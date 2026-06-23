@@ -24,6 +24,8 @@ export function recommendProperties(profile: ConciergeProfile, knowledge: Knowle
       if (profile.investment_interest && /invest|rental|roi|yield|capital/.test(keywordText + project.investment_angle.toLowerCase())) score += 12;
       if (profile.intent === "commercial" && /commercial|office|retail|showroom/.test(keywordText)) score += 20;
       if (profile.intent === "rent" && /rental|apartment|serviced/.test(keywordText)) score += 10;
+      if (profile.intent === "buy" && /buy|ownership|family|villa|apartment|branded/.test(keywordText)) score += 10;
+      if (profile.intent === "invest" && /investment|roi|yield|rental|waterfront/.test(keywordText)) score += 18;
       const signal = knowledge.investmentSignals.find((item) => item.project_name === project.project_name);
       return {
         project_name: project.project_name,
@@ -42,6 +44,23 @@ export function recommendProperties(profile: ConciergeProfile, knowledge: Knowle
 
 export function nextConciergeReply(profile: ConciergeProfile, recommendations: PropertyRecommendation[], knowledge: KnowledgeBase) {
   if (!profile.intent) return "Thank you for your interest. Are you considering buying, renting, investing, or commercial property?";
+  if (profile.intent === "buy") {
+    if (!profile.budget) return "Excellent. For a purchase journey, may I know your approximate budget range and whether you prefer an apartment, villa, or branded residence?";
+    if (!profile.property_type) return "Which property type should I focus on for you: apartment, villa, branded residence, or waterfront home?";
+    if (!profile.location) return "Do you prefer Ajman Waterfront, the Corniche, a family community, or a business district?";
+    if (!profile.timeline) return "What is your ideal purchase timeline: immediate, 1-3 months, or later this year?";
+  }
+  if (profile.intent === "rent") {
+    if (!profile.budget) return "For the rental journey, what monthly budget range would feel comfortable?";
+    if (!profile.property_type) return "Would you like a studio, apartment, villa, or serviced residence for rent?";
+    if (!profile.location) return "Which area suits you best: waterfront, family community, or close to business access?";
+    if (!profile.timeline) return "When would you like to move in, and how long is your preferred lease duration?";
+  }
+  if (profile.intent === "invest") {
+    if (!profile.budget) return "For investment, what capital range are you considering, and do you prefer income yield or capital appreciation?";
+    if (!profile.location) return "Would you like me to focus on waterfront rental demand, branded residences, or commercial yield opportunities?";
+    if (!profile.timeline) return "What is your investment horizon: short-term rental income, 3-5 year growth, or long-term capital preservation?";
+  }
   if (!profile.location) return knowledge.salesLanguage.follow_ups[0];
   if (!profile.property_type) return "May I know which property type you prefer, such as an apartment, villa, branded residence, or commercial space?";
   if (!profile.budget) return knowledge.salesLanguage.follow_ups[1];

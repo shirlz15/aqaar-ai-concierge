@@ -20,6 +20,8 @@ export function storeLocalLead(payload: LeadPayload, leadScore: number, leadCate
     name: payload.name,
     email_hash: redactContact(payload.email),
     phone_hash: redactContact(payload.phone),
+    country: payload.country ?? null,
+    budget_range: payload.budget_range ?? null,
     preferred_contact_method: payload.preferred_contact_method,
     preference: payload.preference ?? null,
     selected_project: payload.selected_project ?? payload.profile.selected_project ?? payload.profile.project_name ?? null,

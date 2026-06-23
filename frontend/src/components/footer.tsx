@@ -4,10 +4,29 @@ import Link from "next/link";
 import { MapPin, Mail, Phone, ExternalLink, Shield, BadgeCheck, Instagram, Linkedin, Twitter } from "lucide-react";
 
 const footerLinks = {
-  Properties: ["Dusit Thani", "Mawjan Waterfront", "Ajman One", "Al Zorah"],
-  Invest: ["Why Ajman", "ROI Calculator", "Payment Plans", "Golden Visa"],
-  Company: ["About Aqaar", "News & Media", "Careers", "Contact"],
-  Legal: ["Privacy Policy", "Terms of Use", "Data Protection"],
+  Properties: [
+    { label: "Dusit Thani", href: "#projects" },
+    { label: "Mawjan Waterfront", href: "#projects" },
+    { label: "Ajman One", href: "#projects" },
+    { label: "Al Zorah", href: "#projects" },
+  ],
+  Invest: [
+    { label: "Why Ajman", href: "#invest" },
+    { label: "ROI Calculator", href: "#concierge" },
+    { label: "Payment Plans", href: "#concierge" },
+    { label: "Golden Visa", href: "/api/downloads/market-report" },
+  ],
+  Company: [
+    { label: "About Aqaar", href: "https://aqaar.com" },
+    { label: "News & Media", href: "https://aqaar.com" },
+    { label: "Careers", href: "https://aqaar.com" },
+    { label: "Contact", href: "#concierge" },
+  ],
+  Legal: [
+    { label: "Privacy Policy", href: "#concierge" },
+    { label: "Terms of Use", href: "#concierge" },
+    { label: "Data Protection", href: "#concierge" },
+  ],
 };
 
 const trustBadges = [
@@ -100,12 +119,14 @@ export function Footer() {
               </p>
               <ul className="space-y-2.5">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={link.label}>
                     <a
-                      href="#"
+                      href={link.href}
+                      target={link.href.startsWith("http") ? "_blank" : undefined}
+                      rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                       className="animated-underline text-sm text-white/60 hover:text-white transition-colors"
                     >
-                      {link}
+                      {link.label}
                     </a>
                   </li>
                 ))}

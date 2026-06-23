@@ -78,6 +78,8 @@ class LeadCreate(BaseModel):
     name: str = Field(min_length=2, max_length=120)
     email: EmailStr
     phone: str = Field(min_length=7, max_length=30)
+    country: str | None = Field(default=None, min_length=2, max_length=80)
+    budget_range: str | None = Field(default=None, min_length=2, max_length=120)
     preferred_contact_method: Literal["phone", "email", "whatsapp"]
     preference: str | None = Field(default=None, min_length=2, max_length=160)
     selected_project: str | None = Field(default=None, max_length=120)

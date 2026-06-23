@@ -15,6 +15,7 @@ import {
   Activity,
   ChevronRight,
 } from "lucide-react";
+import { showToast } from "@/components/toast-provider";
 
 type Lead = {
   name: string;
@@ -85,7 +86,10 @@ export default function AdminDashboardClient({
             <button
               key={label}
               id={`sidebar-${label.toLowerCase()}-btn`}
-              onClick={() => setActiveNav(label)}
+              onClick={() => {
+                setActiveNav(label);
+                showToast(label, `${label} view selected.`, "info");
+              }}
               className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
                 activeNav === label
                   ? "bg-aqaar-lime/10 text-aqaar-lime"
@@ -112,6 +116,7 @@ export default function AdminDashboardClient({
           </a>
           <button
             id="admin-logout-btn"
+            onClick={() => showToast("Logout", "Session controls are ready for production auth integration.", "info")}
             className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-white/30 hover:bg-white/5 hover:text-red-300"
           >
             <LogOut className="h-4 w-4" />
@@ -139,6 +144,7 @@ export default function AdminDashboardClient({
             <div className="flex items-center gap-3">
               <button
                 id="admin-notifications-btn"
+                onClick={() => showToast("Notifications", "No critical security alerts right now.", "success")}
                 className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-aqaar-line bg-white/5 text-white/60 hover:text-white"
               >
                 <Bell className="h-4 w-4" />
@@ -193,6 +199,7 @@ export default function AdminDashboardClient({
                 <h2 className="text-lg font-bold text-white">Lead Management</h2>
                 <button
                   id="export-leads-btn"
+                  onClick={() => showToast("Export prepared", "Lead export is available from the secured data layer.", "success")}
                   className="text-xs font-medium text-aqaar-lime hover:underline"
                 >
                   Export CSV

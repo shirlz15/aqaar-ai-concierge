@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { Lock, Sparkles, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
+import { showToast } from "@/components/toast-provider";
 
 export default function AdminLoginPage() {
   const [token, setToken] = useState("");
@@ -21,12 +22,15 @@ export default function AdminLoginPage() {
         body: JSON.stringify({ token }),
       });
       if (response.ok) {
+        showToast("Admin login", "Access verified. Opening dashboard.", "success");
         window.location.href = "/admin";
         return;
       }
       setError("Access could not be verified. Please check your credentials.");
+      showToast("Admin login failed", "Please check your credentials and server environment.", "error");
     } catch {
       setError("Unable to connect. Please try again.");
+      showToast("Error occurred", "Unable to connect. Please try again.", "error");
     } finally {
       setLoading(false);
     }

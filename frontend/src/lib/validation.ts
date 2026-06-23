@@ -29,6 +29,8 @@ export const leadRequestSchema = z.object({
   name: z.string().trim().min(2).max(120),
   email: z.string().trim().email().max(180),
   phone: z.string().trim().min(7).max(30).regex(/^[+\d\s().-]+$/),
+  country: z.string().trim().min(2).max(80).optional(),
+  budget_range: z.string().trim().min(2).max(120).optional(),
   preferred_contact_method: z.enum(["phone", "email", "whatsapp"]),
   preference: z.string().trim().min(2).max(160).optional(),
   selected_project: z.string().trim().max(120).optional(),

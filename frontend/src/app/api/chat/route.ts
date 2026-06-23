@@ -5,6 +5,7 @@ import { extractIntent } from "@/lib/server/intent-engine";
 import { getKnowledgeBase } from "@/lib/server/knowledge-base";
 import { leadSummary, nextConciergeReply, recommendProperties } from "@/lib/server/recommendation-engine";
 import { buildProxyHeaders, resolveBackendUrl } from "@/lib/server/backend-proxy";
+import { trackAnalyticsEvent } from "@/lib/server/analytics-store";
 
 export const runtime = "nodejs";
 
@@ -15,6 +16,15 @@ export async function POST(request: NextRequest) {
     const profile = extractIntent(payload.message, payload.profile ?? {}, knowledge);
     const recommendations = recommendProperties(profile, knowledge);
     const summary = leadSummary(profile);
+    const journeyEvent =
+      profile.intent === "buy"
+        ? "buy_journey_started"
+        : profile.intent === "rent"
+          ? "rent_journey_started"
+          : profile.intent === "invest"
+            ? "invest_journey_started"
+            : "chat_started";
+    trackAnalyticsEvent(journeyEvent, { session_id: payload.session_id, message: payload.message.slice(0, 120) });
     const backendUrl = resolveBackendUrl();
     if (!backendUrl) {
       return NextResponse.json({

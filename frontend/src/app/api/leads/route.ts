@@ -4,6 +4,7 @@ import { auditClientEvent, readValidatedJson, safeApiError } from "@/lib/securit
 import { resolveBackendUrl } from "@/lib/server/backend-proxy";
 import { scoreLead } from "@/lib/lead-scoring";
 import { storeLocalLead } from "@/lib/server/local-lead-store";
+import { trackAnalyticsEvent } from "@/lib/server/analytics-store";
 
 export async function POST(request: NextRequest) {
   try {
@@ -16,6 +17,11 @@ export async function POST(request: NextRequest) {
         id,
         lead_category: breakdown.leadCategory,
         selected_project: payload.selected_project ?? payload.profile.selected_project ?? payload.profile.project_name ?? null,
+      });
+      trackAnalyticsEvent(payload.selected_project ? "property_enquiry" : "lead_submitted", {
+        selected_project: payload.selected_project ?? payload.profile.selected_project ?? payload.profile.project_name ?? null,
+        preference: payload.preference ?? payload.profile.intent ?? null,
+        lead_category: breakdown.leadCategory,
       });
       return NextResponse.json({
         id,
@@ -36,6 +42,10 @@ export async function POST(request: NextRequest) {
         auditClientEvent("lead_proxy_failed", { status: response.status });
         return localFallback();
       }
+      trackAnalyticsEvent(payload.selected_project ? "property_enquiry" : "lead_submitted", {
+        selected_project: payload.selected_project ?? payload.profile.selected_project ?? payload.profile.project_name ?? null,
+        preference: payload.preference ?? payload.profile.intent ?? null,
+      });
       return NextResponse.json(await response.json());
     } catch (proxyError) {
       auditClientEvent("lead_proxy_failed", {
