@@ -148,9 +148,22 @@ export function HeroSection() {
               loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
           >
-            Building A Brilliant
+            Building A{" "}
+            <span 
+              className="italic text-aqaar-lime normal-case font-medium" 
+              style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.15em", letterSpacing: "normal" }}
+            >
+              Brilliant
+            </span>
             <br />
-            Future For A Better Life<span className="text-aqaar-lime">.</span>
+            Future For A{" "}
+            <span 
+              className="italic text-white/90 normal-case font-medium" 
+              style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.15em", letterSpacing: "normal" }}
+            >
+              Better Life
+            </span>
+            <span className="text-aqaar-lime font-sans">.</span>
           </h1>
 
           <p
