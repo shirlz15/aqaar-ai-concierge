@@ -1,0 +1,37 @@
+entity,field_name,data_type,description,source,requirement,privacy_classification,validation_rule
+customer,customer_id,uuid,Unique customer identifier,system,required,pii_indirect,uuid v4
+customer,name,string,Customer full name,lead form,optional_until_capture,pii_direct,2-120 chars
+customer,email,email,Customer email,lead form,optional_until_capture,pii_direct,valid email
+customer,phone,string,Customer phone number,lead form,optional_until_capture,pii_direct,E.164 preferred
+customer,nationality,string,Nationality or residency profile,chat or form,optional,pii_sensitive,controlled list
+customer,language,enum,Preferred language,chat or browser,required,preference,"en, ar"
+customer,preferred_contact_method,enum,Preferred follow-up channel,lead form,required_at_capture,preference,"phone,email,whatsapp"
+customer,consent_given,boolean,Consent to store contact details,lead form,required_at_capture,privacy,true required
+intent,intent,enum,Primary user intent,nlp,required,behavioral,"buy,rent,invest,commercial,support"
+intent,intent_confidence,decimal,Classifier confidence,nlp,required,system,0-1
+intent,purchase_type,enum,Self-use or investment purchase,chat,optional,behavioral,"self_use,investment,mixed"
+intent,buy_vs_rent,enum,Buy or rent preference,chat,optional,behavioral,"buy,rent,undecided"
+intent,investment_interest,boolean,Investment motivation present,chat,optional,behavioral,boolean
+property,property_type,enum,Desired property type,chat,optional,preference,controlled list
+property,project_name,string,Aqaar project of interest,chat or click,optional,preference,project catalog
+property,unit_type,string,Unit layout,inventory,optional,preference,"studio,1br,2br,villa,etc"
+property,bedrooms,integer,Bedroom count,chat or inventory,optional,preference,0-8
+property,bathrooms,integer,Bathroom count,inventory,optional,preference,1-10
+property,area_sqft,integer,Unit area,inventory,optional,commercial,positive integer
+property,price,decimal,Asking price,inventory,optional,commercial,OMR amount
+property,location,string,Preferred location,chat,optional,preference,location catalog
+property,view_type,enum,Preferred view,chat or inventory,optional,preference,"sea,marina,garden,city,mountain"
+property,amenities,array,Amenity preferences,chat or inventory,optional,preference,amenity catalog
+timeline,purchase_timeline,enum,Buying timeline,chat,optional,behavioral,"immediate,1-3m,3-6m,6m+"
+timeline,urgency,enum,Urgency level,derived,optional,system,"low,medium,high"
+timeline,move_in_date,date,Desired move-in date,chat,optional,preference,ISO date
+lead,lead_score,integer,Lead score,derived,required,system,0-100
+lead,lead_stage,enum,Pipeline stage,crm,required,system,"new,qualified,viewing,reserved,closed"
+lead,lead_temperature,enum,Lead heat,derived,required,system,"cold,warm,hot"
+conversation,session_id,string,Conversation session identifier,system,required,system,8-128 chars
+conversation,last_question_asked,string,Latest assistant question,conversation,optional,system,max 500 chars
+conversation,objection_type,enum,Detected objection,nlp,optional,behavioral,"price,trust,timing,location,legal"
+recommendation,match_score,integer,Project match score,engine,required,system,0-100
+recommendation,recommended_next_action,enum,Next best action,engine,required,system,"ask_budget,show_project,capture_lead,book_viewing"
+audit,source_channel,enum,Traffic or interaction channel,tracking,optional,system,"website,ad,organic,referral"
+audit,risk_flags,array,Security or quality flags,engine,optional,system,"spam,pii_before_consent,injection_attempt"

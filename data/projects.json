@@ -1,0 +1,32 @@
+[
+  {
+    "project_name": "Dusit Thani",
+    "location": "Muscat Bay",
+    "property_type": "branded residence",
+    "price_range": "OMR 185,000 - OMR 620,000",
+    "amenities": ["sea-view residences", "resort services", "wellness facilities", "concierge access"],
+    "investment_score": 91,
+    "estimated_roi": "7.5% - 9.2%",
+    "description": "A luxury branded residence opportunity suited to lifestyle buyers and investors seeking resort-led capital appreciation."
+  },
+  {
+    "project_name": "Mawjan",
+    "location": "Waterfront District",
+    "property_type": "apartment",
+    "price_range": "OMR 95,000 - OMR 340,000",
+    "amenities": ["waterfront promenade", "retail plaza", "smart parking", "family recreation"],
+    "investment_score": 86,
+    "estimated_roi": "6.8% - 8.4%",
+    "description": "A contemporary waterfront community with strong rental appeal and accessible luxury positioning."
+  },
+  {
+    "project_name": "Dusit Thani Signature Villas",
+    "location": "Muscat Bay",
+    "property_type": "villa",
+    "price_range": "OMR 740,000 - OMR 1,450,000",
+    "amenities": ["private pool", "managed hospitality", "beach club", "valet services"],
+    "investment_score": 94,
+    "estimated_roi": "8.1% - 10.0%",
+    "description": "A limited villa collection for high-intent buyers prioritizing privacy, prestige, and long-term value."
+  }
+]

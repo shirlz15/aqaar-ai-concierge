@@ -1,0 +1,201 @@
+amenity_id,amenity_name,category,value_signal,persona_fit,recommendation_weight
+AMN-0001,Concierge Desk,lifestyle,comfort,First Time Buyer,1
+AMN-0002,Valet Parking,service,prestige,Luxury Buyer,2
+AMN-0003,Beach Access,family,rental appeal,Investor,3
+AMN-0004,Resort Pool,wellness,operational utility,Commercial Buyer,4
+AMN-0005,Infinity Pool,commercial,comfort,Rental Seeker,5
+AMN-0006,Fitness Studio,lifestyle,prestige,Foreign Investor,6
+AMN-0007,Spa And Wellness,service,rental appeal,First Time Buyer,7
+AMN-0008,Kids Club,family,operational utility,Luxury Buyer,8
+AMN-0009,Retail Promenade,wellness,comfort,Investor,9
+AMN-0010,Marina Walk,commercial,prestige,Commercial Buyer,10
+AMN-0011,Smart Access,lifestyle,rental appeal,Rental Seeker,1
+AMN-0012,Covered Parking,service,operational utility,Foreign Investor,2
+AMN-0013,Private Garden,family,comfort,First Time Buyer,3
+AMN-0014,Private Pool,wellness,prestige,Luxury Buyer,4
+AMN-0015,Sea View,commercial,rental appeal,Investor,5
+AMN-0016,Mountain View,lifestyle,operational utility,Commercial Buyer,6
+AMN-0017,Maid Room,service,comfort,Rental Seeker,7
+AMN-0018,Business Lounge,family,prestige,Foreign Investor,8
+AMN-0019,Security,wellness,rental appeal,First Time Buyer,9
+AMN-0020,Property Management,commercial,operational utility,Luxury Buyer,10
+AMN-0021,Concierge Desk Tier 1,lifestyle,comfort,Investor,1
+AMN-0022,Valet Parking Tier 1,service,prestige,Commercial Buyer,2
+AMN-0023,Beach Access Tier 1,family,rental appeal,Rental Seeker,3
+AMN-0024,Resort Pool Tier 1,wellness,operational utility,Foreign Investor,4
+AMN-0025,Infinity Pool Tier 1,commercial,comfort,First Time Buyer,5
+AMN-0026,Fitness Studio Tier 1,lifestyle,prestige,Luxury Buyer,6
+AMN-0027,Spa And Wellness Tier 1,service,rental appeal,Investor,7
+AMN-0028,Kids Club Tier 1,family,operational utility,Commercial Buyer,8
+AMN-0029,Retail Promenade Tier 1,wellness,comfort,Rental Seeker,9
+AMN-0030,Marina Walk Tier 1,commercial,prestige,Foreign Investor,10
+AMN-0031,Smart Access Tier 1,lifestyle,rental appeal,First Time Buyer,1
+AMN-0032,Covered Parking Tier 1,service,operational utility,Luxury Buyer,2
+AMN-0033,Private Garden Tier 1,family,comfort,Investor,3
+AMN-0034,Private Pool Tier 1,wellness,prestige,Commercial Buyer,4
+AMN-0035,Sea View Tier 1,commercial,rental appeal,Rental Seeker,5
+AMN-0036,Mountain View Tier 1,lifestyle,operational utility,Foreign Investor,6
+AMN-0037,Maid Room Tier 1,service,comfort,First Time Buyer,7
+AMN-0038,Business Lounge Tier 1,family,prestige,Luxury Buyer,8
+AMN-0039,Security Tier 1,wellness,rental appeal,Investor,9
+AMN-0040,Property Management Tier 1,commercial,operational utility,Commercial Buyer,10
+AMN-0041,Concierge Desk Tier 2,lifestyle,comfort,Rental Seeker,1
+AMN-0042,Valet Parking Tier 2,service,prestige,Foreign Investor,2
+AMN-0043,Beach Access Tier 2,family,rental appeal,First Time Buyer,3
+AMN-0044,Resort Pool Tier 2,wellness,operational utility,Luxury Buyer,4
+AMN-0045,Infinity Pool Tier 2,commercial,comfort,Investor,5
+AMN-0046,Fitness Studio Tier 2,lifestyle,prestige,Commercial Buyer,6
+AMN-0047,Spa And Wellness Tier 2,service,rental appeal,Rental Seeker,7
+AMN-0048,Kids Club Tier 2,family,operational utility,Foreign Investor,8
+AMN-0049,Retail Promenade Tier 2,wellness,comfort,First Time Buyer,9
+AMN-0050,Marina Walk Tier 2,commercial,prestige,Luxury Buyer,10
+AMN-0051,Smart Access Tier 2,lifestyle,rental appeal,Investor,1
+AMN-0052,Covered Parking Tier 2,service,operational utility,Commercial Buyer,2
+AMN-0053,Private Garden Tier 2,family,comfort,Rental Seeker,3
+AMN-0054,Private Pool Tier 2,wellness,prestige,Foreign Investor,4
+AMN-0055,Sea View Tier 2,commercial,rental appeal,First Time Buyer,5
+AMN-0056,Mountain View Tier 2,lifestyle,operational utility,Luxury Buyer,6
+AMN-0057,Maid Room Tier 2,service,comfort,Investor,7
+AMN-0058,Business Lounge Tier 2,family,prestige,Commercial Buyer,8
+AMN-0059,Security Tier 2,wellness,rental appeal,Rental Seeker,9
+AMN-0060,Property Management Tier 2,commercial,operational utility,Foreign Investor,10
+AMN-0061,Concierge Desk Tier 3,lifestyle,comfort,First Time Buyer,1
+AMN-0062,Valet Parking Tier 3,service,prestige,Luxury Buyer,2
+AMN-0063,Beach Access Tier 3,family,rental appeal,Investor,3
+AMN-0064,Resort Pool Tier 3,wellness,operational utility,Commercial Buyer,4
+AMN-0065,Infinity Pool Tier 3,commercial,comfort,Rental Seeker,5
+AMN-0066,Fitness Studio Tier 3,lifestyle,prestige,Foreign Investor,6
+AMN-0067,Spa And Wellness Tier 3,service,rental appeal,First Time Buyer,7
+AMN-0068,Kids Club Tier 3,family,operational utility,Luxury Buyer,8
+AMN-0069,Retail Promenade Tier 3,wellness,comfort,Investor,9
+AMN-0070,Marina Walk Tier 3,commercial,prestige,Commercial Buyer,10
+AMN-0071,Smart Access Tier 3,lifestyle,rental appeal,Rental Seeker,1
+AMN-0072,Covered Parking Tier 3,service,operational utility,Foreign Investor,2
+AMN-0073,Private Garden Tier 3,family,comfort,First Time Buyer,3
+AMN-0074,Private Pool Tier 3,wellness,prestige,Luxury Buyer,4
+AMN-0075,Sea View Tier 3,commercial,rental appeal,Investor,5
+AMN-0076,Mountain View Tier 3,lifestyle,operational utility,Commercial Buyer,6
+AMN-0077,Maid Room Tier 3,service,comfort,Rental Seeker,7
+AMN-0078,Business Lounge Tier 3,family,prestige,Foreign Investor,8
+AMN-0079,Security Tier 3,wellness,rental appeal,First Time Buyer,9
+AMN-0080,Property Management Tier 3,commercial,operational utility,Luxury Buyer,10
+AMN-0081,Concierge Desk Tier 4,lifestyle,comfort,Investor,1
+AMN-0082,Valet Parking Tier 4,service,prestige,Commercial Buyer,2
+AMN-0083,Beach Access Tier 4,family,rental appeal,Rental Seeker,3
+AMN-0084,Resort Pool Tier 4,wellness,operational utility,Foreign Investor,4
+AMN-0085,Infinity Pool Tier 4,commercial,comfort,First Time Buyer,5
+AMN-0086,Fitness Studio Tier 4,lifestyle,prestige,Luxury Buyer,6
+AMN-0087,Spa And Wellness Tier 4,service,rental appeal,Investor,7
+AMN-0088,Kids Club Tier 4,family,operational utility,Commercial Buyer,8
+AMN-0089,Retail Promenade Tier 4,wellness,comfort,Rental Seeker,9
+AMN-0090,Marina Walk Tier 4,commercial,prestige,Foreign Investor,10
+AMN-0091,Smart Access Tier 4,lifestyle,rental appeal,First Time Buyer,1
+AMN-0092,Covered Parking Tier 4,service,operational utility,Luxury Buyer,2
+AMN-0093,Private Garden Tier 4,family,comfort,Investor,3
+AMN-0094,Private Pool Tier 4,wellness,prestige,Commercial Buyer,4
+AMN-0095,Sea View Tier 4,commercial,rental appeal,Rental Seeker,5
+AMN-0096,Mountain View Tier 4,lifestyle,operational utility,Foreign Investor,6
+AMN-0097,Maid Room Tier 4,service,comfort,First Time Buyer,7
+AMN-0098,Business Lounge Tier 4,family,prestige,Luxury Buyer,8
+AMN-0099,Security Tier 4,wellness,rental appeal,Investor,9
+AMN-0100,Property Management Tier 4,commercial,operational utility,Commercial Buyer,10
+AMN-0101,Concierge Desk Tier 5,lifestyle,comfort,Rental Seeker,1
+AMN-0102,Valet Parking Tier 5,service,prestige,Foreign Investor,2
+AMN-0103,Beach Access Tier 5,family,rental appeal,First Time Buyer,3
+AMN-0104,Resort Pool Tier 5,wellness,operational utility,Luxury Buyer,4
+AMN-0105,Infinity Pool Tier 5,commercial,comfort,Investor,5
+AMN-0106,Fitness Studio Tier 5,lifestyle,prestige,Commercial Buyer,6
+AMN-0107,Spa And Wellness Tier 5,service,rental appeal,Rental Seeker,7
+AMN-0108,Kids Club Tier 5,family,operational utility,Foreign Investor,8
+AMN-0109,Retail Promenade Tier 5,wellness,comfort,First Time Buyer,9
+AMN-0110,Marina Walk Tier 5,commercial,prestige,Luxury Buyer,10
+AMN-0111,Smart Access Tier 5,lifestyle,rental appeal,Investor,1
+AMN-0112,Covered Parking Tier 5,service,operational utility,Commercial Buyer,2
+AMN-0113,Private Garden Tier 5,family,comfort,Rental Seeker,3
+AMN-0114,Private Pool Tier 5,wellness,prestige,Foreign Investor,4
+AMN-0115,Sea View Tier 5,commercial,rental appeal,First Time Buyer,5
+AMN-0116,Mountain View Tier 5,lifestyle,operational utility,Luxury Buyer,6
+AMN-0117,Maid Room Tier 5,service,comfort,Investor,7
+AMN-0118,Business Lounge Tier 5,family,prestige,Commercial Buyer,8
+AMN-0119,Security Tier 5,wellness,rental appeal,Rental Seeker,9
+AMN-0120,Property Management Tier 5,commercial,operational utility,Foreign Investor,10
+AMN-0121,Concierge Desk Tier 6,lifestyle,comfort,First Time Buyer,1
+AMN-0122,Valet Parking Tier 6,service,prestige,Luxury Buyer,2
+AMN-0123,Beach Access Tier 6,family,rental appeal,Investor,3
+AMN-0124,Resort Pool Tier 6,wellness,operational utility,Commercial Buyer,4
+AMN-0125,Infinity Pool Tier 6,commercial,comfort,Rental Seeker,5
+AMN-0126,Fitness Studio Tier 6,lifestyle,prestige,Foreign Investor,6
+AMN-0127,Spa And Wellness Tier 6,service,rental appeal,First Time Buyer,7
+AMN-0128,Kids Club Tier 6,family,operational utility,Luxury Buyer,8
+AMN-0129,Retail Promenade Tier 6,wellness,comfort,Investor,9
+AMN-0130,Marina Walk Tier 6,commercial,prestige,Commercial Buyer,10
+AMN-0131,Smart Access Tier 6,lifestyle,rental appeal,Rental Seeker,1
+AMN-0132,Covered Parking Tier 6,service,operational utility,Foreign Investor,2
+AMN-0133,Private Garden Tier 6,family,comfort,First Time Buyer,3
+AMN-0134,Private Pool Tier 6,wellness,prestige,Luxury Buyer,4
+AMN-0135,Sea View Tier 6,commercial,rental appeal,Investor,5
+AMN-0136,Mountain View Tier 6,lifestyle,operational utility,Commercial Buyer,6
+AMN-0137,Maid Room Tier 6,service,comfort,Rental Seeker,7
+AMN-0138,Business Lounge Tier 6,family,prestige,Foreign Investor,8
+AMN-0139,Security Tier 6,wellness,rental appeal,First Time Buyer,9
+AMN-0140,Property Management Tier 6,commercial,operational utility,Luxury Buyer,10
+AMN-0141,Concierge Desk Tier 7,lifestyle,comfort,Investor,1
+AMN-0142,Valet Parking Tier 7,service,prestige,Commercial Buyer,2
+AMN-0143,Beach Access Tier 7,family,rental appeal,Rental Seeker,3
+AMN-0144,Resort Pool Tier 7,wellness,operational utility,Foreign Investor,4
+AMN-0145,Infinity Pool Tier 7,commercial,comfort,First Time Buyer,5
+AMN-0146,Fitness Studio Tier 7,lifestyle,prestige,Luxury Buyer,6
+AMN-0147,Spa And Wellness Tier 7,service,rental appeal,Investor,7
+AMN-0148,Kids Club Tier 7,family,operational utility,Commercial Buyer,8
+AMN-0149,Retail Promenade Tier 7,wellness,comfort,Rental Seeker,9
+AMN-0150,Marina Walk Tier 7,commercial,prestige,Foreign Investor,10
+AMN-0151,Smart Access Tier 7,lifestyle,rental appeal,First Time Buyer,1
+AMN-0152,Covered Parking Tier 7,service,operational utility,Luxury Buyer,2
+AMN-0153,Private Garden Tier 7,family,comfort,Investor,3
+AMN-0154,Private Pool Tier 7,wellness,prestige,Commercial Buyer,4
+AMN-0155,Sea View Tier 7,commercial,rental appeal,Rental Seeker,5
+AMN-0156,Mountain View Tier 7,lifestyle,operational utility,Foreign Investor,6
+AMN-0157,Maid Room Tier 7,service,comfort,First Time Buyer,7
+AMN-0158,Business Lounge Tier 7,family,prestige,Luxury Buyer,8
+AMN-0159,Security Tier 7,wellness,rental appeal,Investor,9
+AMN-0160,Property Management Tier 7,commercial,operational utility,Commercial Buyer,10
+AMN-0161,Concierge Desk Tier 8,lifestyle,comfort,Rental Seeker,1
+AMN-0162,Valet Parking Tier 8,service,prestige,Foreign Investor,2
+AMN-0163,Beach Access Tier 8,family,rental appeal,First Time Buyer,3
+AMN-0164,Resort Pool Tier 8,wellness,operational utility,Luxury Buyer,4
+AMN-0165,Infinity Pool Tier 8,commercial,comfort,Investor,5
+AMN-0166,Fitness Studio Tier 8,lifestyle,prestige,Commercial Buyer,6
+AMN-0167,Spa And Wellness Tier 8,service,rental appeal,Rental Seeker,7
+AMN-0168,Kids Club Tier 8,family,operational utility,Foreign Investor,8
+AMN-0169,Retail Promenade Tier 8,wellness,comfort,First Time Buyer,9
+AMN-0170,Marina Walk Tier 8,commercial,prestige,Luxury Buyer,10
+AMN-0171,Smart Access Tier 8,lifestyle,rental appeal,Investor,1
+AMN-0172,Covered Parking Tier 8,service,operational utility,Commercial Buyer,2
+AMN-0173,Private Garden Tier 8,family,comfort,Rental Seeker,3
+AMN-0174,Private Pool Tier 8,wellness,prestige,Foreign Investor,4
+AMN-0175,Sea View Tier 8,commercial,rental appeal,First Time Buyer,5
+AMN-0176,Mountain View Tier 8,lifestyle,operational utility,Luxury Buyer,6
+AMN-0177,Maid Room Tier 8,service,comfort,Investor,7
+AMN-0178,Business Lounge Tier 8,family,prestige,Commercial Buyer,8
+AMN-0179,Security Tier 8,wellness,rental appeal,Rental Seeker,9
+AMN-0180,Property Management Tier 8,commercial,operational utility,Foreign Investor,10
+AMN-0181,Concierge Desk Tier 9,lifestyle,comfort,First Time Buyer,1
+AMN-0182,Valet Parking Tier 9,service,prestige,Luxury Buyer,2
+AMN-0183,Beach Access Tier 9,family,rental appeal,Investor,3
+AMN-0184,Resort Pool Tier 9,wellness,operational utility,Commercial Buyer,4
+AMN-0185,Infinity Pool Tier 9,commercial,comfort,Rental Seeker,5
+AMN-0186,Fitness Studio Tier 9,lifestyle,prestige,Foreign Investor,6
+AMN-0187,Spa And Wellness Tier 9,service,rental appeal,First Time Buyer,7
+AMN-0188,Kids Club Tier 9,family,operational utility,Luxury Buyer,8
+AMN-0189,Retail Promenade Tier 9,wellness,comfort,Investor,9
+AMN-0190,Marina Walk Tier 9,commercial,prestige,Commercial Buyer,10
+AMN-0191,Smart Access Tier 9,lifestyle,rental appeal,Rental Seeker,1
+AMN-0192,Covered Parking Tier 9,service,operational utility,Foreign Investor,2
+AMN-0193,Private Garden Tier 9,family,comfort,First Time Buyer,3
+AMN-0194,Private Pool Tier 9,wellness,prestige,Luxury Buyer,4
+AMN-0195,Sea View Tier 9,commercial,rental appeal,Investor,5
+AMN-0196,Mountain View Tier 9,lifestyle,operational utility,Commercial Buyer,6
+AMN-0197,Maid Room Tier 9,service,comfort,Rental Seeker,7
+AMN-0198,Business Lounge Tier 9,family,prestige,Foreign Investor,8
+AMN-0199,Security Tier 9,wellness,rental appeal,First Time Buyer,9
+AMN-0200,Property Management Tier 9,commercial,operational utility,Luxury Buyer,10
