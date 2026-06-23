@@ -1,9 +1,8 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Bot,
   Building2,
   Home,
   Send,
@@ -13,6 +12,7 @@ import {
   MapPin,
   ChevronRight,
   Award,
+  CheckCircle,
 } from "lucide-react";
 import { leadRequestSchema, type ChatMessage, type ConciergeProfile } from "@/lib/validation";
 
@@ -35,13 +35,13 @@ const quickActions = [
 
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-aqaar-line bg-aqaar-card px-4 py-3">
-      <div className="flex gap-1">
-        <div className="typing-dot h-2 w-2 rounded-full bg-aqaar-lime/60" />
-        <div className="typing-dot h-2 w-2 rounded-full bg-aqaar-lime/60" />
-        <div className="typing-dot h-2 w-2 rounded-full bg-aqaar-lime/60" />
+    <div className="flex items-center gap-2 rounded-2xl rounded-tl-sm border border-aqaar-line bg-aqaar-card px-4 py-3">
+      <div className="flex gap-1.5 items-center">
+        <div className="typing-dot h-2 w-2 rounded-full bg-aqaar-lime" />
+        <div className="typing-dot h-2 w-2 rounded-full bg-aqaar-lime" />
+        <div className="typing-dot h-2 w-2 rounded-full bg-aqaar-lime" />
       </div>
-      <span className="text-xs text-white/40">Advisor is thinking...</span>
+      <span className="text-xs text-white/40 italic">Advisor is thinking...</span>
     </div>
   );
 }
@@ -49,8 +49,9 @@ function TypingIndicator() {
 function RecommendationCard({ item }: { item: Recommendation }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
       className="rounded-xl border border-aqaar-lime/20 bg-aqaar-lime/5 p-4"
     >
       <div className="flex items-start justify-between gap-3">
@@ -58,7 +59,7 @@ function RecommendationCard({ item }: { item: Recommendation }) {
           <p className="font-semibold text-white">{item.project_name}</p>
           <p className="mt-0.5 text-xs text-aqaar-lime">{item.investment_potential}</p>
         </div>
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex flex-col items-end gap-1 shrink-0">
           <div className="rounded-full bg-aqaar-lime px-2.5 py-1">
             <span className="text-[11px] font-bold text-aqaar-dark">
               {item.match_score}% match
@@ -76,7 +77,33 @@ function RecommendationCard({ item }: { item: Recommendation }) {
   );
 }
 
-/* ── Floating button widget (legacy behavior, enhanced) ── */
+function MessageBubble({ message, index }: { message: ChatMessage; index: number }) {
+  const isAssistant = message.role === "assistant";
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 350, damping: 30, delay: 0.03 * Math.min(index, 3) }}
+      className={`flex gap-2 ${isAssistant ? "flex-row" : "flex-row-reverse"}`}
+    >
+      {isAssistant && (
+        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-aqaar-lime mt-1">
+          <Sparkles className="h-3 w-3 text-aqaar-dark" />
+        </div>
+      )}
+      <div
+        className={`max-w-[82%] whitespace-pre-line rounded-2xl px-4 py-3 text-sm leading-6 ${
+          isAssistant
+            ? "rounded-tl-sm border border-aqaar-line bg-aqaar-card text-white/90"
+            : "rounded-tr-sm bg-aqaar-lime text-aqaar-dark font-medium"
+        }`}
+      >
+        {message.content}
+      </div>
+    </motion.div>
+  );
+}
+
 export function ConciergeWidget() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
@@ -96,9 +123,26 @@ export function ConciergeWidget() {
     preferred_contact_method: "phone",
     consent_given: false,
   });
-  const [leadStatus, setLeadStatus] = useState("");
+  const [leadStatus, setLeadStatus] = useState<"" | "success" | "error">("");
+  const [leadStatusMsg, setLeadStatusMsg] = useState("");
   const [loading, setLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const sessionId = useMemo(() => crypto.randomUUID(), []);
+
+  // Auto-scroll to bottom on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading, recommendations]);
+
+  // Lock body scroll on mobile when open
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      document.body.style.overflow = open ? "hidden" : "";
+    }
+    return () => {
+      if (typeof window !== "undefined") document.body.style.overflow = "";
+    };
+  }, [open]);
 
   async function sendMessage(content: string) {
     const clean = content.trim();
@@ -142,7 +186,8 @@ export function ConciergeWidget() {
     const payload = { ...lead, session_id: sessionId, profile };
     const parsed = leadRequestSchema.safeParse(payload);
     if (!parsed.success) {
-      setLeadStatus("Please complete all fields and provide consent.");
+      setLeadStatus("error");
+      setLeadStatusMsg("Please complete all fields and provide consent.");
       return;
     }
     const response = await fetch("/api/leads", {
@@ -150,11 +195,13 @@ export function ConciergeWidget() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(parsed.data),
     });
-    setLeadStatus(
-      response.ok
-        ? "Thank you. A private advisor will contact you shortly."
-        : "Your details could not be submitted right now. Please try again."
-    );
+    if (response.ok) {
+      setLeadStatus("success");
+      setLeadStatusMsg("Thank you. A private advisor will contact you shortly.");
+    } else {
+      setLeadStatus("error");
+      setLeadStatusMsg("Your details could not be submitted right now. Please try again.");
+    }
   }
 
   return (
@@ -166,10 +213,14 @@ export function ConciergeWidget() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.97 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="mb-4 flex h-[min(700px,calc(100vh-6rem))] w-[min(440px,calc(100vw-3rem))] flex-col overflow-hidden rounded-2xl border border-aqaar-line bg-aqaar-panel shadow-concierge"
+            className="concierge-widget-panel mb-4 flex flex-col overflow-hidden rounded-2xl border border-aqaar-line bg-aqaar-panel shadow-concierge"
+            style={{
+              height: "min(700px, calc(100vh - 6rem))",
+              width: "min(440px, calc(100vw - 3rem))",
+            }}
           >
             {/* Header */}
-            <div className="relative overflow-hidden border-b border-aqaar-line bg-gradient-to-r from-aqaar-card to-aqaar-panel px-5 py-4">
+            <div className="relative overflow-hidden border-b border-aqaar-line bg-gradient-to-r from-aqaar-card to-aqaar-panel px-5 py-4 shrink-0">
               {/* Lime accent bar */}
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-aqaar-lime via-aqaar-lime/50 to-transparent" />
 
@@ -179,16 +230,21 @@ export function ConciergeWidget() {
                   <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-aqaar-lime">
                     <Sparkles className="h-5 w-5 text-aqaar-dark" />
                     <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-aqaar-panel bg-green-400" />
+                    {/* Ping ring */}
+                    <span className="absolute -inset-1 rounded-full border border-aqaar-lime/30 animate-ping-lime" />
                   </div>
                   <div>
                     <p className="text-sm font-bold text-white">Aqaar AI Advisor</p>
-                    <p className="text-xs text-aqaar-lime">● Online — Luxury Real Estate</p>
+                    <p className="text-xs text-aqaar-lime flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block animate-pulse" />
+                      Online — Luxury Real Estate
+                    </p>
                   </div>
                 </div>
                 <button
                   aria-label="Close concierge"
                   onClick={() => setOpen(false)}
-                  className="rounded-lg p-1.5 text-white/40 hover:bg-white/10 hover:text-white"
+                  className="rounded-lg p-1.5 text-white/40 hover:bg-white/10 hover:text-white transition-all"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -198,25 +254,7 @@ export function ConciergeWidget() {
             {/* Messages */}
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {messages.map((message, index) => (
-                <div
-                  key={`${message.role}-${index}`}
-                  className={`flex gap-2 ${message.role === "user" ? "flex-row-reverse" : "flex-row"}`}
-                >
-                  {message.role === "assistant" && (
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-aqaar-lime mt-1">
-                      <Sparkles className="h-3 w-3 text-aqaar-dark" />
-                    </div>
-                  )}
-                  <div
-                    className={`max-w-[82%] whitespace-pre-line rounded-2xl px-4 py-3 text-sm leading-6 ${
-                      message.role === "assistant"
-                        ? "rounded-tl-sm border border-aqaar-line bg-aqaar-card text-white/90"
-                        : "rounded-tr-sm bg-aqaar-lime text-aqaar-dark font-medium"
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                </div>
+                <MessageBubble key={`${message.role}-${index}`} message={message} index={index} />
               ))}
 
               {/* Typing indicator */}
@@ -235,7 +273,7 @@ export function ConciergeWidget() {
               ))}
 
               {/* Lead capture */}
-              {recommendations.length > 0 && (
+              {recommendations.length > 0 && leadStatus !== "success" && (
                 <motion.form
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -250,7 +288,7 @@ export function ConciergeWidget() {
                     value={lead.name}
                     onChange={(e) => setLead({ ...lead, name: e.target.value })}
                     maxLength={120}
-                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime"
+                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime transition-colors"
                     placeholder="Full name"
                   />
                   <input
@@ -258,14 +296,14 @@ export function ConciergeWidget() {
                     onChange={(e) => setLead({ ...lead, email: e.target.value })}
                     maxLength={180}
                     type="email"
-                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime"
+                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime transition-colors"
                     placeholder="Email address"
                   />
                   <input
                     value={lead.phone}
                     onChange={(e) => setLead({ ...lead, phone: e.target.value })}
                     maxLength={30}
-                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime"
+                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime transition-colors"
                     placeholder="Phone / WhatsApp"
                   />
                   <select
@@ -273,7 +311,7 @@ export function ConciergeWidget() {
                     onChange={(e) =>
                       setLead({ ...lead, preferred_contact_method: e.target.value })
                     }
-                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none focus:border-aqaar-lime"
+                    className="h-10 w-full rounded-lg border border-aqaar-line bg-aqaar-panel px-3 text-sm text-white outline-none focus:border-aqaar-lime transition-colors"
                   >
                     <option value="phone">Phone</option>
                     <option value="email">Email</option>
@@ -290,25 +328,42 @@ export function ConciergeWidget() {
                   </label>
                   <button
                     type="submit"
-                    className="w-full rounded-lg bg-aqaar-lime py-2.5 text-sm font-bold text-aqaar-dark transition-all hover:bg-aqaar-lime-soft"
+                    className="group relative w-full overflow-hidden rounded-lg bg-aqaar-lime py-2.5 text-sm font-bold text-aqaar-dark transition-all hover:bg-aqaar-lime-soft hover:shadow-lime-sm"
                   >
                     Submit Details
+                    <span className="absolute inset-0 -skew-x-12 translate-x-[-100%] bg-white/20 group-hover:translate-x-[200%] transition-transform duration-700" />
                   </button>
-                  {leadStatus && (
-                    <p className="text-xs text-aqaar-lime">{leadStatus}</p>
+                  {leadStatus === "error" && (
+                    <p className="text-xs text-red-400">{leadStatusMsg}</p>
                   )}
                 </motion.form>
               )}
+
+              {/* Success state */}
+              {leadStatus === "success" && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="rounded-xl border border-green-500/20 bg-green-500/5 p-4 text-center"
+                >
+                  <CheckCircle className="h-8 w-8 text-green-400 mx-auto animate-success-pop" />
+                  <p className="mt-2 text-sm font-semibold text-white">Consultation Requested</p>
+                  <p className="mt-1 text-xs text-white/50">{leadStatusMsg}</p>
+                </motion.div>
+              )}
+
+              <div ref={messagesEndRef} />
             </div>
 
             {/* Quick actions */}
-            <div className="border-t border-aqaar-line px-4 pt-3 pb-2">
-              <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-2">
+            <div className="border-t border-aqaar-line px-4 pt-3 pb-2 shrink-0">
+              <div className="hide-scrollbar fade-edges flex gap-2 overflow-x-auto pb-2">
                 {quickActions.map((action) => (
                   <button
                     key={action.label}
                     onClick={() => void sendMessage(action.prompt)}
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-aqaar-line bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-all hover:border-aqaar-lime/30 hover:bg-aqaar-lime/10 hover:text-aqaar-lime"
+                    disabled={loading}
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-aqaar-line bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 transition-all hover:border-aqaar-lime/30 hover:bg-aqaar-lime/10 hover:text-aqaar-lime disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <action.icon className="h-3 w-3" />
                     {action.label}
@@ -318,20 +373,20 @@ export function ConciergeWidget() {
             </div>
 
             {/* Input */}
-            <div className="border-t border-aqaar-line px-4 pb-4 pt-3">
+            <div className="border-t border-aqaar-line px-4 pb-4 pt-3 shrink-0">
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   maxLength={2000}
-                  className="min-w-0 flex-1 rounded-xl border border-aqaar-line bg-aqaar-card px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime"
+                  className="min-w-0 flex-1 rounded-xl border border-aqaar-line bg-aqaar-card px-4 py-2.5 text-sm text-white outline-none placeholder:text-white/30 focus:border-aqaar-lime transition-colors"
                   placeholder="Ask about any property or investment..."
                 />
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
                   aria-label="Send message"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-aqaar-lime text-aqaar-dark transition-all hover:bg-aqaar-lime-soft disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-aqaar-lime text-aqaar-dark transition-all hover:bg-aqaar-lime-soft hover:shadow-lime-sm disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <Send className="h-4 w-4" />
                 </button>
@@ -342,51 +397,61 @@ export function ConciergeWidget() {
       </AnimatePresence>
 
       {/* FAB button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setOpen(!open)}
-        className="group relative flex h-16 w-16 items-center justify-center rounded-full bg-aqaar-lime shadow-concierge transition-all hover:bg-aqaar-lime-soft hover:shadow-lime"
-        aria-label="Open AI property advisor"
-        id="concierge-fab-btn"
-      >
-        <AnimatePresence mode="wait">
-          {open ? (
-            <motion.div
-              key="x"
-              initial={{ rotate: -90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: 90, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <X className="h-7 w-7 text-aqaar-dark" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="sparkles"
-              initial={{ rotate: 90, opacity: 0 }}
-              animate={{ rotate: 0, opacity: 1 }}
-              exit={{ rotate: -90, opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <Sparkles className="h-7 w-7 text-aqaar-dark" />
-            </motion.div>
+      <div className="flex items-end gap-2">
+        {/* Desktop label */}
+        {!open && (
+          <motion.div
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 10 }}
+            className="mb-1 hidden sm:block"
+          >
+            <div className="glass rounded-full border border-aqaar-line px-3 py-2">
+              <p className="text-xs font-semibold text-white whitespace-nowrap">AI Property Advisor</p>
+              <p className="text-[10px] text-aqaar-lime">Available 24/7</p>
+            </div>
+          </motion.div>
+        )}
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setOpen(!open)}
+          className="group relative flex h-16 w-16 items-center justify-center rounded-full bg-aqaar-lime shadow-concierge transition-all hover:bg-aqaar-lime-soft hover:shadow-lime"
+          aria-label="Open AI property advisor"
+          id="concierge-fab-btn"
+        >
+          <AnimatePresence mode="wait">
+            {open ? (
+              <motion.div
+                key="x"
+                initial={{ rotate: -90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: 90, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <X className="h-7 w-7 text-aqaar-dark" />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="sparkles"
+                initial={{ rotate: 90, opacity: 0 }}
+                animate={{ rotate: 0, opacity: 1 }}
+                exit={{ rotate: -90, opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <Sparkles className="h-7 w-7 text-aqaar-dark" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          {/* Ping indicator */}
+          {!open && (
+            <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-aqaar-lime opacity-40" />
+              <span className="relative inline-flex h-4 w-4 rounded-full bg-green-400" />
+            </span>
           )}
-        </AnimatePresence>
-        {/* Ping indicator */}
-        {!open && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-aqaar-lime opacity-40" />
-            <span className="relative inline-flex h-4 w-4 rounded-full bg-green-400" />
-          </span>
-        )}
-        {/* Tooltip */}
-        {!open && (
-          <div className="absolute bottom-full right-0 mb-3 hidden whitespace-nowrap rounded-lg border border-aqaar-line bg-aqaar-card px-3 py-2 text-xs font-semibold text-white shadow-card group-hover:block">
-            AI Property Advisor
-          </div>
-        )}
-      </motion.button>
+        </motion.button>
+      </div>
     </div>
   );
 }

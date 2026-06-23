@@ -2,13 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowRight, MapPin, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, MapPin, Sparkles, TrendingUp, Home, Building2, Shield, CheckCircle } from "lucide-react";
 
 const stats = [
   { label: "Active Projects", value: 12, suffix: "+" },
   { label: "Sqft Delivered", value: 4.2, suffix: "M+" },
   { label: "Avg ROI", value: 8.5, suffix: "%" },
   { label: "Happy Investors", value: 3200, suffix: "+" },
+];
+
+const trustBadges = [
+  { icon: Shield, label: "Government Entity" },
+  { icon: CheckCircle, label: "100% Freehold" },
+  { icon: CheckCircle, label: "Escrow Protected" },
+  { icon: CheckCircle, label: "RERA Registered" },
+];
+
+const heroTabs = [
+  { label: "Buy", icon: Home, color: "lime" },
+  { label: "Rent", icon: Building2, color: "blue" },
+  { label: "Invest", icon: TrendingUp, color: "lime" },
 ];
 
 function AnimatedCounter({
@@ -60,15 +73,35 @@ function AnimatedCounter({
 
 export function HeroSection() {
   const [loaded, setLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState("Buy");
+  const [parallaxY, setParallaxY] = useState(0);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     setLoaded(true);
   }, []);
 
+  useEffect(() => {
+    const onScroll = () => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        const scrolled = -rect.top;
+        if (scrolled >= 0) {
+          setParallaxY(scrolled * 0.3);
+        }
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <section className="relative min-h-screen overflow-hidden bg-aqaar-deeper">
-      {/* Background image */}
-      <div className="absolute inset-0">
+    <section ref={heroRef} className="relative min-h-screen overflow-hidden bg-aqaar-deeper">
+      {/* Background image with parallax */}
+      <div
+        className="absolute inset-0 scale-110"
+        style={{ transform: `translateY(${parallaxY}px) scale(1.1)` }}
+      >
         <Image
           src="/images/hero_tower.png"
           alt="Luxury property in Ajman"
@@ -77,15 +110,20 @@ export function HeroSection() {
           className="object-cover opacity-40"
           sizes="100vw"
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-aqaar-deeper via-aqaar-deeper/70 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-aqaar-deeper via-transparent to-transparent" />
       </div>
 
-      {/* Ambient glow */}
+      {/* Gradient overlays */}
+      <div className="absolute inset-0 bg-gradient-to-r from-aqaar-deeper via-aqaar-deeper/75 to-aqaar-deeper/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-aqaar-deeper via-transparent to-transparent" />
+
+      {/* Ambient glow blobs */}
       <div
         className="hero-blob"
-        style={{ left: "60%", top: "40%", transform: "translate(-50%, -50%)" }}
+        style={{ left: "65%", top: "40%", transform: "translate(-50%, -50%)" }}
+      />
+      <div
+        className="hero-blob-2"
+        style={{ left: "75%", top: "65%", transform: "translate(-50%, -50%)" }}
       />
 
       {/* Content */}
@@ -99,6 +137,7 @@ export function HeroSection() {
           >
             <Sparkles className="h-3.5 w-3.5" />
             AI-Powered Luxury Real Estate Advisory
+            <span className="flex h-1.5 w-1.5 rounded-full bg-aqaar-lime animate-pulse" />
           </div>
 
           {/* Headline */}
@@ -135,25 +174,56 @@ export function HeroSection() {
             Ajman, United Arab Emirates
           </div>
 
+          {/* BUY / RENT / INVEST Tab Bar */}
+          <div
+            className={`mt-10 transition-all duration-700 delay-350 ${
+              loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            }`}
+          >
+            <div className="glass inline-flex rounded-2xl p-1.5 gap-1 border-aqaar-lime/15">
+              {heroTabs.map(({ label, icon: Icon }) => (
+                <button
+                  key={label}
+                  onClick={() => setActiveTab(label)}
+                  className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all duration-300 ${
+                    activeTab === label
+                      ? "tab-pill-active"
+                      : "text-white/60 hover:text-white hover:bg-white/5"
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-3 text-xs text-white/40">
+              {activeTab === "Buy" && "Explore premium freehold properties starting from AED 600K"}
+              {activeTab === "Rent" && "Discover quality rental homes across Ajman's finest developments"}
+              {activeTab === "Invest" && "High-yield investment opportunities with 8-11% ROI potential"}
+            </p>
+          </div>
+
           {/* CTAs */}
           <div
-            className={`mt-10 flex flex-col gap-3 sm:flex-row transition-all duration-700 delay-400 ${
+            className={`mt-8 flex flex-col gap-3 sm:flex-row transition-all duration-700 delay-400 ${
               loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
             <a
               id="hero-explore-btn"
               href="#concierge"
-              className="group inline-flex h-14 items-center gap-3 rounded-full bg-aqaar-lime px-8 text-sm font-bold text-aqaar-dark transition-all hover:bg-aqaar-lime-soft hover:shadow-lime hover:gap-4"
+              className="group relative inline-flex h-14 items-center gap-3 overflow-hidden rounded-full bg-aqaar-lime px-8 text-sm font-bold text-aqaar-dark transition-all hover:bg-aqaar-lime-soft hover:shadow-lime hover:gap-4"
             >
               <Sparkles className="h-4 w-4" />
               Start AI Concierge
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              {/* Shimmer sweep */}
+              <span className="absolute inset-0 -skew-x-12 translate-x-[-100%] bg-white/25 group-hover:translate-x-[200%] transition-transform duration-700" />
             </a>
             <a
               id="hero-projects-btn"
               href="#projects"
-              className="inline-flex h-14 items-center gap-2 rounded-full border border-aqaar-line bg-white/5 px-8 text-sm font-semibold text-white transition-all hover:border-aqaar-line-strong hover:bg-white/10"
+              className="inline-flex h-14 items-center gap-2 rounded-full border border-aqaar-line bg-white/5 px-8 text-sm font-semibold text-white transition-all hover:border-aqaar-line-strong hover:bg-white/10 backdrop-blur-sm"
             >
               View Projects
             </a>
@@ -162,15 +232,18 @@ export function HeroSection() {
 
         {/* Stats row */}
         <div
-          className={`mt-20 grid grid-cols-2 gap-6 sm:grid-cols-4 transition-all duration-700 delay-500 ${
+          className={`mt-20 grid grid-cols-2 gap-4 sm:grid-cols-4 transition-all duration-700 delay-500 ${
             loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
         >
           {stats.map((stat) => (
-            <div key={stat.label} className="glass rounded-xl p-5">
+            <div
+              key={stat.label}
+              className="glass rounded-2xl p-5 border-aqaar-line hover:border-aqaar-lime/20 transition-all hover:shadow-glow group"
+            >
               <div className="flex items-center gap-1.5">
-                <TrendingUp className="h-4 w-4 text-aqaar-lime" />
-                <span className="text-xs uppercase tracking-widest text-white/40">
+                <TrendingUp className="h-3.5 w-3.5 text-aqaar-lime group-hover:scale-110 transition-transform" />
+                <span className="text-[10px] uppercase tracking-widest text-white/40">
                   {stat.label}
                 </span>
               </div>
@@ -179,6 +252,22 @@ export function HeroSection() {
               </p>
             </div>
           ))}
+        </div>
+
+        {/* Trust strip */}
+        <div
+          className={`mt-10 transition-all duration-700 delay-600 ${
+            loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          }`}
+        >
+          <div className="trust-strip rounded-xl px-6 py-3 flex flex-wrap items-center gap-x-6 gap-y-2">
+            {trustBadges.map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-2">
+                <Icon className="h-3.5 w-3.5 text-aqaar-lime shrink-0" />
+                <span className="text-xs font-semibold text-white/60">{label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
