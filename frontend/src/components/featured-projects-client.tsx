@@ -54,6 +54,7 @@ export function FeaturedProjectsClient({ projects }: Props) {
     return true;
   });
 
+
   return (
     <section id="projects" className="relative bg-aqaar-dark py-24" ref={revealRef}>
       {/* Background accent */}
@@ -102,7 +103,6 @@ export function FeaturedProjectsClient({ projects }: Props) {
           {filtered.map((project, index) => (
             <div
               key={project.project_name as string}
-              data-reveal
               style={{ transitionDelay: `${index * 80}ms` }}
             >
               <PropertyCard
