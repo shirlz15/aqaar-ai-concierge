@@ -144,10 +144,9 @@ export function HeroSection() {
 
           {/* Headline */}
           <h1
-            className={`font-display text-5xl font-bold leading-tight text-white md:text-7xl lg:text-8xl transition-all duration-700 delay-100 ${
+            className={`text-4xl font-bold leading-[1.1] tracking-tight text-white md:text-6xl lg:text-7xl transition-all duration-700 delay-100 uppercase ${
               loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
-            style={{ fontFamily: "'Playfair Display', serif", textTransform: "uppercase" }}
           >
             Building A Brilliant
             <br />
