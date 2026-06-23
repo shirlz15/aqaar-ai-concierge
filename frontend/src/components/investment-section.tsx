@@ -81,14 +81,29 @@ function useReveal(threshold = 0.1) {
   return ref;
 }
 
+import { showToast } from "@/components/toast-provider";
+
 export function InvestmentSection() {
   const revealRef = useReveal();
   const [downloadState, setDownloadState] = useState<"idle" | "loading" | "done">("idle");
 
   const handleDownload = () => {
     setDownloadState("loading");
+    showToast("Generating Guide...", "Preparing your personalized investment guide", "info");
+    
     setTimeout(() => {
+      // Minimal valid PDF Base64
+      const pdfData = "JVBERi0xLjEKJcKlwrQKMSAwIG9iago8PAovVHlwZSAvQ2F0YWxvZwovUGFnZXMgMiAwIFIKPj4KZW5kb2JqCjIgMCBvYmoKPDwKL1R5cGUgL1BhZ2VzCi9LaWRzIFszIDAgUl0KL0NvdW50IDEKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1R5cGUgL1BhZ2UKL1BhcmVudCAyIDAgUgovTWVkaWFCb3ggWzAgMCA1OTUuMjggODQxLjg5XQo+PgplbmRvYmoKeHJlZgowIDQKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDE4IDAwMDAwIG4gCjAwMDAwMDAwNjkgMDAwMDAgbiAKMDAwMDAwMDEyNiAwMDAwMCBuIAp0cmFpbGVyCjwwCi9TaXplIDQKL1Jvb3QgMSAwIFIKPj4Kc3RhcnR4cmVmCjIzNQolJUVPRgo=";
+      
+      const link = document.createElement("a");
+      link.href = `data:application/pdf;base64,${pdfData}`;
+      link.download = "Ajman Investment Guide.pdf";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
       setDownloadState("done");
+      showToast("Guide Downloaded Successfully!", "The guide has been saved to your device", "success");
       setTimeout(() => setDownloadState("idle"), 3000);
     }, 1500);
   };

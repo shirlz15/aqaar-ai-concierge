@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { PropertyCard } from "@/components/property-card";
 import { ArrowRight, Building2, Home, Layers } from "lucide-react";
 import type { CsvRow } from "@/lib/server/csv";
+import { useJourney } from "@/lib/client/journey-context";
 
 const tabs = [
   { label: "All", icon: Layers },
@@ -41,14 +42,15 @@ type Props = {
 };
 
 export function FeaturedProjectsClient({ projects }: Props) {
-  const [activeTab, setActiveTab] = useState("All");
+  const { mode: activeTab, setMode: setActiveTab } = useJourney();
   const revealRef = useScrollReveal();
 
   const filtered = projects.filter((p) => {
-    if (activeTab === "All") return true;
     const type = ((p.project_type as string) || "").toLowerCase();
+    const investment = ((p.investment_angle as string) || "").toLowerCase();
     if (activeTab === "Buy") return !type.includes("rent");
     if (activeTab === "Rent") return type.includes("rent");
+    if (activeTab === "Invest") return investment.includes("roi") || investment.includes("yield") || investment.includes("appreciation") || type.includes("commercial");
     return true;
   });
 
@@ -74,13 +76,14 @@ export function FeaturedProjectsClient({ projects }: Props) {
               className="font-display text-4xl font-bold text-white md:text-5xl"
               style={{ fontFamily: "'Playfair Display', serif" }}
             >
-              Curated Aqaar
+              {activeTab === "Invest" ? "High-Yield " : "Curated Aqaar "}
               <br />
               <span className="italic text-aqaar-lime">Opportunities</span>
             </h2>
             <p className="mt-4 max-w-md text-base text-white/55">
-              Each property is selected for its investment potential, lifestyle
-              premium, and location advantage within Ajman's master plan.
+              {activeTab === "Invest"
+                ? "Discover premium properties engineered for capital appreciation and strong rental yields across Ajman."
+                : "Each property is selected for its investment potential, lifestyle premium, and location advantage within Ajman's master plan."}
             </p>
           </div>
           <a
@@ -89,30 +92,9 @@ export function FeaturedProjectsClient({ projects }: Props) {
             className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-aqaar-line bg-white/5 px-6 py-3 text-sm font-semibold text-white transition-all hover:border-aqaar-lime/30 hover:bg-aqaar-lime/10 hover:text-aqaar-lime"
           >
             <Building2 className="h-4 w-4" />
-            View All with AI
+            Ask AI Advisor
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
           </a>
-        </div>
-
-        {/* BUY / RENT filter tabs */}
-        <div className="mb-8 flex items-center gap-2" data-reveal>
-          <div className="glass inline-flex rounded-xl p-1 gap-1">
-            {tabs.map(({ label, icon: Icon }) => (
-              <button
-                key={label}
-                onClick={() => setActiveTab(label)}
-                className={`inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-300 ${
-                  activeTab === label
-                    ? "bg-aqaar-lime text-aqaar-dark shadow-lime-sm"
-                    : "text-white/60 hover:text-white hover:bg-white/5"
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-                {label}
-              </button>
-            ))}
-          </div>
-          <span className="text-xs text-white/40 ml-2">{filtered.length} properties</span>
         </div>
 
         {/* Property grid */}
@@ -126,7 +108,7 @@ export function FeaturedProjectsClient({ projects }: Props) {
               <PropertyCard
                 project={project}
                 priority={index < 3}
-                featured={index === 0 && activeTab === "All"}
+                featured={index === 0 && activeTab === "Buy"}
                 index={index}
               />
             </div>

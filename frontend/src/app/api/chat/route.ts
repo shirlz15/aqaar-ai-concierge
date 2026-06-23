@@ -35,12 +35,26 @@ export async function POST(request: NextRequest) {
         recommendations,
       });
     }
-    const response = await fetch(`${backendUrl}/api/chat`, {
-      method: "POST",
-      headers: buildProxyHeaders(request),
-      body: JSON.stringify(payload),
-      cache: "no-store",
-    });
+    let response;
+    try {
+      response = await fetch(`${backendUrl}/api/chat`, {
+        method: "POST",
+        headers: buildProxyHeaders(request),
+        body: JSON.stringify(payload),
+        cache: "no-store",
+      });
+    } catch (fetchError) {
+      // Network error, backend not reachable, fallback to local engine
+      auditClientEvent("chat_proxy_network_error", { error: String(fetchError) });
+      return NextResponse.json({
+        reply: nextConciergeReply(profile, recommendations, knowledge),
+        profile,
+        lead_score: summary.lead_score,
+        lead_category: summary.lead_category,
+        recommendations,
+      });
+    }
+
     if (!response.ok) {
       auditClientEvent("chat_proxy_failed", { status: response.status });
       return NextResponse.json({

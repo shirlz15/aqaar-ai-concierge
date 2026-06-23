@@ -71,9 +71,11 @@ function AnimatedCounter({
   );
 }
 
+import { useJourney } from "@/lib/client/journey-context";
+
 export function HeroSection() {
   const [loaded, setLoaded] = useState(false);
-  const [activeTab, setActiveTab] = useState("Buy");
+  const { mode: activeTab, setMode: setActiveTab } = useJourney();
   const [parallaxY, setParallaxY] = useState(0);
   const heroRef = useRef<HTMLElement>(null);
 
@@ -184,7 +186,7 @@ export function HeroSection() {
               {heroTabs.map(({ label, icon: Icon }) => (
                 <button
                   key={label}
-                  onClick={() => setActiveTab(label)}
+                  onClick={() => setActiveTab(label as any)}
                   className={`inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold transition-all duration-300 ${
                     activeTab === label
                       ? "tab-pill-active"

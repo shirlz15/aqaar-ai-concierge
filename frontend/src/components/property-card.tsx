@@ -18,6 +18,7 @@ import {
   Bath,
 } from "lucide-react";
 import type { CsvRow } from "@/lib/server/csv";
+import { useJourney } from "@/lib/client/journey-context";
 
 type PropertyCardProps = {
   project: CsvRow;
@@ -118,6 +119,7 @@ export function PropertyCard({
   index = 0,
 }: PropertyCardProps) {
   const [hovered, setHovered] = useState(false);
+  const { setEnquiryProperty } = useJourney();
   const imgSrc = getProjectImage(project.project_name as string);
   const roi = (project.roi_yield as string) || "7-9%";
   const investScore = getInvestmentScore(roi);
@@ -240,6 +242,7 @@ export function PropertyCard({
           </div>
           <button
             id={`enquire-btn-${index}`}
+            onClick={() => setEnquiryProperty(project)}
             className="group/btn relative inline-flex items-center gap-1.5 overflow-hidden rounded-full border border-aqaar-lime/30 bg-aqaar-lime/10 px-4 py-2 text-xs font-semibold text-aqaar-lime transition-all hover:bg-aqaar-lime hover:text-aqaar-dark hover:border-aqaar-lime hover:shadow-lime-sm hover:gap-2"
           >
             Enquire

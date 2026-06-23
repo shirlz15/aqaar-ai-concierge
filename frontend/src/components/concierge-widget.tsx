@@ -14,6 +14,7 @@ import {
   Award,
   CheckCircle,
 } from "lucide-react";
+import { showToast } from "@/components/toast-provider";
 import { leadRequestSchema, type ChatMessage, type ConciergeProfile } from "@/lib/validation";
 
 type Recommendation = {
@@ -198,9 +199,11 @@ export function ConciergeWidget() {
     if (response.ok) {
       setLeadStatus("success");
       setLeadStatusMsg("Thank you. A private advisor will contact you shortly.");
+      showToast("Lead Captured!", "An advisor will contact you shortly.", "success");
     } else {
       setLeadStatus("error");
       setLeadStatusMsg("Your details could not be submitted right now. Please try again.");
+      showToast("Submission Failed", "Please try again.", "error");
     }
   }
 
