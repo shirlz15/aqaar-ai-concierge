@@ -147,13 +147,11 @@ export function HeroSection() {
             className={`font-display text-5xl font-bold leading-tight text-white md:text-7xl lg:text-8xl transition-all duration-700 delay-100 ${
               loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
             }`}
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "'Playfair Display', serif", textTransform: "uppercase" }}
           >
-            Live Where
+            Building A Brilliant
             <br />
-            <span className="italic text-aqaar-lime">Excellence</span>
-            <br />
-            Meets the Sea
+            Future For A Better Life<span className="text-aqaar-lime">.</span>
           </h1>
 
           <p
