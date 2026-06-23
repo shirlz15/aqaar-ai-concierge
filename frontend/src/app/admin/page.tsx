@@ -1,81 +1,87 @@
 import { BarChart3, Flame, Users, Wand2 } from "lucide-react";
 import { getKnowledgeBase } from "@/lib/server/knowledge-base";
+import AdminDashboardClient from "@/components/admin-dashboard-client";
 
 export default function AdminDashboardPage() {
   const knowledge = getKnowledgeBase();
   const totalLeads = knowledge.faqs.length + knowledge.personas.length;
-  const hotLeads = knowledge.investmentSignals.filter((signal) => signal.signal_strength === "very_high").length;
+  const hotLeads = knowledge.investmentSignals.filter(
+    (signal) => signal.signal_strength === "very_high"
+  ).length;
   const newLeads = knowledge.projectsMaster.length * 3;
   const conversionRate = `${Math.round((hotLeads / totalLeads) * 1000) / 10}%`;
+
   const cards = [
-    { label: "Total Leads", value: String(totalLeads), icon: Users },
-    { label: "Hot Leads", value: String(hotLeads), icon: Flame },
-    { label: "New Leads", value: String(newLeads), icon: Wand2 },
-    { label: "Conversion Rate", value: conversionRate, icon: BarChart3 },
+    {
+      label: "Total Leads",
+      value: String(totalLeads),
+      icon: "Users" as const,
+      change: "+12%",
+      positive: true,
+    },
+    {
+      label: "Hot Leads",
+      value: String(hotLeads),
+      icon: "Flame" as const,
+      change: "+8%",
+      positive: true,
+    },
+    {
+      label: "New Leads",
+      value: String(newLeads),
+      icon: "Wand2" as const,
+      change: "+24%",
+      positive: true,
+    },
+    {
+      label: "Conversion Rate",
+      value: conversionRate,
+      icon: "BarChart3" as const,
+      change: "+2.1%",
+      positive: true,
+    },
   ];
-  const leads = knowledge.projectsMaster.slice(0, 5).map((project, index) => ({
-    name: project.target_customer.split(",")[0] || "Qualified Client",
-    project: project.project_name,
-    score: 92 - index * 7,
-    status: index < 2 ? "Hot" : "Warm",
+
+  const leads = knowledge.projectsMaster.slice(0, 8).map((project, index) => ({
+    name: (project.target_customer as string)?.split(",")[0] || "Qualified Client",
+    project: project.project_name as string,
+    score: 97 - index * 5,
+    status: (index < 2 ? "Hot" : index < 5 ? "Warm" : "Cold") as
+      | "Hot"
+      | "Warm"
+      | "Cold",
+    time: `${index + 1}h ago`,
   }));
-  const interest = knowledge.projectsMaster.slice(0, 3).map((project, index) => [project.project_name, `${46 - index * 12}%`]);
+
+  const interest = knowledge.projectsMaster.slice(0, 5).map((project, index) => ({
+    label: project.project_name as string,
+    pct: 82 - index * 14,
+    value: `${82 - index * 14}%`,
+  }));
+
+  const conversionFunnel = [
+    { stage: "Visitors", count: 1240, pct: 100 },
+    { stage: "Engaged", count: 687, pct: 55 },
+    { stage: "Qualified", count: 312, pct: 42 },
+    { stage: "Consulted", count: 148, pct: 32 },
+    { stage: "Converted", count: hotLeads, pct: 20 },
+  ];
+
+  const recentActivity = [
+    { action: "New lead captured", detail: "Waterfront unit inquiry — Mawjan Phase 2", time: "2m ago" },
+    { action: "Lead scored Hot", detail: "Budget AED 2M+ — Dusit Thani inquiry", time: "15m ago" },
+    { action: "Consultation booked", detail: "Private viewing — Ajman One Tower B", time: "1h ago" },
+    { action: "ROI query resolved", detail: "8.5% yield confirmed for Studio unit", time: "3h ago" },
+    { action: "New lead captured", detail: "Golden Visa eligibility inquiry", time: "5h ago" },
+  ];
 
   return (
-    <main className="min-h-screen bg-aqaar-dark px-6 py-8">
-      <div className="mx-auto max-w-7xl">
-        <header className="flex flex-col justify-between gap-4 border-b border-aqaar-line pb-6 md:flex-row md:items-end">
-          <div>
-            <p className="text-sm uppercase text-aqaar-lime">Aqaar Operations</p>
-            <h1 className="mt-2 text-4xl font-semibold">Lead Intelligence Dashboard</h1>
-          </div>
-          <p className="max-w-md text-sm leading-6 text-white/60">
-            Role-ready admin surface for tracking lead quality, project interest, and concierge performance.
-          </p>
-        </header>
-
-        <section className="mt-8 grid gap-4 md:grid-cols-4">
-          {cards.map((card) => (
-            <div key={card.label} className="rounded-lg border border-aqaar-line bg-aqaar-panel p-5">
-              <card.icon className="h-5 w-5 text-aqaar-lime" />
-              <p className="mt-5 text-sm text-white/60">{card.label}</p>
-              <p className="mt-2 text-3xl font-semibold">{card.value}</p>
-            </div>
-          ))}
-        </section>
-
-        <section className="mt-8 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-          <div className="rounded-lg border border-aqaar-line bg-aqaar-panel p-5">
-            <h2 className="text-xl font-semibold">Lead Management</h2>
-            <div className="mt-5 overflow-hidden rounded-md border border-aqaar-line">
-              {leads.map((lead) => (
-                <div key={lead.name} className="grid grid-cols-4 gap-3 border-b border-aqaar-line px-4 py-4 text-sm last:border-0">
-                  <span>{lead.name}</span>
-                  <span className="text-white/65">{lead.project}</span>
-                  <span>{lead.score}</span>
-                  <span className="text-aqaar-lime">{lead.status}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="rounded-lg border border-aqaar-line bg-aqaar-panel p-5">
-            <h2 className="text-xl font-semibold">Analytics</h2>
-            <div className="mt-5 space-y-4">
-              {interest.map(([label, value]) => (
-                <div key={label}>
-                  <div className="mb-2 flex justify-between text-sm">
-                    <span>{label}</span>
-                    <span className="text-white/60">{value}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-white/10">
-                    <div className="h-2 rounded-full bg-aqaar-lime" style={{ width: value }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </div>
-    </main>
+    <AdminDashboardClient
+      cards={cards}
+      leads={leads}
+      interest={interest}
+      conversionFunnel={conversionFunnel}
+      recentActivity={recentActivity}
+    />
   );
 }
