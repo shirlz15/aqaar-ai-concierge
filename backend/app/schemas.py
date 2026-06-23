@@ -19,6 +19,7 @@ class ConciergeProfile(BaseModel):
     investment_interest: bool | None = None
     urgency: Literal["low", "medium", "high"] | None = None
     persona: str | None = None
+    selected_project: str | None = Field(default=None, max_length=120)
     organic_buying_stage: Literal["awareness", "consideration", "qualification", "conversion"] | None = None
 
 
@@ -78,6 +79,8 @@ class LeadCreate(BaseModel):
     email: EmailStr
     phone: str = Field(min_length=7, max_length=30)
     preferred_contact_method: Literal["phone", "email", "whatsapp"]
+    preference: str | None = Field(default=None, min_length=2, max_length=160)
+    selected_project: str | None = Field(default=None, max_length=120)
     consent_given: bool
     session_id: str = Field(min_length=8, max_length=128)
     profile: ConciergeProfile = Field(default_factory=ConciergeProfile)

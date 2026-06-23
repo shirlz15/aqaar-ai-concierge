@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { z, ZodSchema } from "zod";
+import { z, type ZodTypeAny } from "zod";
 
 export const MAX_JSON_BYTES = 16_384;
 
-export async function readValidatedJson<T>(request: NextRequest, schema: ZodSchema<T>): Promise<T> {
+export async function readValidatedJson<S extends ZodTypeAny>(request: NextRequest, schema: S): Promise<z.infer<S>> {
   const contentLength = request.headers.get("content-length");
   if (contentLength && Number(contentLength) > MAX_JSON_BYTES) {
     throw new HttpError(413, "Request payload is too large.");

@@ -18,6 +18,7 @@ const propertyKeywords = {
   apartment: ["apartment", "flat", "studio", "1br", "2br", "3br"],
   villa: ["villa", "private", "garden", "pool"],
   "branded residence": ["branded", "serviced", "hotel", "resort", "dusit"],
+  waterfront: ["waterfront", "marina", "sea view", "promenade", "mawjan"],
   commercial: ["office", "retail", "showroom", "commercial"],
   penthouse: ["penthouse"],
 };
@@ -49,8 +50,11 @@ export function extractIntent(message: string, previous: ConciergeProfile, knowl
     if (location.location_name && text.includes(location.location_name.toLowerCase())) profile.location = location.location_name;
   }
 
-  const budgetMatch = text.match(/(?:omr|rial|budget)?\s?(\d{2,4}(?:,\d{3})?|\d+(?:\.\d+)?)\s?(?:k|thousand|m|million|omr|rial)?/i);
-  if (budgetMatch && /\b(omr|rial|budget|k|thousand|million|m)\b/i.test(text)) profile.budget = budgetMatch[0].trim();
+  if (text.includes("ajman")) profile.location = "Ajman";
+  if (text.includes("waterfront")) profile.location = profile.location || "Ajman Waterfront";
+
+  const budgetMatch = text.match(/(?:aed|dirham|budget|under|below|up to)?\s?(\d{1,4}(?:,\d{3})?|\d+(?:\.\d+)?)\s?(?:k|thousand|m|million|aed|dirham)?/i);
+  if (budgetMatch && /\b(aed|dirham|budget|under|below|up to|k|thousand|million|m)\b/i.test(text)) profile.budget = budgetMatch[0].trim();
 
   if (/(immediate|now|this month|urgent|as soon)/i.test(message)) {
     profile.timeline = "immediate";

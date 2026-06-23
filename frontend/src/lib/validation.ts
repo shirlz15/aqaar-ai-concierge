@@ -10,6 +10,7 @@ export const conciergeProfileSchema = z.object({
   investment_interest: z.boolean().optional().nullable(),
   urgency: z.enum(["low", "medium", "high"]).optional().nullable(),
   persona: z.string().max(80).optional().nullable(),
+  selected_project: z.string().max(120).optional().nullable(),
 });
 
 export const chatMessageSchema = z.object({
@@ -29,6 +30,8 @@ export const leadRequestSchema = z.object({
   email: z.string().trim().email().max(180),
   phone: z.string().trim().min(7).max(30).regex(/^[+\d\s().-]+$/),
   preferred_contact_method: z.enum(["phone", "email", "whatsapp"]),
+  preference: z.string().trim().min(2).max(160).optional(),
+  selected_project: z.string().trim().max(120).optional(),
   consent_given: z.literal(true),
   session_id: z.string().min(8).max(128),
   profile: conciergeProfileSchema.default({}),

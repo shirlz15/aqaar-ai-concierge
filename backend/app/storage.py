@@ -1,3 +1,9 @@
+import hashlib
+import json
+from datetime import UTC, datetime
+from pathlib import Path
+from uuid import uuid4
+
 from supabase import Client, create_client
 
 from .config import get_settings
@@ -13,20 +19,52 @@ def get_supabase() -> Client | None:
 
 def store_lead(payload: LeadCreate, lead_score: int, lead_category: str) -> dict:
     client = get_supabase()
+    selected_project = payload.selected_project or payload.profile.selected_project or payload.profile.project_name
     record = {
         "name": payload.name,
         "email": payload.email,
         "phone": payload.phone,
         "preferred_contact_method": payload.preferred_contact_method,
+        "preference": payload.preference,
+        "selected_project": selected_project,
         "lead_score": lead_score,
         "lead_category": lead_category,
         "consent_given": payload.consent_given,
         "profile": payload.profile.model_dump(),
     }
     if client is None:
-        return {"id": "pending-supabase-write", **record}
+        return _store_local_lead(payload, lead_score, lead_category, selected_project)
     result = client.table("leads").insert(record).execute()
     return result.data[0]
+
+
+def _hash_contact(value: str) -> str:
+    return hashlib.sha256(value.strip().lower().encode("utf-8")).hexdigest()
+
+
+def _store_local_lead(payload: LeadCreate, lead_score: int, lead_category: str, selected_project: str | None) -> dict:
+    lead_id = f"local-{uuid4()}"
+    storage_dir = Path.cwd() / ".local-data"
+    storage_dir.mkdir(exist_ok=True)
+    record = {
+        "id": lead_id,
+        "created_at": datetime.now(UTC).isoformat(),
+        "name": payload.name,
+        "email_hash": _hash_contact(payload.email),
+        "phone_hash": _hash_contact(payload.phone),
+        "preferred_contact_method": payload.preferred_contact_method,
+        "preference": payload.preference,
+        "selected_project": selected_project,
+        "lead_score": lead_score,
+        "lead_category": lead_category,
+        "consent_given": payload.consent_given,
+        "session_id": payload.session_id,
+        "profile": payload.profile.model_dump(),
+        "source": "backend-local-fallback",
+    }
+    with (storage_dir / "backend-leads.jsonl").open("a", encoding="utf-8") as lead_file:
+        lead_file.write(json.dumps(record) + "\n")
+    return {"id": lead_id, **record}
 
 
 def get_conversation(session_id: str) -> ConversationState | None:

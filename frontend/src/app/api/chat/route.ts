@@ -4,6 +4,7 @@ import { auditClientEvent, readValidatedJson, safeApiError } from "@/lib/securit
 import { extractIntent } from "@/lib/server/intent-engine";
 import { getKnowledgeBase } from "@/lib/server/knowledge-base";
 import { leadSummary, nextConciergeReply, recommendProperties } from "@/lib/server/recommendation-engine";
+import { buildProxyHeaders, resolveBackendUrl } from "@/lib/server/backend-proxy";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
     const profile = extractIntent(payload.message, payload.profile ?? {}, knowledge);
     const recommendations = recommendProperties(profile, knowledge);
     const summary = leadSummary(profile);
-    const backendUrl = process.env.BACKEND_API_URL;
+    const backendUrl = resolveBackendUrl();
     if (!backendUrl) {
       return NextResponse.json({
         reply: nextConciergeReply(profile, recommendations, knowledge),
@@ -26,7 +27,7 @@ export async function POST(request: NextRequest) {
     }
     const response = await fetch(`${backendUrl}/api/chat`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: buildProxyHeaders(request),
       body: JSON.stringify(payload),
       cache: "no-store",
     });

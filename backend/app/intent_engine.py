@@ -57,8 +57,13 @@ def extract_intent(message: str, previous: ConciergeProfile) -> tuple[ConciergeP
             signals.append(IntentSignal(name="property_type", confidence=0.72, evidence=[property_type]))
             break
 
-    budget = re.search(r"(?:omr|rial|budget|around|up to)?\s*(\d{2,4}(?:,\d{3})?|\d+(?:\.\d+)?)\s*(k|thousand|m|million|omr|rial)?", text)
-    if budget and re.search(r"\b(omr|rial|budget|cash|finance|loan|k|thousand|million|m)\b", text):
+    if "ajman" in text:
+        profile.location = "Ajman"
+    if "waterfront" in text and not profile.location:
+        profile.location = "Ajman Waterfront"
+
+    budget = re.search(r"(?:aed|dirham|budget|around|under|below|up to)?\s*(\d{1,4}(?:,\d{3})?|\d+(?:\.\d+)?)\s*(k|thousand|m|million|aed|dirham)?", text)
+    if budget and re.search(r"\b(aed|dirham|budget|cash|finance|loan|under|below|up to|k|thousand|million|m)\b", text):
         profile.budget = budget.group(0).strip()
         signals.append(IntentSignal(name="budget", confidence=0.77, evidence=[profile.budget]))
 
