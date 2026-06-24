@@ -4,25 +4,20 @@ Source of truth: AQAAR-KB-ACQ-FINAL-v3.zip
 
 Generated: 2026-06-25
 
-## Coverage
+## Strict KB-Only Output
 
-- Projects available in v3 KB: 141
-- Inventory rows available in v3 KB: 153
-- Recommendation project rules: 80
-- Unit recommendation candidates: 103
-- Lead scenarios generated: 240
-- Runtime events generated: 1440
-- Audit rows generated: 1200
-- Dashboard metrics generated: 68
-- Retrieval tests generated: 24
+- Project records mapped from KB: 141
+- Inventory records mapped from KB: 153
+- Intent records mapped from KB: 4
+- Persona records mapped from KB: 5
+- Recommendation rules mapped from KB: 5
+- Conversation flow groups mapped from KB: 6
+- FAQ records mapped from KB: 18
+- RAG chunks available in KB: 239
 
-## Enriched Project Handling
+## Unknown Handling
 
-- Mawjan included when present in v3 KB: yes
-- Dusit Thani Residences Ajman included when present in v3 KB: yes
-
-## Guardrails
-
-- No external sources used.
-- No non-v3 projects used.
-- Unpublished price, ROI, yield, contact, and payment values remain unknown.
+- Real leads: unknown because v3 KB does not contain runtime lead records.
+- Lead score and grade: unknown because v3 KB does not publish scoring logic.
+- Sales handoff summary: unknown because v3 KB does not publish handoff templates.
+- ROI, yield, ranking, and projected returns: unknown.

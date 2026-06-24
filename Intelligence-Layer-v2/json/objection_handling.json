@@ -1,53 +1,153 @@
 {
   "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "source_policy": "All records are copied, mapped, or counted from v3 KB only. Missing data is unknown. No invented projects, prices, rankings, ROI, or sales logic.",
   "extraction_date": "2026-06-25",
-  "objections": [
+  "objection_handling_available_in_kb": "faq_records_available",
+  "faq_records": [
     {
-      "objection": "price is unclear",
-      "response": "I can only use published Aqaar KB prices. This value is unknown when not published, and the sales team should confirm it.",
-      "allowed_fields": [
-        "price_min",
-        "price_max",
-        "currency",
-        "source_url"
-      ]
+      "question": "What types of properties are available for lease with Aqaar?",
+      "answer": "Aqaar offers a range of leasing options, including residential apartments, commercial offices, and retail spaces across Ajman. You can browse available units on our website or visit our leasing office for assistance.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
     },
     {
-      "objection": "ROI or yield requested",
-      "response": "ROI and yield are not published in the v3 KB. I can capture your investment goal and hand it to sales for confirmation.",
-      "allowed_fields": [
-        "purpose",
-        "budget",
-        "project_name"
-      ]
+      "question": "How can I apply for a lease?",
+      "answer": "You can apply online through our website or the Aqaar Ajman mobile app by selecting your desired unit and submitting the required documents. Alternatively, you can visit our leasing office for in-person assistance.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
     },
     {
-      "objection": "payment plan requested",
-      "response": "Payment plan is shown only when published in the v3 KB; otherwise it remains unknown.",
-      "allowed_fields": [
-        "payment_plan",
-        "down_payment",
-        "installment_years"
-      ]
+      "question": "What documents are required to lease a unit?",
+      "answer": "The required documents typically include: ; Emirates ID (for UAE residents) or Passport with valid visa (for non-residents); Proof of income (salary certificate or bank statement); Post-dated cheques for rent payments; Trade license and company documents (for commercial leases) Specific requirements may vary by property.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
     },
     {
-      "objection": "location suitability",
-      "response": "Use only v3 KB location, district, community, and brochure distance facts where present.",
-      "allowed_fields": [
-        "city",
-        "district",
-        "community",
-        "source_url"
-      ]
+      "question": "What is the minimum lease term?",
+      "answer": "The standard lease term for residential and commercial properties is 12 months , unless otherwise specified in the lease agreement.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
     },
     {
-      "objection": "availability requested",
-      "response": "Availability status must be read from v3 inventory and confirmed by sales at handoff.",
-      "allowed_fields": [
-        "availability_status",
-        "last_verified"
-      ]
+      "question": "What payment methods does Aqaar accept for rent?",
+      "answer": "We accept: ; Post-dated cheques (for the agreed number of installments); Online payments via the Aqaar Ajman mobile app",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "How can I hand over my cheques if I lease or renew my contract online?",
+      "answer": "; You can drop off your cheques in person at the Aqaar office during business hours.; Alternatively, you can choose a free courier pickup service from anywhere in the UAE.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "Are there any additional fees apart from rent?",
+      "answer": "Yes, in addition to rent, tenants must pay a security deposit , which is refundable at the end of the lease .",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "Can I pay my rent in multiple installments?",
+      "answer": "Yes, rent payment plans vary depending on the lease agreement. Aqaar offers flexible installment options , typically 2, 4, or 6 cheques for residential leases.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "How do I report a maintenance issue?",
+      "answer": "Tenants can report maintenance requests through the Aqaar Ajman mobile app or via the website , allowing easy tracking and direct communication with our maintenance team.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "Is AC maintenance included in my lease?",
+      "answer": "For some properties, AC maintenance is included . Please check your lease agreement for details.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "Is there any cost for the initial maintenance, and how long does it take?",
+      "answer": "; The initial maintenance is free of cost and includes essential fixes required before move-in.; It will be completed within 20 days from the date of signing the lease contract.; Please note that the lease contract will officially start after 20 days from the signing date.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "How can I renew my lease?",
+      "answer": "Lease renewal notices are sent two months before the contract expiration date . You can renew through: ; The Aqaar Ajman mobile app ; Our leasing office ; Customer service support",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "What is the notice period for vacating a unit?",
+      "answer": "Tenants must provide a 60-day written notice before the lease expiration if they do not wish to renew.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "What happens if I need to terminate my lease early?",
+      "answer": "Early termination is subject to a penalty , which may include one or two months' rent , depending on your lease terms.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "Is my lease contract registered with ARRA?",
+      "answer": "Yes, all lease agreements are registered with Ajman Real Estate Regulatory Agency (ARRA) to ensure compliance with local rental laws.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "Can I sublease my unit?",
+      "answer": "Subleasing is strictly prohibited unless explicitly approved by Aqaar in writing.",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "What happens if I fail to pay rent on time?",
+      "answer": "Late payments may result in: ; A late payment penalty , as per the lease agreement; Legal action or eviction notices in case of continued non-payment",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
+    },
+    {
+      "question": "How do I contact Aqaar for leasing inquiries?",
+      "answer": "You can reach us through: ; Website : www.aqaar.com ; Mobile App : Aqaar Ajman ; Leasing Office : 1st Floor, Grand Mall - Sheikh Khalifa Bin Zayed St - Ajman, UAE ; Customer Support : ; Phone / WhatsApp : 600515155 ; Email : info@aqaar.com",
+      "category": "unknown",
+      "source_url": "https://www.aqaar.com/faq",
+      "last_verified": "2026-06-24",
+      "confidence_score": "unknown"
     }
   ],
-  "faq_seed_count": 18
+  "reason": "Only v3 FAQ records are used; no objection scripts are invented."
 }

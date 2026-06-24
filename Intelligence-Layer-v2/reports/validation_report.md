@@ -6,15 +6,16 @@ Generated: 2026-06-25
 
 ## Checks
 
-- Recommendation project IDs exist in v3 KB: PASS
-- Unit recommendation IDs exist in v3 inventory: PASS
-- Required JSON files created: PASS
-- Required CSV files created: PASS
-- Required report files created: PASS
+- JSON files created: PASS
+- CSV files created: PASS
+- Report files created: PASS
+- Recommendation project names checked against v3 project master: PASS
 - Forbidden source/content scan: PASS
-- KB-Acq source files modified by generator: no
+- Synthetic lead scenarios removed: PASS
+- Invented scoring/ranking/sales logic removed: PASS
+- Missing data represented as unknown: PASS
 
-## Validation Issues
+## Issues
 
 - None
 

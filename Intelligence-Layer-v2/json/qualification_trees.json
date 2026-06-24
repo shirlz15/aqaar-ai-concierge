@@ -1,243 +1,638 @@
 {
   "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "source_policy": "All records are copied, mapped, or counted from v3 KB only. Missing data is unknown. No invented projects, prices, rankings, ROI, or sales logic.",
   "extraction_date": "2026-06-25",
-  "trees": {
-    "buy": {
-      "purpose": "buy",
-      "root_question": "Is the visitor looking to buy?",
-      "required_slots": [
-        "purpose",
-        "property_type",
-        "location",
-        "budget",
-        "timeline",
-        "name",
-        "phone",
-        "email"
+  "qualification_trees": [
+    {
+      "tree_id": "qualification_2a3c98f8cda6",
+      "intent": "Buy Property",
+      "trigger_phrases": [
+        "buy",
+        "purchase",
+        "own",
+        "available for sale",
+        "freehold"
       ],
-      "stages": [
+      "qualification_questions": [
+        "What budget range?",
+        "Which official Aqaar location?",
+        "Which property type?"
+      ],
+      "next_steps": [
+        "Match to official Aqaar sales records",
+        "Collect contact details"
+      ],
+      "recommended_projects": [
         {
-          "stage": "intent_confirmed",
-          "question": "Confirm buy requirement",
-          "outputs": [
-            "purpose"
-          ]
+          "project_id": "ccb8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Ajman Corniche Residences",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman Corniche",
+          "community": "Ajman Corniche",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Corniche%20Residences&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "fit_capture",
-          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
-          "outputs": [
-            "property_type",
-            "project",
-            "location",
-            "bedrooms_or_area",
-            "budget"
-          ]
+          "project_id": "2eb8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Ajman One",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman",
+          "community": "Ajman",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20One&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "timeline_capture",
-          "question": "Capture purchase, move-in, investment, or business timeline",
-          "outputs": [
-            "timeline"
-          ]
+          "project_id": "22796319_20da_ee11_a2bf_00155d119841",
+          "project_name": "Ajman One - PH II",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman",
+          "community": "Ajman",
+          "property_type": "commercial",
+          "sub_type": "Freehold",
+          "status": "active",
+          "completion_status": "Townhouse,1,2,3 bedroom for sale",
+          "source_url": "https://www.aqaar.com/ajman-one-phase2",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.94"
         },
         {
-          "stage": "contact_capture",
-          "question": "Capture name, phone, and email for handoff",
-          "outputs": [
-            "name",
-            "phone",
-            "email"
-          ]
+          "project_id": "7f307ab5_a6a9_ea11_a2c3_00155d119619",
+          "project_name": "Ajman Pearl",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman",
+          "community": "Ajman",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Pearl&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "handoff",
-          "question": "Generate source-grounded lead summary and sales handoff message",
-          "outputs": [
-            "lead_summary",
-            "sales_handoff_message"
-          ]
+          "project_id": "2a565476_ed0f_ee11_a2be_00155d119f33",
+          "project_name": "Ajman Uptown",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman",
+          "community": "Ajman",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "unknown",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.72"
+        },
+        {
+          "project_id": "eeb7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "AL-Khour Towers",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=AL-Khour%20Towers&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "c05d8b0f_bab9_e911_a2bb_00155d119619",
+          "project_name": "Beach Residence",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "residential",
+          "sub_type": "Residential",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Beach%20Residence&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.68"
+        },
+        {
+          "project_id": "30b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "City Towers",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=City%20Towers&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "16b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Corniche Tower",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman Corniche",
+          "community": "Ajman Corniche",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Corniche%20Tower&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "836256dc_a305_f111_8407_70a8a5232028",
+          "project_name": "Dusit Thani Residences Ajman",
+          "developer": "Aqaar / Ajman Properties Corporation",
+          "city": "Ajman",
+          "district": "Al Nakheel - Ajman Corniche",
+          "community": "Ajman Corniche",
+          "property_type": "residential",
+          "sub_type": "Branded beachfront residences",
+          "status": "active",
+          "completion_status": "Ajman first branded beachfront residence; 328 branded apartments with 1, 2, 3, and 4-bedroom residences",
+          "source_url": "assets/Dusit-Thani-Brochure.pdf#page=2",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.98"
+        },
+        {
+          "project_id": "14b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Falcon Towers",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Falcon%20Towers&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "7d307ab5_a6a9_ea11_a2c3_00155d119619",
+          "project_name": "Garden City",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "sold_out",
+          "completion_status": "100% Sold out",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Garden%20City&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         }
       ],
-      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+      "kb_source": "json/aqaar_intents.json",
+      "missing_data_policy": "unknown"
     },
-    "rent": {
-      "purpose": "rent",
-      "root_question": "Is the visitor looking to rent?",
-      "required_slots": [
-        "purpose",
-        "property_type",
-        "location",
-        "budget",
-        "timeline",
-        "name",
-        "phone",
-        "email"
+    {
+      "tree_id": "qualification_f27981162faf",
+      "intent": "Rent Property",
+      "trigger_phrases": [
+        "rent",
+        "lease",
+        "tenant"
       ],
-      "stages": [
+      "qualification_questions": [
+        "When do you need to move?",
+        "What property type?",
+        "What yearly budget?"
+      ],
+      "next_steps": [
+        "Check official Aqaar leasing availability",
+        "Route to Aqaar contact"
+      ],
+      "recommended_projects": [
         {
-          "stage": "intent_confirmed",
-          "question": "Confirm rent requirement",
-          "outputs": [
-            "purpose"
-          ]
+          "project_id": "60b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Ajman American International School",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Ajman",
+          "community": "Ajman",
+          "property_type": "education",
+          "sub_type": "Education",
+          "status": "active",
+          "completion_status": "unknown",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20American%20International%20School&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.60"
         },
         {
-          "stage": "fit_capture",
-          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
-          "outputs": [
-            "property_type",
-            "project",
-            "location",
-            "bedrooms_or_area",
-            "budget"
-          ]
+          "project_id": "66b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Ajman Society Cooperative (Rumailah)",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Rumaila 1",
+          "community": "Rumaila 1",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "unknown",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Society%20Cooperative%20(Rumailah)&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.60"
         },
         {
-          "stage": "timeline_capture",
-          "question": "Capture purchase, move-in, investment, or business timeline",
-          "outputs": [
-            "timeline"
-          ]
+          "project_id": "f6b7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Andalus 4",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "contact_capture",
-          "question": "Capture name, phone, and email for handoff",
-          "outputs": [
-            "name",
-            "phone",
-            "email"
-          ]
+          "project_id": "96b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Arabi Building",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "handoff",
-          "question": "Generate source-grounded lead summary and sales handoff message",
-          "outputs": [
-            "lead_summary",
-            "sales_handoff_message"
-          ]
+          "project_id": "3ab8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Berouj 1",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%201&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "3cb8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Berouj 2",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "3eb8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Berouj 3",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "40b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Berouj 4",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "ecb7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Bustan",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Bustan&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "08b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Bustan Shops",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "active",
+          "completion_status": "unknown",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Bustan%20Shops&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.68"
+        },
+        {
+          "project_id": "e6b7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Dana",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "feb7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Durra",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         }
       ],
-      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+      "kb_source": "json/aqaar_intents.json",
+      "missing_data_policy": "unknown"
     },
-    "invest": {
-      "purpose": "invest",
-      "root_question": "Is the visitor looking to invest?",
-      "required_slots": [
-        "purpose",
-        "project",
-        "budget",
-        "timeline",
-        "risk_preference",
-        "name",
-        "phone",
-        "email"
+    {
+      "tree_id": "qualification_0401729c31ea",
+      "intent": "Investment",
+      "trigger_phrases": [
+        "invest",
+        "official price",
+        "published starting price",
+        "freehold"
       ],
-      "stages": [
+      "qualification_questions": [
+        "Budget?",
+        "Residential or commercial?",
+        "Income or appreciation priority?"
+      ],
+      "next_steps": [
+        "Use only official price/status fields",
+        "Avoid ROI estimates unless officially supplied"
+      ],
+      "recommended_projects": [
         {
-          "stage": "intent_confirmed",
-          "question": "Confirm invest requirement",
-          "outputs": [
-            "purpose"
-          ]
+          "project_id": "4ab8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Traditional Houses - Al Manama",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Traditional%20Houses%20-%20Al%20Manama&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "fit_capture",
-          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
-          "outputs": [
-            "property_type",
-            "project",
-            "location",
-            "bedrooms_or_area",
-            "budget"
-          ]
+          "project_id": "46b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Rawdat Al Reef Flats & Shops",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Rawdat%20Al%20Reef%20Flats%20%26%20Shops&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "timeline_capture",
-          "question": "Capture purchase, move-in, investment, or business timeline",
-          "outputs": [
-            "timeline"
-          ]
+          "project_id": "7cb8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Manama Buildings",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Manama%20Buildings&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "contact_capture",
-          "question": "Capture name, phone, and email for handoff",
-          "outputs": [
-            "name",
-            "phone",
-            "email"
-          ]
+          "project_id": "eab7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Dewan Towers",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Dewan%20Towers&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         },
         {
-          "stage": "handoff",
-          "question": "Generate source-grounded lead summary and sales handoff message",
-          "outputs": [
-            "lead_summary",
-            "sales_handoff_message"
-          ]
+          "project_id": "50b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Houses and Flats Masfoot",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Masfout",
+          "community": "Masfout",
+          "property_type": "commercial",
+          "sub_type": "Retail",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Houses%20and%20Flats%20Masfoot&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "12b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Monaliza",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Monaliza&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "29eb4220_c77d_ec11_a2ca_00155d119619",
+          "project_name": "Al Nakheel 2",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "Nakheel 2",
+          "community": "Nakheel 2",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Nakheel%202&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "2ab8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Jurf Complex",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Complex&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "42b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Yasmeen Complex",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Leasing",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Yasmeen%20%20Complex&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.86"
+        },
+        {
+          "project_id": "e6b7dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Dana",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "48b8dd4b_0ad1_e811_a2b8_00155d119707",
+          "project_name": "Al Manama Old Clinic",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "healthcare",
+          "sub_type": "Healthcare",
+          "status": "active",
+          "completion_status": "1,2,3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Manama%20Old%20Clinic&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
+        },
+        {
+          "project_id": "44f00817_9e49_eb11_a2c6_00155d119619",
+          "project_name": "Al Shorouq",
+          "developer": "Aqaar",
+          "city": "Ajman",
+          "district": "unknown",
+          "community": "unknown",
+          "property_type": "commercial",
+          "sub_type": "Commercial",
+          "status": "active",
+          "completion_status": "Studio, 1, 2, 3 Bedrooms for rent",
+          "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Shorouq&pageNumber=1&pageSize=100",
+          "last_verified": "2026-06-24",
+          "confidence_score": "0.80"
         }
       ],
-      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+      "kb_source": "json/aqaar_intents.json",
+      "missing_data_policy": "unknown"
     },
-    "commercial": {
-      "purpose": "commercial",
-      "root_question": "Is the visitor looking to commercial?",
-      "required_slots": [
-        "purpose",
-        "business_type",
-        "location",
-        "area",
-        "budget",
-        "timeline",
-        "name",
-        "phone",
-        "email"
+    {
+      "tree_id": "qualification_03688ba6aa34",
+      "intent": "FAQ",
+      "trigger_phrases": [
+        "documents",
+        "lease term",
+        "cheques",
+        "maintenance",
+        "renewal",
+        "notice period"
       ],
-      "stages": [
-        {
-          "stage": "intent_confirmed",
-          "question": "Confirm commercial requirement",
-          "outputs": [
-            "purpose"
-          ]
-        },
-        {
-          "stage": "fit_capture",
-          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
-          "outputs": [
-            "property_type",
-            "project",
-            "location",
-            "bedrooms_or_area",
-            "budget"
-          ]
-        },
-        {
-          "stage": "timeline_capture",
-          "question": "Capture purchase, move-in, investment, or business timeline",
-          "outputs": [
-            "timeline"
-          ]
-        },
-        {
-          "stage": "contact_capture",
-          "question": "Capture name, phone, and email for handoff",
-          "outputs": [
-            "name",
-            "phone",
-            "email"
-          ]
-        },
-        {
-          "stage": "handoff",
-          "question": "Generate source-grounded lead summary and sales handoff message",
-          "outputs": [
-            "lead_summary",
-            "sales_handoff_message"
-          ]
-        }
+      "qualification_questions": [
+        "Which leasing topic do you need help with?"
       ],
-      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+      "next_steps": [
+        "Answer only from Aqaar official FAQ rows",
+        "Escalate unavailable facts as unknown"
+      ],
+      "recommended_projects": [],
+      "kb_source": "json/aqaar_intents.json",
+      "missing_data_policy": "unknown"
     }
-  }
+  ]
 }

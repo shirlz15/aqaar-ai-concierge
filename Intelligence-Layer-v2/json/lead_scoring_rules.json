@@ -1,62 +1,8 @@
 {
   "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "source_policy": "All records are copied, mapped, or counted from v3 KB only. Missing data is unknown. No invented projects, prices, rankings, ROI, or sales logic.",
   "extraction_date": "2026-06-25",
-  "max_score": 100,
-  "rules": [
-    {
-      "rule_id": "score_purpose_known",
-      "points": 10,
-      "condition": "purpose in buy, rent, invest, commercial"
-    },
-    {
-      "rule_id": "score_project_known",
-      "points": 15,
-      "condition": "project_id exists in v3 KB"
-    },
-    {
-      "rule_id": "score_budget_known",
-      "points": 15,
-      "condition": "budget_min or budget_max captured from user or matched to published unit price"
-    },
-    {
-      "rule_id": "score_timeline_urgent",
-      "points": 15,
-      "condition": "timeline is immediate, 0-30 days, or this quarter"
-    },
-    {
-      "rule_id": "score_contact_phone",
-      "points": 15,
-      "condition": "phone captured; unknown receives 0"
-    },
-    {
-      "rule_id": "score_contact_email",
-      "points": 10,
-      "condition": "email captured; unknown receives 0"
-    },
-    {
-      "rule_id": "score_unit_fit",
-      "points": 10,
-      "condition": "unit type or bedroom/area preference captured and exists in v3 inventory"
-    },
-    {
-      "rule_id": "score_source_confidence",
-      "points": 10,
-      "condition": "matched project confidence_score >= 0.80"
-    }
-  ],
-  "grade_thresholds": [
-    {
-      "grade": "hot",
-      "min_score": 70
-    },
-    {
-      "grade": "warm",
-      "min_score": 45
-    },
-    {
-      "grade": "cold",
-      "min_score": 0
-    }
-  ],
-  "no_guessing_policy": "Scores are operational prioritization only; they do not infer financial returns."
+  "lead_scoring_available_in_kb": "unknown",
+  "rules": [],
+  "reason": "v3 KB does not publish lead score weights or rankings; no scoring logic is invented."
 }
