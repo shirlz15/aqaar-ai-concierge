@@ -1,0 +1,227 @@
+{
+  "status": 200,
+  "message": "Location, amenities and budget found",
+  "data": {
+    "allLocation": [
+      {
+        "aqr_name": "Jurf 1",
+        "aqr_locationid": "77373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Rumaila 2",
+        "aqr_locationid": "79373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Rashideya 1",
+        "aqr_locationid": "7d373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Al Zahya",
+        "aqr_locationid": "7f373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Rashideya 3",
+        "aqr_locationid": "81373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Rumaila 1",
+        "aqr_locationid": "83373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Liwara 1",
+        "aqr_locationid": "85373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Nakheel 1",
+        "aqr_locationid": "87373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Nakheel 2",
+        "aqr_locationid": "89373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Jurf 2",
+        "aqr_locationid": "8e373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Humaideya 2",
+        "aqr_locationid": "90373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Nuaimeya 3",
+        "aqr_locationid": "92373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Humaideya 1",
+        "aqr_locationid": "94373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "jurf Industrial 2",
+        "aqr_locationid": "96373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Manama 15",
+        "aqr_locationid": "98373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Manama 16",
+        "aqr_locationid": "9a373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Manama 7",
+        "aqr_locationid": "9c373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Nuaimeya 2",
+        "aqr_locationid": "9e373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Dubai",
+        "aqr_locationid": "a0373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Rumaila 3",
+        "aqr_locationid": "a2373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Al Danah - Abu Dhabi",
+        "aqr_locationid": "a4373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Nuaimeya 1",
+        "aqr_locationid": "a6373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Liwara 2",
+        "aqr_locationid": "aa373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Rashideya 2",
+        "aqr_locationid": "ac373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Zorah",
+        "aqr_locationid": "b0373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Ajman Industrial 1",
+        "aqr_locationid": "b2373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Masfout",
+        "aqr_locationid": "b6373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Ajman Industrial 2",
+        "aqr_locationid": "b8373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Aamra",
+        "aqr_locationid": "ba373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Masfout 1",
+        "aqr_locationid": "bc373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Musherif",
+        "aqr_locationid": "c2373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Ajman",
+        "aqr_locationid": "c4373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Sofia",
+        "aqr_locationid": "c8373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "jurf Industrial 3",
+        "aqr_locationid": "ca373f08-cc75-ef11-a2cb-00155d119747"
+      },
+      {
+        "aqr_name": "Manama 8",
+        "aqr_locationid": "86d14555-6484-ef11-a2cf-00155d119f38"
+      },
+      {
+        "aqr_name": "Industrial area - 3",
+        "aqr_locationid": "7570ce41-6784-ef11-a2cf-00155d119f38"
+      },
+      {
+        "aqr_name": "Al Ras - Dubai",
+        "aqr_locationid": "0f9acee4-fad2-ef11-a2d0-00155d119f38"
+      }
+    ],
+    "amenities": [
+      {
+        "value": "118140000",
+        "color": "#0000ff",
+        "label": "Central AC"
+      },
+      {
+        "value": "118140001",
+        "color": "#0000ff",
+        "label": "Gym"
+      },
+      {
+        "value": "118140002",
+        "color": "#0000ff",
+        "label": "Swimming Pool"
+      },
+      {
+        "value": "118140003",
+        "color": "#0000ff",
+        "label": "Kids play area"
+      },
+      {
+        "value": "118140004",
+        "color": "#0000ff",
+        "label": "Garden"
+      },
+      {
+        "value": "118140005",
+        "color": "#0000ff",
+        "label": "Satellite/Cable TV"
+      },
+      {
+        "value": "118140006",
+        "color": "#0000ff",
+        "label": "CCTV Security"
+      },
+      {
+        "value": "118140007",
+        "color": "#0000ff",
+        "label": "ATM Facility"
+      },
+      {
+        "value": "118140008",
+        "color": "#0000ff",
+        "label": "Covered Parking"
+      },
+      {
+        "value": "118140009",
+        "color": "#0000ff",
+        "label": "Facilities for Disabled"
+      },
+      {
+        "value": "118140010",
+        "color": "#0000ff",
+        "label": "Security Staff"
+      },
+      {
+        "value": "118140011",
+        "color": "#0000ff",
+        "label": "Free Maintenance"
+      },
+      {
+        "value": "118140012",
+        "color": "#0000ff",
+        "label": "Waste Disposal"
+      }
+    ],
+    "budget": {
+      "min_price": "0.00",
+      "max_price": "99284578.00"
+    }
+  }
+}

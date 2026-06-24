@@ -1,0 +1,23 @@
+{
+  "package": "Aqaar KB-Acq",
+  "phase": "knowledge_acquisition_only",
+  "generated_at": "2026-06-24T09:31:12.532Z",
+  "official_sources_only": true,
+  "excluded_this_phase": [
+    "frontend",
+    "dashboard",
+    "ai_chat",
+    "recommendation_engine",
+    "persona_engine",
+    "intent_engine"
+  ],
+  "source_families": [
+    "https://www.aqaar.com",
+    "https://prodadmin-aqaar.realcube.estate/api"
+  ],
+  "notes": [
+    "PalmX package was used only as a structural benchmark.",
+    "No PalmX data, project names, prices, locations, or assets are copied into this package.",
+    "Fields unavailable from public official Aqaar sources are marked unknown or on_request."
+  ]
+}
