@@ -1,0 +1,79 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "comparison_fields": [
+    "project_name",
+    "developer",
+    "city",
+    "district",
+    "community",
+    "property_type",
+    "sub_type",
+    "status",
+    "completion_status",
+    "handover_year",
+    "known_starting_price",
+    "known_min_area_sqft",
+    "known_max_area_sqft",
+    "source_url",
+    "confidence_score"
+  ],
+  "rules": [
+    {
+      "rule_id": "compare_only_published",
+      "rule": "Compare only fields present in v3 KB and show unknown where missing."
+    },
+    {
+      "rule_id": "compare_units_by_project",
+      "rule": "Unit comparisons must reference unit_id values from aqaar_properties_inventory.csv."
+    },
+    {
+      "rule_id": "compare_no_financial_projection",
+      "rule": "Do not estimate ROI, yield, appreciation, or payment affordability."
+    }
+  ],
+  "example_project_set": [
+    {
+      "project_id": "836256dc_a305_f111_8407_70a8a5232028",
+      "project_name": "Dusit Thani Residences Ajman",
+      "developer": "Aqaar / Ajman Properties Corporation",
+      "city": "Ajman",
+      "district": "Al Nakheel - Ajman Corniche",
+      "community": "Ajman Corniche",
+      "property_type": "residential",
+      "sub_type": "Branded beachfront residences",
+      "status": "active",
+      "completion_status": "Ajman first branded beachfront residence; 328 branded apartments with 1, 2, 3, and 4-bedroom residences",
+      "handover_year": "unknown",
+      "known_unit_count": 7,
+      "known_starting_price": 2090753.29,
+      "known_max_price": 5721508.19,
+      "known_min_area_sqft": 1108.1,
+      "known_max_area_sqft": 2776.9,
+      "source_url": "assets/Dusit-Thani-Brochure.pdf#page=2",
+      "last_verified": "2026-06-24",
+      "confidence_score": "0.98"
+    },
+    {
+      "project_id": "ed194b08_59aa_f011_a2e0_00155d119f3e",
+      "project_name": "Mawjan",
+      "developer": "Aqaar / Ajman Properties Corporation",
+      "city": "Ajman",
+      "district": "Ajman Corniche",
+      "community": "Ajman Corniche",
+      "property_type": "residential",
+      "sub_type": "Waterfront apartments",
+      "status": "active",
+      "completion_status": "Mawjan Residence stands along Ajman Corniche with sea views and waterfront lifestyle positioning",
+      "handover_year": "unknown",
+      "known_unit_count": 7,
+      "known_starting_price": 583000,
+      "known_max_price": 2700000,
+      "known_min_area_sqft": 585.79,
+      "known_max_area_sqft": 2892.29,
+      "source_url": "assets/Mawjan-Brochure.pdf#page=8",
+      "last_verified": "2026-06-24",
+      "confidence_score": "0.96"
+    }
+  ]
+}

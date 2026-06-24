@@ -1,0 +1,53 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "objections": [
+    {
+      "objection": "price is unclear",
+      "response": "I can only use published Aqaar KB prices. This value is unknown when not published, and the sales team should confirm it.",
+      "allowed_fields": [
+        "price_min",
+        "price_max",
+        "currency",
+        "source_url"
+      ]
+    },
+    {
+      "objection": "ROI or yield requested",
+      "response": "ROI and yield are not published in the v3 KB. I can capture your investment goal and hand it to sales for confirmation.",
+      "allowed_fields": [
+        "purpose",
+        "budget",
+        "project_name"
+      ]
+    },
+    {
+      "objection": "payment plan requested",
+      "response": "Payment plan is shown only when published in the v3 KB; otherwise it remains unknown.",
+      "allowed_fields": [
+        "payment_plan",
+        "down_payment",
+        "installment_years"
+      ]
+    },
+    {
+      "objection": "location suitability",
+      "response": "Use only v3 KB location, district, community, and brochure distance facts where present.",
+      "allowed_fields": [
+        "city",
+        "district",
+        "community",
+        "source_url"
+      ]
+    },
+    {
+      "objection": "availability requested",
+      "response": "Availability status must be read from v3 inventory and confirmed by sales at handoff.",
+      "allowed_fields": [
+        "availability_status",
+        "last_verified"
+      ]
+    }
+  ],
+  "faq_seed_count": 18
+}

@@ -1,0 +1,49 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "stages": [
+    {
+      "stage": "qualify",
+      "actions": [
+        "Confirm purpose, project, location, budget, timeline, and contact details.",
+        "Do not fill unknown values from assumptions."
+      ]
+    },
+    {
+      "stage": "recommend",
+      "actions": [
+        "Recommend only projects validated in recommendation_engine.json.",
+        "Quote only prices and sizes published in v3 inventory."
+      ]
+    },
+    {
+      "stage": "handoff",
+      "actions": [
+        "Send lead summary with source URL and unknown fields.",
+        "Ask sales to verify unpublished payment, availability, ROI, and completion details."
+      ]
+    },
+    {
+      "stage": "follow_up",
+      "actions": [
+        "Prioritize hot leads by score and timeline.",
+        "Use project-specific source snippets where available."
+      ]
+    }
+  ],
+  "handoff_summary_fields": [
+    "lead_id",
+    "purpose",
+    "project_id",
+    "project_name",
+    "unit_id",
+    "budget_min",
+    "budget_max",
+    "timeline",
+    "name",
+    "phone",
+    "email",
+    "source_url",
+    "unknown_fields"
+  ]
+}

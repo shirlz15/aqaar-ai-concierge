@@ -1,0 +1,243 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "trees": {
+    "buy": {
+      "purpose": "buy",
+      "root_question": "Is the visitor looking to buy?",
+      "required_slots": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "stages": [
+        {
+          "stage": "intent_confirmed",
+          "question": "Confirm buy requirement",
+          "outputs": [
+            "purpose"
+          ]
+        },
+        {
+          "stage": "fit_capture",
+          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
+          "outputs": [
+            "property_type",
+            "project",
+            "location",
+            "bedrooms_or_area",
+            "budget"
+          ]
+        },
+        {
+          "stage": "timeline_capture",
+          "question": "Capture purchase, move-in, investment, or business timeline",
+          "outputs": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "contact_capture",
+          "question": "Capture name, phone, and email for handoff",
+          "outputs": [
+            "name",
+            "phone",
+            "email"
+          ]
+        },
+        {
+          "stage": "handoff",
+          "question": "Generate source-grounded lead summary and sales handoff message",
+          "outputs": [
+            "lead_summary",
+            "sales_handoff_message"
+          ]
+        }
+      ],
+      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+    },
+    "rent": {
+      "purpose": "rent",
+      "root_question": "Is the visitor looking to rent?",
+      "required_slots": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "stages": [
+        {
+          "stage": "intent_confirmed",
+          "question": "Confirm rent requirement",
+          "outputs": [
+            "purpose"
+          ]
+        },
+        {
+          "stage": "fit_capture",
+          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
+          "outputs": [
+            "property_type",
+            "project",
+            "location",
+            "bedrooms_or_area",
+            "budget"
+          ]
+        },
+        {
+          "stage": "timeline_capture",
+          "question": "Capture purchase, move-in, investment, or business timeline",
+          "outputs": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "contact_capture",
+          "question": "Capture name, phone, and email for handoff",
+          "outputs": [
+            "name",
+            "phone",
+            "email"
+          ]
+        },
+        {
+          "stage": "handoff",
+          "question": "Generate source-grounded lead summary and sales handoff message",
+          "outputs": [
+            "lead_summary",
+            "sales_handoff_message"
+          ]
+        }
+      ],
+      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+    },
+    "invest": {
+      "purpose": "invest",
+      "root_question": "Is the visitor looking to invest?",
+      "required_slots": [
+        "purpose",
+        "project",
+        "budget",
+        "timeline",
+        "risk_preference",
+        "name",
+        "phone",
+        "email"
+      ],
+      "stages": [
+        {
+          "stage": "intent_confirmed",
+          "question": "Confirm invest requirement",
+          "outputs": [
+            "purpose"
+          ]
+        },
+        {
+          "stage": "fit_capture",
+          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
+          "outputs": [
+            "property_type",
+            "project",
+            "location",
+            "bedrooms_or_area",
+            "budget"
+          ]
+        },
+        {
+          "stage": "timeline_capture",
+          "question": "Capture purchase, move-in, investment, or business timeline",
+          "outputs": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "contact_capture",
+          "question": "Capture name, phone, and email for handoff",
+          "outputs": [
+            "name",
+            "phone",
+            "email"
+          ]
+        },
+        {
+          "stage": "handoff",
+          "question": "Generate source-grounded lead summary and sales handoff message",
+          "outputs": [
+            "lead_summary",
+            "sales_handoff_message"
+          ]
+        }
+      ],
+      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+    },
+    "commercial": {
+      "purpose": "commercial",
+      "root_question": "Is the visitor looking to commercial?",
+      "required_slots": [
+        "purpose",
+        "business_type",
+        "location",
+        "area",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "stages": [
+        {
+          "stage": "intent_confirmed",
+          "question": "Confirm commercial requirement",
+          "outputs": [
+            "purpose"
+          ]
+        },
+        {
+          "stage": "fit_capture",
+          "question": "Capture property type, project, location, bedroom/area preference, and budget if the visitor provides it",
+          "outputs": [
+            "property_type",
+            "project",
+            "location",
+            "bedrooms_or_area",
+            "budget"
+          ]
+        },
+        {
+          "stage": "timeline_capture",
+          "question": "Capture purchase, move-in, investment, or business timeline",
+          "outputs": [
+            "timeline"
+          ]
+        },
+        {
+          "stage": "contact_capture",
+          "question": "Capture name, phone, and email for handoff",
+          "outputs": [
+            "name",
+            "phone",
+            "email"
+          ]
+        },
+        {
+          "stage": "handoff",
+          "question": "Generate source-grounded lead summary and sales handoff message",
+          "outputs": [
+            "lead_summary",
+            "sales_handoff_message"
+          ]
+        }
+      ],
+      "unknown_policy": "If the KB does not publish a value, return unknown and ask sales to confirm."
+    }
+  }
+}

@@ -1,0 +1,661 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "policy": "Only v3 KB values are used. Unpublished values remain unknown.",
+  "intents": [
+    {
+      "intent_id": "intent_buy",
+      "purpose": "buy",
+      "keywords": [
+        "buy",
+        "purchase",
+        "own",
+        "sale",
+        "apartment",
+        "villa",
+        "residence"
+      ],
+      "required_slots": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "handoff_priority": "standard"
+    },
+    {
+      "intent_id": "intent_rent",
+      "purpose": "rent",
+      "keywords": [
+        "rent",
+        "lease",
+        "tenant",
+        "monthly",
+        "yearly"
+      ],
+      "required_slots": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "handoff_priority": "standard"
+    },
+    {
+      "intent_id": "intent_invest",
+      "purpose": "invest",
+      "keywords": [
+        "invest",
+        "investment",
+        "capital",
+        "portfolio",
+        "rental income"
+      ],
+      "required_slots": [
+        "purpose",
+        "project",
+        "budget",
+        "timeline",
+        "risk_preference",
+        "name",
+        "phone",
+        "email"
+      ],
+      "handoff_priority": "high_when_budget_known"
+    },
+    {
+      "intent_id": "intent_commercial",
+      "purpose": "commercial",
+      "keywords": [
+        "commercial",
+        "office",
+        "retail",
+        "shop",
+        "warehouse",
+        "business"
+      ],
+      "required_slots": [
+        "purpose",
+        "business_type",
+        "location",
+        "area",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "handoff_priority": "high_when_area_known"
+    }
+  ],
+  "entity_detection": {
+    "project_names": [
+      {
+        "value": "Ajman Corniche Residences",
+        "project_id": "ccb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Corniche%20Residences&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Ajman One",
+        "project_id": "2eb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20One&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Ajman One - PH II",
+        "project_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      {
+        "value": "Ajman Pearl",
+        "project_id": "7f307ab5_a6a9_ea11_a2c3_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Pearl&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Ajman Uptown",
+        "project_id": "2a565476_ed0f_ee11_a2be_00155d119f33",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Andalus 4",
+        "project_id": "f6b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Arabi Building",
+        "project_id": "96b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Berouj 1",
+        "project_id": "3ab8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Berouj 2",
+        "project_id": "3cb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Berouj 3",
+        "project_id": "3eb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Berouj 4",
+        "project_id": "40b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Bustan",
+        "project_id": "ecb7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Bustan&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Dana",
+        "project_id": "e6b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Durra",
+        "project_id": "feb7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Fazzan",
+        "project_id": "b0b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Fazzan&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Gharoub",
+        "project_id": "f4502104_adbf_ec11_a2bf_00155d119927",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Gharoub&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Humaidia Villa 1",
+        "project_id": "76b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Humaidia Villa 2",
+        "project_id": "78b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Itihad",
+        "project_id": "e8b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Itihad&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Johara",
+        "project_id": "a6b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Johara&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf 1",
+        "project_id": "24b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf 2",
+        "project_id": "26b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf 3",
+        "project_id": "22b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%203&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf Complex",
+        "project_id": "2ab8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Complex&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf Residential Villas",
+        "project_id": "20b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Residential%20Villas&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf Villas",
+        "project_id": "1cb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Villas&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Jurf Villas 2",
+        "project_id": "1eb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Villas%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Karama",
+        "project_id": "8aed16b5_4982_ec11_a2bf_00155d119927",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Karama&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Khor Villas & Shops",
+        "project_id": "44b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Khor%20Villas%20%26%20Shops&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Madina Tower",
+        "project_id": "9cb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Madina%20Tower&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Manama Buildings",
+        "project_id": "7cb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Manama%20Buildings&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Manama Old Clinic",
+        "project_id": "48b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Manama%20Old%20Clinic&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Manara",
+        "project_id": "0ab8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Manara&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Monaliza",
+        "project_id": "12b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Monaliza&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Musalla Building (Kempinski)",
+        "project_id": "b2b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Musalla%20%20Building%20(Kempinski)&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Muthaf",
+        "project_id": "00b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Muthaf&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Nakheel 1",
+        "project_id": "fcb7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Nakheel%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Nakheel 2",
+        "project_id": "29eb4220_c77d_ec11_a2ca_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Nakheel%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Nasr",
+        "project_id": "06b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Nasr&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Nuaimia Complex",
+        "project_id": "28b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Nuaimia%20Complex&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Ofoq Tower",
+        "project_id": "9eb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Ofoq%20Tower&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Rumaila 1",
+        "project_id": "f0d34484_309f_ee11_a2bf_00155d119841",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Rumaila%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Rumailah",
+        "project_id": "18b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Rumailah&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Rumailah New Villas",
+        "project_id": "86b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Rumailah%20New%20Villas&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Sediq",
+        "project_id": "11f6f9c7_d27d_ec11_a2ca_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Sediq&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Shahba",
+        "project_id": "32b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Shahba&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Sheikh Humaid Building (Abu-Dhabi)",
+        "project_id": "90b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Sheikh%20Humaid%20Building%20(Abu-Dhabi)&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Sheikha Fatima Building (Abu-Dhabi)",
+        "project_id": "b4b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Sheikha%20Fatima%20Building%20(Abu-Dhabi)&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Shorouq",
+        "project_id": "44f00817_9e49_eb11_a2c6_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Shorouq&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Suwan",
+        "project_id": "0eb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Suwan&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Tameer",
+        "project_id": "10b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Tameer&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Thuraya 1",
+        "project_id": "a8b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Thuraya%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Thuraya 2",
+        "project_id": "aab8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Thuraya%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Thuraya 3",
+        "project_id": "acb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Thuraya%203&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Yasmeen Complex",
+        "project_id": "42b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Yasmeen%20%20Complex&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Zahir",
+        "project_id": "beabdf96_e122_e911_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Zahir&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al Zahra Complex",
+        "project_id": "02b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Zahra%20Complex&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Al-Khour Tower C",
+        "project_id": "6c1c103f_f0f0_ea11_a2c4_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al-Khour%20Tower%20C&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "AL-Khour Towers",
+        "project_id": "eeb7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=AL-Khour%20Towers&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Asayel 1",
+        "project_id": "1ab8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Asayel%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Asayel 2",
+        "project_id": "a0b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Asayel%202&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "City Towers",
+        "project_id": "30b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=City%20Towers&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Commercial Complex",
+        "project_id": "04b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Commercial%20Complex&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Corniche Tower",
+        "project_id": "16b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Corniche%20Tower&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Crystal",
+        "project_id": "aeb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Crystal&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Crystal 1",
+        "project_id": "38b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Crystal%201&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Dewan Towers",
+        "project_id": "eab7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Dewan%20Towers&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Dusit Thani Residences Ajman",
+        "project_id": "836256dc_a305_f111_8407_70a8a5232028",
+        "source_url": "assets/Dusit-Thani-Brochure.pdf#page=2"
+      },
+      {
+        "value": "Falcon Towers",
+        "project_id": "14b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Falcon%20Towers&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Flamingo Building",
+        "project_id": "34b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Flamingo%20Building&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Flamingo Villas",
+        "project_id": "36b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Flamingo%20Villas&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Garden City",
+        "project_id": "7d307ab5_a6a9_ea11_a2c3_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Garden%20City&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Grand",
+        "project_id": "e4b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Grand&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Horizon Towers",
+        "project_id": "f4b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Horizon%20Towers&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Houses and Flats Masfoot",
+        "project_id": "50b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Houses%20and%20Flats%20Masfoot&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Lewara",
+        "project_id": "9ab8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Lewara&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Manama Flats",
+        "project_id": "4cb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Manama%20Flats&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Masfoot Buildings",
+        "project_id": "84b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Masfoot%20Buildings&pageNumber=1&pageSize=100"
+      },
+      {
+        "value": "Mawjan",
+        "project_id": "ed194b08_59aa_f011_a2e0_00155d119f3e",
+        "source_url": "assets/Mawjan-Brochure.pdf#page=8"
+      },
+      {
+        "value": "Musherif Villas",
+        "project_id": "b514b2db_08f8_ea11_a2c5_00155d119619",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Musherif%20Villas&pageNumber=1&pageSize=100"
+      }
+    ],
+    "locations": [
+      {
+        "value": "Ajman",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Ajman Corniche",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Rumaila 1",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Jurf 1",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Jurf 2",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Nakheel 1",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Nakheel 2",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Abu Dhabi",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Al Nakheel - Ajman Corniche",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Masfout",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Industrial area - 3",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Liwara 1",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Musherif",
+        "source": "v3_kb_locations_or_projects"
+      },
+      {
+        "value": "Nuaimeya 3",
+        "source": "v3_kb_locations_or_projects"
+      }
+    ],
+    "property_types": [
+      {
+        "value": "Education",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Commercial",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Freehold",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Retail",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Leasing",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Villa",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Residential",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Land",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Healthcare",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Office",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Warehouse",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "1 Bedroom Type A",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "1 Bedroom Type B",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "2 Bedroom Type A",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "2 Bedroom Type B",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "3 Bedroom Type A",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "3 Bedroom Type B",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "4 Bedroom",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Studio",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "One Bedroom Apartment",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Two Bedroom Apartment",
+        "source": "v3_kb_inventory"
+      },
+      {
+        "value": "Three Bedroom Apartment",
+        "source": "v3_kb_inventory"
+      }
+    ],
+    "budget_detection": {
+      "currency": "AED when v3 unit currency is AED; otherwise unknown",
+      "min_max_capture": true,
+      "no_estimation": true
+    },
+    "contact_capture": [
+      "name",
+      "phone",
+      "email"
+    ]
+  }
+}

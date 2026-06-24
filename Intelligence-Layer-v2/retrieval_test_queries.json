@@ -1,0 +1,174 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "tests": [
+    {
+      "query_id": "RT-001",
+      "query": "What published unit prices are available for Dusit Thani Residences Ajman?",
+      "expected_project_id": "836256dc_a305_f111_8407_70a8a5232028",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Return only published prices; unknown when absent."
+    },
+    {
+      "query_id": "RT-002",
+      "query": "What amenities or lifestyle features are published for Dusit Thani Residences Ajman?",
+      "expected_project_id": "836256dc_a305_f111_8407_70a8a5232028",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Use only v3 amenities/assets/RAG chunks."
+    },
+    {
+      "query_id": "RT-003",
+      "query": "What published unit prices are available for Mawjan?",
+      "expected_project_id": "ed194b08_59aa_f011_a2e0_00155d119f3e",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Return only published prices; unknown when absent."
+    },
+    {
+      "query_id": "RT-004",
+      "query": "What amenities or lifestyle features are published for Mawjan?",
+      "expected_project_id": "ed194b08_59aa_f011_a2e0_00155d119f3e",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Use only v3 amenities/assets/RAG chunks."
+    },
+    {
+      "query_id": "RT-005",
+      "query": "Show verified Aqaar details for Ajman Corniche Residences",
+      "expected_project_id": "ccb8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-006",
+      "query": "Show verified Aqaar details for Ajman One",
+      "expected_project_id": "2eb8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-007",
+      "query": "Show verified Aqaar details for Ajman One - PH II",
+      "expected_project_id": "22796319_20da_ee11_a2bf_00155d119841",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-008",
+      "query": "Show verified Aqaar details for Ajman Pearl",
+      "expected_project_id": "7f307ab5_a6a9_ea11_a2c3_00155d119619",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-009",
+      "query": "Show verified Aqaar details for Ajman Uptown",
+      "expected_project_id": "2a565476_ed0f_ee11_a2be_00155d119f33",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-010",
+      "query": "Show verified Aqaar details for Al Andalus 4",
+      "expected_project_id": "f6b7dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-011",
+      "query": "Show verified Aqaar details for Al Arabi Building",
+      "expected_project_id": "96b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-012",
+      "query": "Show verified Aqaar details for Al Berouj 1",
+      "expected_project_id": "3ab8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-013",
+      "query": "Show verified Aqaar details for Al Berouj 2",
+      "expected_project_id": "3cb8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-014",
+      "query": "Show verified Aqaar details for Al Berouj 3",
+      "expected_project_id": "3eb8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-015",
+      "query": "Show verified Aqaar details for Al Berouj 4",
+      "expected_project_id": "40b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-016",
+      "query": "Show verified Aqaar details for Al Bustan",
+      "expected_project_id": "ecb7dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-017",
+      "query": "Show verified Aqaar details for Al Dana",
+      "expected_project_id": "e6b7dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-018",
+      "query": "Show verified Aqaar details for Al Durra",
+      "expected_project_id": "feb7dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-019",
+      "query": "Show verified Aqaar details for Al Fazzan",
+      "expected_project_id": "b0b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-020",
+      "query": "Show verified Aqaar details for Al Gharoub",
+      "expected_project_id": "f4502104_adbf_ec11_a2bf_00155d119927",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-021",
+      "query": "Show verified Aqaar details for Al Humaidia Villa 1",
+      "expected_project_id": "76b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-022",
+      "query": "Show verified Aqaar details for Al Humaidia Villa 2",
+      "expected_project_id": "78b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-023",
+      "query": "Show verified Aqaar details for Al Itihad",
+      "expected_project_id": "e8b7dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    },
+    {
+      "query_id": "RT-024",
+      "query": "Show verified Aqaar details for Al Johara",
+      "expected_project_id": "a6b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "expected_source": "AQAAR-KB-ACQ-FINAL-v3",
+      "expected_answer_policy": "Cite source_url and use unknown for unpublished fields."
+    }
+  ]
+}

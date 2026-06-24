@@ -1,0 +1,103 @@
+{
+  "source_package": "AQAAR-KB-ACQ-FINAL-v3.zip",
+  "extraction_date": "2026-06-25",
+  "flows": [
+    {
+      "flow_id": "flow_buy",
+      "purpose": "buy",
+      "entry_prompts": [
+        "I can help with buy. Which project, location, or property type are you considering?"
+      ],
+      "slot_order": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "recommendation_step": {
+        "uses": "recommendation_engine.rules",
+        "validation": "project_id and unit_id must exist in v3 KB",
+        "unknown_policy": "If no match is verified, ask a clarifying question."
+      },
+      "lead_summary_template": "Purpose: {purpose}; Project: {project_name}; Location: {location}; Unit: {unit_type}; Budget: {budget}; Timeline: {timeline}; Contact: {name} / {phone} / {email}; Unknowns: {unknown_fields}.",
+      "sales_handoff_template": "Aqaar lead handoff: {purpose} inquiry for {project_name}. Matched v3 KB source: {source_url}. Confirm unpublished values marked unknown before advising."
+    },
+    {
+      "flow_id": "flow_rent",
+      "purpose": "rent",
+      "entry_prompts": [
+        "I can help with rent. Which project, location, or property type are you considering?"
+      ],
+      "slot_order": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "recommendation_step": {
+        "uses": "recommendation_engine.rules",
+        "validation": "project_id and unit_id must exist in v3 KB",
+        "unknown_policy": "If no match is verified, ask a clarifying question."
+      },
+      "lead_summary_template": "Purpose: {purpose}; Project: {project_name}; Location: {location}; Unit: {unit_type}; Budget: {budget}; Timeline: {timeline}; Contact: {name} / {phone} / {email}; Unknowns: {unknown_fields}.",
+      "sales_handoff_template": "Aqaar lead handoff: {purpose} inquiry for {project_name}. Matched v3 KB source: {source_url}. Confirm unpublished values marked unknown before advising."
+    },
+    {
+      "flow_id": "flow_invest",
+      "purpose": "invest",
+      "entry_prompts": [
+        "I can help with invest. Which project, location, or property type are you considering?"
+      ],
+      "slot_order": [
+        "purpose",
+        "project",
+        "budget",
+        "timeline",
+        "risk_preference",
+        "name",
+        "phone",
+        "email"
+      ],
+      "recommendation_step": {
+        "uses": "recommendation_engine.rules",
+        "validation": "project_id and unit_id must exist in v3 KB",
+        "unknown_policy": "If no match is verified, ask a clarifying question."
+      },
+      "lead_summary_template": "Purpose: {purpose}; Project: {project_name}; Location: {location}; Unit: {unit_type}; Budget: {budget}; Timeline: {timeline}; Contact: {name} / {phone} / {email}; Unknowns: {unknown_fields}.",
+      "sales_handoff_template": "Aqaar lead handoff: {purpose} inquiry for {project_name}. Matched v3 KB source: {source_url}. Confirm unpublished values marked unknown before advising."
+    },
+    {
+      "flow_id": "flow_commercial",
+      "purpose": "commercial",
+      "entry_prompts": [
+        "I can help with commercial. Which project, location, or property type are you considering?"
+      ],
+      "slot_order": [
+        "purpose",
+        "business_type",
+        "location",
+        "area",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ],
+      "recommendation_step": {
+        "uses": "recommendation_engine.rules",
+        "validation": "project_id and unit_id must exist in v3 KB",
+        "unknown_policy": "If no match is verified, ask a clarifying question."
+      },
+      "lead_summary_template": "Purpose: {purpose}; Project: {project_name}; Location: {location}; Unit: {unit_type}; Budget: {budget}; Timeline: {timeline}; Contact: {name} / {phone} / {email}; Unknowns: {unknown_fields}.",
+      "sales_handoff_template": "Aqaar lead handoff: {purpose} inquiry for {project_name}. Matched v3 KB source: {source_url}. Confirm unpublished values marked unknown before advising."
+    }
+  ]
+}
