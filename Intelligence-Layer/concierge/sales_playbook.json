@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "stages": [
+    {
+      "stage": "open",
+      "goal": "Identify purpose and set official-data boundary",
+      "talk_track": "I can help with Aqaar buy, rent, investment, or commercial options using verified Aqaar KB data."
+    },
+    {
+      "stage": "qualify",
+      "goal": "Capture property type, location, budget, timeline, and contact slots",
+      "required_fields": [
+        "purpose",
+        "property_type",
+        "location",
+        "budget",
+        "timeline",
+        "name",
+        "phone",
+        "email"
+      ]
+    },
+    {
+      "stage": "match",
+      "goal": "Match to official Aqaar project records",
+      "data_sources": [
+        "aqaar_projects_master.csv",
+        "aqaar_properties_inventory.csv",
+        "aqaar_locations.csv"
+      ]
+    },
+    {
+      "stage": "handle_objections",
+      "goal": "Answer only with official FAQ/project facts and mark unavailable fields unknown",
+      "data_sources": [
+        "aqaar_faqs.csv",
+        "objection_handling.json"
+      ]
+    },
+    {
+      "stage": "handoff",
+      "goal": "Prepare concise sales handoff message",
+      "format": "Purpose, project, location, budget, timeline, contact, unknowns, source URL"
+    }
+  ],
+  "do_not_say": [
+    "Do not estimate ROI",
+    "Do not invent unit availability",
+    "Do not invent customer contact details",
+    "Do not use PalmX or external facts"
+  ],
+  "handoff_channels": [
+    "CRM",
+    "email",
+    "manual sales note"
+  ]
+}

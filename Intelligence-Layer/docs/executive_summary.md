@@ -1,24 +1,26 @@
 # Aqaar Intelligence Layer Executive Summary
 
 Generated: 2026-06-24
+Version: 2.0
 
-## What Was Built
+## What Was Upgraded
 
-This package converts the completed Aqaar KB-Acq dataset into a runtime intelligence layer for concierge conversations, lead capture, dashboard metrics, seed runtime sheets, retrieval quality checks, and sales handoff messages.
+The Aqaar Intelligence Layer was upgraded to production-grade runtime data contracts, persona logic, qualification trees, lead scoring, recommendation rules, objection handling, sales playbook guidance, investment guardrails, project comparison rules, and memory schema.
 
 ## Source Boundary
 
-All project, location, price, FAQ, and asset facts come from AQAAR-KB-ACQ-FINAL. PalmX was not used as a data source. Values unavailable in the Aqaar KB are marked `unknown`.
+All project, location, price, FAQ, amenity, and RAG facts come from AQAAR-KB-ACQ-FINAL. PalmX was not used as a data source. Values unavailable in the Aqaar KB are marked `unknown`.
 
 ## Runtime Coverage
 
 - Concierge flows: Buy, Rent, Invest, Commercial
-- Entity detection: purpose, property type, location, budget, timeline, contact slots
-- Lead seed rows: 24
-- Runtime events: 120
+- Buyer personas: 5
+- Seed lead scenarios: 240
+- Runtime events: 1440
+- Audit records: 1707
+- Retrieval test queries: 194
+- Retrieval lexical checks passed: 194/194
 - Dashboard metrics and chart payloads: generated
-- Retrieval test queries: 21
-- RAG chunks tested: 237
 
 ## Important Constraint
 

@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "max_score": 100,
+  "rules": [
+    {
+      "rule_id": "has_purpose",
+      "description": "Purpose detected as Buy/Rent/Invest/Commercial",
+      "points": 15
+    },
+    {
+      "rule_id": "has_budget",
+      "description": "Budget min or max provided or inferred from official published price context",
+      "points": 15
+    },
+    {
+      "rule_id": "has_timeline",
+      "description": "Timeline captured and not unknown",
+      "points": 10
+    },
+    {
+      "rule_id": "has_location",
+      "description": "Location detected from Aqaar KB location dictionary",
+      "points": 10
+    },
+    {
+      "rule_id": "has_project_match",
+      "description": "Matched to official Aqaar project",
+      "points": 15
+    },
+    {
+      "rule_id": "has_contact_phone",
+      "description": "Phone captured from real conversation",
+      "points": 15
+    },
+    {
+      "rule_id": "has_contact_email",
+      "description": "Email captured from real conversation",
+      "points": 10
+    },
+    {
+      "rule_id": "investment_guardrail",
+      "description": "Investor did not request unsupported ROI/yield answer, or was routed to advisor",
+      "points": 5
+    },
+    {
+      "rule_id": "handoff_ready",
+      "description": "Lead summary and sales handoff message generated",
+      "points": 5
+    }
+  ],
+  "grade_thresholds": {
+    "hot": 75,
+    "warm": 45,
+    "cold": 0
+  },
+  "unknown_policy": "Unknown contacts score zero for contact fields; never fabricate contact data."
+}

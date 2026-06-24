@@ -1,0 +1,110 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "objections": [
+    {
+      "objection_id": "price_unknown",
+      "trigger": [
+        "price not available",
+        "how much exactly",
+        "total price"
+      ],
+      "response": "The Aqaar KB only confirms official published starting prices where available. For this value, the field is unknown; I can prepare a sales handoff for confirmation.",
+      "allowed_sources": [
+        "aqaar_properties_inventory.csv"
+      ]
+    },
+    {
+      "objection_id": "roi_request",
+      "trigger": [
+        "roi",
+        "yield",
+        "return"
+      ],
+      "response": "ROI or yield is not published in the Aqaar KB. I can summarize official price/status facts and route you to an Aqaar advisor.",
+      "allowed_sources": [
+        "aqaar_projects_master.csv",
+        "aqaar_properties_inventory.csv"
+      ]
+    },
+    {
+      "objection_id": "availability_unclear",
+      "trigger": [
+        "available now",
+        "which unit",
+        "exact unit"
+      ],
+      "response": "The KB contains project-level status and published price data, not complete live unit availability. Exact availability is unknown and should be confirmed by Aqaar sales.",
+      "allowed_sources": [
+        "aqaar_projects_master.csv"
+      ]
+    },
+    {
+      "objection_id": "documents_needed",
+      "trigger": [
+        "documents",
+        "lease papers",
+        "what do I need"
+      ],
+      "response": "unknown",
+      "allowed_sources": [
+        "aqaar_faqs.csv"
+      ]
+    },
+    {
+      "objection_id": "payment_methods",
+      "trigger": [
+        "payment",
+        "cheque",
+        "installments"
+      ],
+      "response": "We accept: ; Post-dated cheques (for the agreed number of installments); Online payments via the Aqaar Ajman mobile app",
+      "allowed_sources": [
+        "aqaar_faqs.csv"
+      ]
+    },
+    {
+      "objection_id": "maintenance",
+      "trigger": [
+        "maintenance",
+        "AC",
+        "repair"
+      ],
+      "response": "Use the Aqaar FAQ maintenance answers when the question matches; otherwise mark unknown and hand off.",
+      "faq_candidates": [
+        {
+          "question": "What payment methods does Aqaar accept for rent?",
+          "answer": "We accept: ; Post-dated cheques (for the agreed number of installments); Online payments via the Aqaar Ajman mobile app"
+        },
+        {
+          "question": "How can I hand over my cheques if I lease or renew my contract online?",
+          "answer": "; You can drop off your cheques in person at the Aqaar office during business hours.; Alternatively, you can choose a free courier pickup service from anywhere in the UAE."
+        },
+        {
+          "question": "How do I report a maintenance issue?",
+          "answer": "Tenants can report maintenance requests through the Aqaar Ajman mobile app or via the website , allowing easy tracking and direct communication with our maintenance team."
+        },
+        {
+          "question": "Is AC maintenance included in my lease?",
+          "answer": "For some properties, AC maintenance is included . Please check your lease agreement for details."
+        },
+        {
+          "question": "Is there any cost for the initial maintenance, and how long does it take?",
+          "answer": "; The initial maintenance is free of cost and includes essential fixes required before move-in.; It will be completed within 20 days from the date of signing the lease contract.; Please note that the lease contract will officially start after 20 days from the signing date."
+        },
+        {
+          "question": "What is the notice period for vacating a unit?",
+          "answer": "Tenants must provide a 60-day written notice before the lease expiration if they do not wish to renew."
+        },
+        {
+          "question": "Is my lease contract registered with ARRA?",
+          "answer": "Yes, all lease agreements are registered with Ajman Real Estate Regulatory Agency (ARRA) to ensure compliance with local rental laws."
+        },
+        {
+          "question": "How do I contact Aqaar for leasing inquiries?",
+          "answer": "You can reach us through: ; Website : www.aqaar.com ; Mobile App : Aqaar Ajman ; Leasing Office : 1st Floor, Grand Mall - Sheikh Khalifa Bin Zayed St - Ajman, UAE ; Customer Support : ; Phone / WhatsApp : 600515155 ; Email : info@aqaar.com"
+        }
+      ]
+    }
+  ]
+}

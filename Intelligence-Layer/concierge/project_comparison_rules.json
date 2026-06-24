@@ -1,0 +1,202 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "comparison_fields": [
+    "property_name",
+    "location",
+    "property_type",
+    "unit_type",
+    "ownership_type",
+    "status",
+    "price_min",
+    "currency",
+    "bedrooms_min",
+    "bedrooms_max",
+    "payment_plan",
+    "source_url"
+  ],
+  "rules": [
+    {
+      "rule_id": "compare_only_kb_projects",
+      "description": "Both projects must exist in Aqaar KB."
+    },
+    {
+      "rule_id": "unknown_visible",
+      "description": "Unavailable fields must display unknown, not blank or inferred."
+    },
+    {
+      "rule_id": "price_sort",
+      "description": "When both prices are known, sort by official price_min."
+    },
+    {
+      "rule_id": "location_sort",
+      "description": "When location is requested, exact official KB location match outranks unknown."
+    },
+    {
+      "rule_id": "source_required",
+      "description": "Every compared row must include source_url."
+    }
+  ],
+  "sample_project_set": [
+    {
+      "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+      "property_name": "Ajman One - PH II",
+      "city": "Ajman",
+      "location": "Ajman",
+      "property_type": "commercial",
+      "unit_type": "Freehold",
+      "ownership_type": "Freehold",
+      "status": "active",
+      "price_min": "316000",
+      "currency": "AED",
+      "bedrooms_min": "1",
+      "bedrooms_max": "3",
+      "payment_plan": "5% Down payment | 1% Monthly installment",
+      "source_url": "https://www.aqaar.com/ajman-one-phase2"
+    },
+    {
+      "property_id": "2a565476_ed0f_ee11_a2be_00155d119f33",
+      "property_name": "Ajman Uptown",
+      "city": "Ajman",
+      "location": "Ajman",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "979000",
+      "currency": "AED",
+      "bedrooms_min": "unknown",
+      "bedrooms_max": "unknown",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "f6b7dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Andalus 4",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "20000",
+      "currency": "AED",
+      "bedrooms_min": "1",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "96b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Arabi Building",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "35500",
+      "currency": "AED",
+      "bedrooms_min": "1",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "3ab8dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Berouj 1",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "19200",
+      "currency": "AED",
+      "bedrooms_min": "1",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%201&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "3cb8dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Berouj 2",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "15600",
+      "currency": "AED",
+      "bedrooms_min": "0",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "3eb8dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Berouj 3",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "15600",
+      "currency": "AED",
+      "bedrooms_min": "0",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "40b8dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Berouj 4",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "15600",
+      "currency": "AED",
+      "bedrooms_min": "0",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "ecb7dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Bustan",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "36000",
+      "currency": "AED",
+      "bedrooms_min": "1",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Bustan&pageNumber=1&pageSize=100"
+    },
+    {
+      "property_id": "e6b7dd4b_0ad1_e811_a2b8_00155d119707",
+      "property_name": "Al Dana",
+      "city": "Ajman",
+      "location": "unknown",
+      "property_type": "commercial",
+      "unit_type": "Commercial",
+      "ownership_type": "unknown",
+      "status": "active",
+      "price_min": "14400",
+      "currency": "AED",
+      "bedrooms_min": "0",
+      "bedrooms_max": "3",
+      "payment_plan": "unknown",
+      "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100"
+    }
+  ]
+}

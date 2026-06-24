@@ -1,0 +1,191 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "trees": {
+    "buy": {
+      "root": "purpose_buy",
+      "nodes": [
+        {
+          "id": "purpose_buy",
+          "question": "Are you looking to buy an Aqaar property?",
+          "captures": "purpose",
+          "next": "property_type"
+        },
+        {
+          "id": "property_type",
+          "question": "Which property type are you interested in?",
+          "captures": "property_type",
+          "allowed_values": [
+            "Commercial",
+            "Education",
+            "Freehold",
+            "Healthcare",
+            "Land",
+            "Leasing",
+            "Office",
+            "Residential",
+            "Retail",
+            "Villa",
+            "Warehouse",
+            "unknown"
+          ],
+          "next": "location"
+        },
+        {
+          "id": "location",
+          "question": "Which Aqaar location do you prefer?",
+          "captures": "location",
+          "allowed_values": [
+            "Ajman",
+            "Ajman Corniche",
+            "Industrial area - 3",
+            "Jurf 1",
+            "Jurf 2",
+            "Liwara 1",
+            "Masfout",
+            "Musherif",
+            "Nakheel 1",
+            "Nakheel 2",
+            "Nuaimeya 3",
+            "Rumaila 1",
+            "unknown"
+          ],
+          "next": "budget"
+        },
+        {
+          "id": "budget",
+          "question": "What AED budget range should we use?",
+          "captures": "budget_min,budget_max",
+          "next": "timeline"
+        },
+        {
+          "id": "timeline",
+          "question": "When are you planning to proceed?",
+          "captures": "timeline",
+          "next": "contact"
+        },
+        {
+          "id": "contact",
+          "question": "Please share name, phone, and email for Aqaar follow-up.",
+          "captures": "name,phone,email",
+          "next": "handoff"
+        }
+      ]
+    },
+    "rent": {
+      "root": "purpose_rent",
+      "nodes": [
+        {
+          "id": "purpose_rent",
+          "question": "Are you looking to rent or renew with Aqaar?",
+          "captures": "purpose",
+          "next": "unit_type"
+        },
+        {
+          "id": "unit_type",
+          "question": "What unit type do you need?",
+          "captures": "unit_type",
+          "allowed_values": [
+            "Commercial",
+            "Education",
+            "Freehold",
+            "Healthcare",
+            "Land",
+            "Leasing",
+            "Office",
+            "Residential",
+            "Retail",
+            "Villa",
+            "Warehouse"
+          ],
+          "next": "move_in"
+        },
+        {
+          "id": "move_in",
+          "question": "When do you need to move in?",
+          "captures": "timeline",
+          "next": "documents"
+        },
+        {
+          "id": "documents",
+          "question": "Do you need leasing document or payment guidance?",
+          "captures": "faq_need",
+          "source": "aqaar_faqs.csv",
+          "next": "contact"
+        }
+      ]
+    },
+    "invest": {
+      "root": "purpose_invest",
+      "nodes": [
+        {
+          "id": "purpose_invest",
+          "question": "What investment objective should Aqaar understand?",
+          "captures": "investment_objective",
+          "next": "budget"
+        },
+        {
+          "id": "budget",
+          "question": "What official published price range should we screen?",
+          "captures": "budget_min,budget_max",
+          "next": "asset_preference"
+        },
+        {
+          "id": "asset_preference",
+          "question": "Residential, commercial, freehold, or unknown?",
+          "captures": "property_type",
+          "next": "risk_note"
+        },
+        {
+          "id": "risk_note",
+          "question": "Aqaar KB does not publish ROI/yield; should we hand off for advisor discussion?",
+          "captures": "advisor_handoff",
+          "next": "contact"
+        }
+      ]
+    },
+    "commercial": {
+      "root": "purpose_commercial",
+      "nodes": [
+        {
+          "id": "purpose_commercial",
+          "question": "What commercial use do you need?",
+          "captures": "business_use",
+          "next": "space_type"
+        },
+        {
+          "id": "space_type",
+          "question": "Office, shop, retail, warehouse, showroom, land, or unknown?",
+          "captures": "unit_type",
+          "next": "location"
+        },
+        {
+          "id": "location",
+          "question": "Which Aqaar location should we prioritize?",
+          "captures": "location",
+          "allowed_values": [
+            "Ajman",
+            "Ajman Corniche",
+            "Industrial area - 3",
+            "Jurf 1",
+            "Jurf 2",
+            "Liwara 1",
+            "Masfout",
+            "Musherif",
+            "Nakheel 1",
+            "Nakheel 2",
+            "Nuaimeya 3",
+            "Rumaila 1"
+          ],
+          "next": "budget"
+        },
+        {
+          "id": "budget",
+          "question": "What AED budget range should we use?",
+          "captures": "budget_min,budget_max",
+          "next": "contact"
+        }
+      ]
+    }
+  }
+}

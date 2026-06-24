@@ -1,137 +1,1591 @@
 [
   {
-    "query_id": "RQ-001",
-    "query": "Tell me about Ajman One - PH II and its official starting price.",
+    "query_id": "RQ-V2-0001",
+    "query": "Retrieve the Aqaar KB record for Ajman American International School.",
     "expected_entities": [
-      "Ajman One - PH II",
-      "316000"
+      "Ajman American International School"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0002",
+    "query": "Retrieve the Aqaar KB record for Ajman Corniche Residences.",
+    "expected_entities": [
+      "Ajman Corniche Residences"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0003",
+    "query": "Retrieve the Aqaar KB record for Ajman One.",
+    "expected_entities": [
+      "Ajman One"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0004",
+    "query": "Retrieve the Aqaar KB record for Ajman One - PH II.",
+    "expected_entities": [
+      "Ajman One - PH II"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0005",
+    "query": "Retrieve the Aqaar KB record for Ajman Pearl.",
+    "expected_entities": [
+      "Ajman Pearl"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0006",
+    "query": "Retrieve the Aqaar KB record for Ajman Society Cooperative (Rumailah).",
+    "expected_entities": [
+      "Ajman Society Cooperative (Rumailah)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0007",
+    "query": "Retrieve the Aqaar KB record for Ajman Uptown.",
+    "expected_entities": [
+      "Ajman Uptown"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0008",
+    "query": "Retrieve the Aqaar KB record for Al Andalus 4.",
+    "expected_entities": [
+      "Al Andalus 4"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0009",
+    "query": "Retrieve the Aqaar KB record for Al Arabi Building.",
+    "expected_entities": [
+      "Al Arabi Building"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0010",
+    "query": "Retrieve the Aqaar KB record for Al Berouj 1.",
+    "expected_entities": [
+      "Al Berouj 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0011",
+    "query": "Retrieve the Aqaar KB record for Al Berouj 2.",
+    "expected_entities": [
+      "Al Berouj 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0012",
+    "query": "Retrieve the Aqaar KB record for Al Berouj 3.",
+    "expected_entities": [
+      "Al Berouj 3"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0013",
+    "query": "Retrieve the Aqaar KB record for Al Berouj 4.",
+    "expected_entities": [
+      "Al Berouj 4"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0014",
+    "query": "Retrieve the Aqaar KB record for Al Bustan.",
+    "expected_entities": [
+      "Al Bustan"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0015",
+    "query": "Retrieve the Aqaar KB record for Al Bustan Shops.",
+    "expected_entities": [
+      "Al Bustan Shops"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0016",
+    "query": "Retrieve the Aqaar KB record for Al Dana.",
+    "expected_entities": [
+      "Al Dana"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0017",
+    "query": "Retrieve the Aqaar KB record for Al Durra.",
+    "expected_entities": [
+      "Al Durra"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0018",
+    "query": "Retrieve the Aqaar KB record for Al Fazzan.",
+    "expected_entities": [
+      "Al Fazzan"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0019",
+    "query": "Retrieve the Aqaar KB record for Al Gharoub.",
+    "expected_entities": [
+      "Al Gharoub"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0020",
+    "query": "Retrieve the Aqaar KB record for Al Humaidia Show Rooms.",
+    "expected_entities": [
+      "Al Humaidia Show Rooms"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0021",
+    "query": "Retrieve the Aqaar KB record for Al Humaidia Villa 1.",
+    "expected_entities": [
+      "Al Humaidia Villa 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0022",
+    "query": "Retrieve the Aqaar KB record for Al Humaidia Villa 2.",
+    "expected_entities": [
+      "Al Humaidia Villa 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0023",
+    "query": "Retrieve the Aqaar KB record for Al Itihad.",
+    "expected_entities": [
+      "Al Itihad"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0024",
+    "query": "Retrieve the Aqaar KB record for Al Johara.",
+    "expected_entities": [
+      "Al Johara"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0025",
+    "query": "Retrieve the Aqaar KB record for Al Jurf 1.",
+    "expected_entities": [
+      "Al Jurf 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0026",
+    "query": "Retrieve the Aqaar KB record for Al Jurf 2.",
+    "expected_entities": [
+      "Al Jurf 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0027",
+    "query": "Retrieve the Aqaar KB record for Al Jurf 3.",
+    "expected_entities": [
+      "Al Jurf 3"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0028",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Buildings 20 / A7 (Labor City).",
+    "expected_entities": [
+      "Al Jurf Buildings 20 / A7 (Labor City)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0029",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Buildings 20 / B7 (Labor City).",
+    "expected_entities": [
+      "Al Jurf Buildings 20 / B7 (Labor City)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0030",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Complex.",
+    "expected_entities": [
+      "Al Jurf Complex"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0031",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Residential Villas.",
+    "expected_entities": [
+      "Al Jurf Residential Villas"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0032",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Show Room 1.",
+    "expected_entities": [
+      "Al Jurf Show Room 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0033",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Show Room 2.",
+    "expected_entities": [
+      "Al Jurf Show Room 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0034",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Villas.",
+    "expected_entities": [
+      "Al Jurf Villas"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0035",
+    "query": "Retrieve the Aqaar KB record for Al Jurf Villas 2.",
+    "expected_entities": [
+      "Al Jurf Villas 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0036",
+    "query": "Retrieve the Aqaar KB record for Al Karama.",
+    "expected_entities": [
+      "Al Karama"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0037",
+    "query": "Retrieve the Aqaar KB record for Al Khor Villas & Shops.",
+    "expected_entities": [
+      "Al Khor Villas & Shops"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0038",
+    "query": "Retrieve the Aqaar KB record for Al Madina Tower.",
+    "expected_entities": [
+      "Al Madina Tower"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0039",
+    "query": "Retrieve the Aqaar KB record for Al Manama Buildings.",
+    "expected_entities": [
+      "Al Manama Buildings"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0040",
+    "query": "Retrieve the Aqaar KB record for Al Manama New Shops.",
+    "expected_entities": [
+      "Al Manama New Shops"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0041",
+    "query": "Retrieve the Aqaar KB record for Al Manama Old Clinic.",
+    "expected_entities": [
+      "Al Manama Old Clinic"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0042",
+    "query": "Retrieve the Aqaar KB record for Al Manara.",
+    "expected_entities": [
+      "Al Manara"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0043",
+    "query": "Retrieve the Aqaar KB record for Al Maya Super market.",
+    "expected_entities": [
+      "Al Maya Super market"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0044",
+    "query": "Retrieve the Aqaar KB record for Al Monaliza.",
+    "expected_entities": [
+      "Al Monaliza"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0045",
+    "query": "Retrieve the Aqaar KB record for Al Musalla Building (Kempinski).",
+    "expected_entities": [
+      "Al Musalla Building (Kempinski)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0046",
+    "query": "Retrieve the Aqaar KB record for Al Muthaf.",
+    "expected_entities": [
+      "Al Muthaf"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0047",
+    "query": "Retrieve the Aqaar KB record for Al Nakheel 1.",
+    "expected_entities": [
+      "Al Nakheel 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0048",
+    "query": "Retrieve the Aqaar KB record for Al Nakheel 2.",
+    "expected_entities": [
+      "Al Nakheel 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0049",
+    "query": "Retrieve the Aqaar KB record for Al Nasr.",
+    "expected_entities": [
+      "Al Nasr"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0050",
+    "query": "Retrieve the Aqaar KB record for Al Nuaimia Complex.",
+    "expected_entities": [
+      "Al Nuaimia Complex"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0051",
+    "query": "Retrieve the Aqaar KB record for Al Ofoq Tower.",
+    "expected_entities": [
+      "Al Ofoq Tower"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0052",
+    "query": "Retrieve the Aqaar KB record for Al Quds Villa.",
+    "expected_entities": [
+      "Al Quds Villa"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0053",
+    "query": "Retrieve the Aqaar KB record for Al Ras.",
+    "expected_entities": [
+      "Al Ras"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0054",
+    "query": "Retrieve the Aqaar KB record for Al Rumaila 1.",
+    "expected_entities": [
+      "Al Rumaila 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0055",
+    "query": "Retrieve the Aqaar KB record for Al Rumailah.",
+    "expected_entities": [
+      "Al Rumailah"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0056",
+    "query": "Retrieve the Aqaar KB record for Al Rumailah New Villas.",
+    "expected_entities": [
+      "Al Rumailah New Villas"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0057",
+    "query": "Retrieve the Aqaar KB record for Al Sediq.",
+    "expected_entities": [
+      "Al Sediq"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0058",
+    "query": "Retrieve the Aqaar KB record for Al Shahba.",
+    "expected_entities": [
+      "Al Shahba"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0059",
+    "query": "Retrieve the Aqaar KB record for Al Sheikh Humaid Building (Abu-Dhabi).",
+    "expected_entities": [
+      "Al Sheikh Humaid Building (Abu-Dhabi)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0060",
+    "query": "Retrieve the Aqaar KB record for Al Sheikha Fatima Building (Abu-Dhabi).",
+    "expected_entities": [
+      "Al Sheikha Fatima Building (Abu-Dhabi)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0061",
+    "query": "Retrieve the Aqaar KB record for Al Shorouq.",
+    "expected_entities": [
+      "Al Shorouq"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0062",
+    "query": "Retrieve the Aqaar KB record for Al Suwan.",
+    "expected_entities": [
+      "Al Suwan"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0063",
+    "query": "Retrieve the Aqaar KB record for Al Tameer.",
+    "expected_entities": [
+      "Al Tameer"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0064",
+    "query": "Retrieve the Aqaar KB record for Al Thuraya 1.",
+    "expected_entities": [
+      "Al Thuraya 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0065",
+    "query": "Retrieve the Aqaar KB record for Al Thuraya 2.",
+    "expected_entities": [
+      "Al Thuraya 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0066",
+    "query": "Retrieve the Aqaar KB record for Al Thuraya 3.",
+    "expected_entities": [
+      "Al Thuraya 3"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0067",
+    "query": "Retrieve the Aqaar KB record for Al Yasmeen Complex.",
+    "expected_entities": [
+      "Al Yasmeen Complex"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0068",
+    "query": "Retrieve the Aqaar KB record for Al Zahir.",
+    "expected_entities": [
+      "Al Zahir"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0069",
+    "query": "Retrieve the Aqaar KB record for Al Zahra Complex.",
+    "expected_entities": [
+      "Al Zahra Complex"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0070",
+    "query": "Retrieve the Aqaar KB record for Al-Khour Tower C.",
+    "expected_entities": [
+      "Al-Khour Tower C"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0071",
+    "query": "Retrieve the Aqaar KB record for AL-Khour Towers.",
+    "expected_entities": [
+      "AL-Khour Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0072",
+    "query": "Retrieve the Aqaar KB record for Asayel 1.",
+    "expected_entities": [
+      "Asayel 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0073",
+    "query": "Retrieve the Aqaar KB record for Asayel 2.",
+    "expected_entities": [
+      "Asayel 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0074",
+    "query": "Retrieve the Aqaar KB record for British International School.",
+    "expected_entities": [
+      "British International School"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0075",
+    "query": "Retrieve the Aqaar KB record for Building materials Factory.",
+    "expected_entities": [
+      "Building materials Factory"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0076",
+    "query": "Retrieve the Aqaar KB record for City Towers.",
+    "expected_entities": [
+      "City Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0077",
+    "query": "Retrieve the Aqaar KB record for Commercial Complex.",
+    "expected_entities": [
+      "Commercial Complex"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0078",
+    "query": "Retrieve the Aqaar KB record for Corniche Tower.",
+    "expected_entities": [
+      "Corniche Tower"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0079",
+    "query": "Retrieve the Aqaar KB record for Crown Private.",
+    "expected_entities": [
+      "Crown Private"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0080",
+    "query": "Retrieve the Aqaar KB record for Crystal.",
+    "expected_entities": [
+      "Crystal"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0081",
+    "query": "Retrieve the Aqaar KB record for Crystal 1.",
+    "expected_entities": [
+      "Crystal 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0082",
+    "query": "Retrieve the Aqaar KB record for Dewan Towers.",
+    "expected_entities": [
+      "Dewan Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0083",
+    "query": "Retrieve the Aqaar KB record for Dusit Thani Residences Ajman.",
+    "expected_entities": [
+      "Dusit Thani Residences Ajman"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0084",
+    "query": "Retrieve the Aqaar KB record for Falcon Towers.",
+    "expected_entities": [
+      "Falcon Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0085",
+    "query": "Retrieve the Aqaar KB record for Flamingo Building.",
+    "expected_entities": [
+      "Flamingo Building"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0086",
+    "query": "Retrieve the Aqaar KB record for Flamingo Villas.",
+    "expected_entities": [
+      "Flamingo Villas"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0087",
+    "query": "Retrieve the Aqaar KB record for Garden City.",
+    "expected_entities": [
+      "Garden City"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0088",
+    "query": "Retrieve the Aqaar KB record for Grand.",
+    "expected_entities": [
+      "Grand"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0089",
+    "query": "Retrieve the Aqaar KB record for Horizon Towers.",
+    "expected_entities": [
+      "Horizon Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0090",
+    "query": "Retrieve the Aqaar KB record for Houses and Flats Masfoot.",
+    "expected_entities": [
+      "Houses and Flats Masfoot"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0091",
+    "query": "Retrieve the Aqaar KB record for Indian International School 1.",
+    "expected_entities": [
+      "Indian International School 1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0092",
+    "query": "Retrieve the Aqaar KB record for Lake Tower C4.",
+    "expected_entities": [
+      "Lake Tower C4"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0093",
+    "query": "Retrieve the Aqaar KB record for Lewara.",
+    "expected_entities": [
+      "Lewara"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0094",
+    "query": "Retrieve the Aqaar KB record for Manama Flats.",
+    "expected_entities": [
+      "Manama Flats"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0095",
+    "query": "Retrieve the Aqaar KB record for Manama Shops.",
+    "expected_entities": [
+      "Manama Shops"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0096",
+    "query": "Retrieve the Aqaar KB record for Manama Wedding Hall (Ajman Society).",
+    "expected_entities": [
+      "Manama Wedding Hall (Ajman Society)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0097",
+    "query": "Retrieve the Aqaar KB record for Masfoot Buildings.",
+    "expected_entities": [
+      "Masfoot Buildings"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0098",
+    "query": "Retrieve the Aqaar KB record for Masfoot Plaza.",
+    "expected_entities": [
+      "Masfoot Plaza"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0099",
+    "query": "Retrieve the Aqaar KB record for Metropolitan International Indian Private School.",
+    "expected_entities": [
+      "Metropolitan International Indian Private School"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0100",
+    "query": "Retrieve the Aqaar KB record for Musheirif Shops.",
+    "expected_entities": [
+      "Musheirif Shops"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0101",
+    "query": "Retrieve the Aqaar KB record for Musherif Villas.",
+    "expected_entities": [
+      "Musherif Villas"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0102",
+    "query": "Retrieve the Aqaar KB record for New Gold Market.",
+    "expected_entities": [
+      "New Gold Market"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0103",
+    "query": "Retrieve the Aqaar KB record for New Musherif Villas.",
+    "expected_entities": [
+      "New Musherif Villas"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0104",
+    "query": "Retrieve the Aqaar KB record for North Gate British School.",
+    "expected_entities": [
+      "North Gate British School"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0105",
+    "query": "Retrieve the Aqaar KB record for Nuaiemiyah Towers.",
+    "expected_entities": [
+      "Nuaiemiyah Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0106",
+    "query": "Retrieve the Aqaar KB record for Nuaimeya 3.",
+    "expected_entities": [
+      "Nuaimeya 3"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0107",
+    "query": "Retrieve the Aqaar KB record for Old Civil Defense (Middle East ).",
+    "expected_entities": [
+      "Old Civil Defense (Middle East )"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0108",
+    "query": "Retrieve the Aqaar KB record for Old Gold Market.",
+    "expected_entities": [
+      "Old Gold Market"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0109",
+    "query": "Retrieve the Aqaar KB record for Old Quds.",
+    "expected_entities": [
+      "Old Quds"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0110",
+    "query": "Retrieve the Aqaar KB record for Orient Towers.",
+    "expected_entities": [
+      "Orient Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0111",
+    "query": "Retrieve the Aqaar KB record for Rashidia 2.",
+    "expected_entities": [
+      "Rashidia 2"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0112",
+    "query": "Retrieve the Aqaar KB record for Rashidia Towers.",
+    "expected_entities": [
+      "Rashidia Towers"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0113",
+    "query": "Retrieve the Aqaar KB record for Rawdat Al Reef Flats & Shops.",
+    "expected_entities": [
+      "Rawdat Al Reef Flats & Shops"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0114",
+    "query": "Retrieve the Aqaar KB record for Royal Academic School.",
+    "expected_entities": [
+      "Royal Academic School"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0115",
+    "query": "Retrieve the Aqaar KB record for Traditional Houses - Al Manama.",
+    "expected_entities": [
+      "Traditional Houses - Al Manama"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0116",
+    "query": "Retrieve the Aqaar KB record for UM Khalaad School For Basic Education C-1.",
+    "expected_entities": [
+      "UM Khalaad School For Basic Education C-1"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0117",
+    "query": "Retrieve the Aqaar KB record for Waqf Thamer Saied Salman (University).",
+    "expected_entities": [
+      "Waqf Thamer Saied Salman (University)"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0118",
+    "query": "Retrieve the Aqaar KB record for Water Treatment Plant.",
+    "expected_entities": [
+      "Water Treatment Plant"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0119",
+    "query": "Retrieve the Aqaar KB record for Wood Lem Park School.",
+    "expected_entities": [
+      "Wood Lem Park School"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0120",
+    "query": "Retrieve Ajman Corniche Residences and confirm the official published starting price field.",
+    "expected_entities": [
+      "Ajman Corniche Residences"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-002",
-    "query": "Tell me about Ajman Uptown and its official starting price.",
+    "query_id": "RQ-V2-0121",
+    "query": "Retrieve Ajman One and confirm the official published starting price field.",
     "expected_entities": [
-      "Ajman Uptown",
-      "979000"
+      "Ajman One"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-003",
-    "query": "Tell me about Al Andalus 4 and its official starting price.",
+    "query_id": "RQ-V2-0122",
+    "query": "Retrieve Ajman One - PH II and confirm the official published starting price field.",
     "expected_entities": [
-      "Al Andalus 4",
-      "20000"
+      "Ajman One - PH II"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-004",
-    "query": "Tell me about Al Arabi Building and its official starting price.",
+    "query_id": "RQ-V2-0123",
+    "query": "Retrieve Ajman Pearl and confirm the official published starting price field.",
     "expected_entities": [
-      "Al Arabi Building",
-      "35500"
+      "Ajman Pearl"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-005",
-    "query": "Tell me about Al Berouj 1 and its official starting price.",
+    "query_id": "RQ-V2-0124",
+    "query": "Retrieve Ajman Uptown and confirm the official published starting price field.",
     "expected_entities": [
-      "Al Berouj 1",
-      "19200"
+      "Ajman Uptown"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-006",
-    "query": "Tell me about Al Berouj 2 and its official starting price.",
+    "query_id": "RQ-V2-0125",
+    "query": "Retrieve Al Andalus 4 and confirm the official published starting price field.",
     "expected_entities": [
-      "Al Berouj 2",
-      "15600"
+      "Al Andalus 4"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-007",
-    "query": "Tell me about Al Berouj 3 and its official starting price.",
+    "query_id": "RQ-V2-0126",
+    "query": "Retrieve Al Arabi Building and confirm the official published starting price field.",
     "expected_entities": [
-      "Al Berouj 3",
-      "15600"
+      "Al Arabi Building"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-008",
-    "query": "Tell me about Al Berouj 4 and its official starting price.",
+    "query_id": "RQ-V2-0127",
+    "query": "Retrieve Al Berouj 1 and confirm the official published starting price field.",
     "expected_entities": [
-      "Al Berouj 4",
-      "15600"
+      "Al Berouj 1"
     ],
     "expected_source_type": "project_inventory",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-009",
-    "query": "What location does Aqaar list for Ajman American International School?",
+    "query_id": "RQ-V2-0128",
+    "query": "Retrieve Al Berouj 2 and confirm the official published starting price field.",
     "expected_entities": [
-      "Ajman American International School",
-      "Ajman"
+      "Al Berouj 2"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0129",
+    "query": "Retrieve Al Berouj 3 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Berouj 3"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0130",
+    "query": "Retrieve Al Berouj 4 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Berouj 4"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0131",
+    "query": "Retrieve Al Bustan and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Bustan"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0132",
+    "query": "Retrieve Al Dana and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Dana"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0133",
+    "query": "Retrieve Al Durra and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Durra"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0134",
+    "query": "Retrieve Al Fazzan and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Fazzan"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0135",
+    "query": "Retrieve Al Gharoub and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Gharoub"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0136",
+    "query": "Retrieve Al Humaidia Villa 1 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Humaidia Villa 1"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0137",
+    "query": "Retrieve Al Humaidia Villa 2 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Humaidia Villa 2"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0138",
+    "query": "Retrieve Al Itihad and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Itihad"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0139",
+    "query": "Retrieve Al Johara and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Johara"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0140",
+    "query": "Retrieve Al Jurf 1 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf 1"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0141",
+    "query": "Retrieve Al Jurf 2 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf 2"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0142",
+    "query": "Retrieve Al Jurf 3 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf 3"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0143",
+    "query": "Retrieve Al Jurf Complex and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf Complex"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0144",
+    "query": "Retrieve Al Jurf Residential Villas and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf Residential Villas"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0145",
+    "query": "Retrieve Al Jurf Villas and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf Villas"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0146",
+    "query": "Retrieve Al Jurf Villas 2 and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Jurf Villas 2"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0147",
+    "query": "Retrieve Al Karama and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Karama"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0148",
+    "query": "Retrieve Al Khor Villas & Shops and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Khor Villas & Shops"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0149",
+    "query": "Retrieve Al Madina Tower and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Madina Tower"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0150",
+    "query": "Retrieve Al Manama Buildings and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Manama Buildings"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0151",
+    "query": "Retrieve Al Manama Old Clinic and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Manama Old Clinic"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0152",
+    "query": "Retrieve Al Manara and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Manara"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0153",
+    "query": "Retrieve Al Monaliza and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Monaliza"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0154",
+    "query": "Retrieve Al Musalla Building (Kempinski) and confirm the official published starting price field.",
+    "expected_entities": [
+      "Al Musalla Building (Kempinski)"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0155",
+    "query": "Retrieve the Aqaar location record for Ajman American International School.",
+    "expected_entities": [
+      "Ajman American International School"
     ],
     "expected_source_type": "location",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-010",
-    "query": "What location does Aqaar list for Ajman Corniche Residences?",
+    "query_id": "RQ-V2-0156",
+    "query": "Retrieve the Aqaar location record for Ajman Corniche Residences.",
     "expected_entities": [
-      "Ajman Corniche Residences",
-      "Ajman Corniche"
+      "Ajman Corniche Residences"
     ],
     "expected_source_type": "location",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-011",
-    "query": "What location does Aqaar list for Ajman One?",
+    "query_id": "RQ-V2-0157",
+    "query": "Retrieve the Aqaar location record for Ajman One.",
     "expected_entities": [
-      "Ajman One",
-      "Ajman"
+      "Ajman One"
     ],
     "expected_source_type": "location",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-012",
-    "query": "What location does Aqaar list for Ajman One - PH II?",
+    "query_id": "RQ-V2-0158",
+    "query": "Retrieve the Aqaar location record for Ajman One - PH II.",
     "expected_entities": [
-      "Ajman One - PH II",
-      "Ajman"
+      "Ajman One - PH II"
     ],
     "expected_source_type": "location",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-013",
-    "query": "What location does Aqaar list for Ajman Pearl?",
+    "query_id": "RQ-V2-0159",
+    "query": "Retrieve the Aqaar location record for Ajman Pearl.",
     "expected_entities": [
-      "Ajman Pearl",
-      "Ajman"
+      "Ajman Pearl"
     ],
     "expected_source_type": "location",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-014",
-    "query": "What types of properties are available for lease with Aqaar?",
+    "query_id": "RQ-V2-0160",
+    "query": "Retrieve the Aqaar location record for Ajman Society Cooperative (Rumailah).",
+    "expected_entities": [
+      "Ajman Society Cooperative (Rumailah)"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0161",
+    "query": "Retrieve the Aqaar location record for Ajman Uptown.",
+    "expected_entities": [
+      "Ajman Uptown"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0162",
+    "query": "Retrieve the Aqaar location record for Al Jurf 1.",
+    "expected_entities": [
+      "Al Jurf 1"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0163",
+    "query": "Retrieve the Aqaar location record for Al Jurf 2.",
+    "expected_entities": [
+      "Al Jurf 2"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0164",
+    "query": "Retrieve the Aqaar location record for Al Nakheel 1.",
+    "expected_entities": [
+      "Al Nakheel 1"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0165",
+    "query": "Retrieve the Aqaar location record for Al Nakheel 2.",
+    "expected_entities": [
+      "Al Nakheel 2"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0166",
+    "query": "Retrieve the Aqaar location record for Al Rumaila 1.",
+    "expected_entities": [
+      "Al Rumaila 1"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0167",
+    "query": "Retrieve the Aqaar location record for Al Rumailah.",
+    "expected_entities": [
+      "Al Rumailah"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0168",
+    "query": "Retrieve the Aqaar location record for Al Rumailah New Villas.",
+    "expected_entities": [
+      "Al Rumailah New Villas"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0169",
+    "query": "Retrieve the Aqaar location record for Corniche Tower.",
+    "expected_entities": [
+      "Corniche Tower"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0170",
+    "query": "Retrieve the Aqaar location record for Dusit Thani Residences Ajman.",
+    "expected_entities": [
+      "Dusit Thani Residences Ajman"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0171",
+    "query": "Retrieve the Aqaar location record for Houses and Flats Masfoot.",
+    "expected_entities": [
+      "Houses and Flats Masfoot"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0172",
+    "query": "Retrieve the Aqaar location record for Lewara.",
+    "expected_entities": [
+      "Lewara"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0173",
+    "query": "Retrieve the Aqaar location record for Manama Wedding Hall (Ajman Society).",
+    "expected_entities": [
+      "Manama Wedding Hall (Ajman Society)"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0174",
+    "query": "Retrieve the Aqaar location record for Masfoot Buildings.",
+    "expected_entities": [
+      "Masfoot Buildings"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0175",
+    "query": "Retrieve the Aqaar location record for Masfoot Plaza.",
+    "expected_entities": [
+      "Masfoot Plaza"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0176",
+    "query": "Retrieve the Aqaar location record for Musherif Villas.",
+    "expected_entities": [
+      "Musherif Villas"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0177",
+    "query": "Retrieve the Aqaar FAQ answer for: What types of properties are available for lease with Aqaar?",
     "expected_entities": [
       "What types of properties are available for lease with Aqaar?"
     ],
@@ -139,8 +1593,8 @@
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-015",
-    "query": "How can I apply for a lease?",
+    "query_id": "RQ-V2-0178",
+    "query": "Retrieve the Aqaar FAQ answer for: How can I apply for a lease?",
     "expected_entities": [
       "How can I apply for a lease?"
     ],
@@ -148,8 +1602,8 @@
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-016",
-    "query": "What documents are required to lease a unit?",
+    "query_id": "RQ-V2-0179",
+    "query": "Retrieve the Aqaar FAQ answer for: What documents are required to lease a unit?",
     "expected_entities": [
       "What documents are required to lease a unit?"
     ],
@@ -157,8 +1611,8 @@
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-017",
-    "query": "What is the minimum lease term?",
+    "query_id": "RQ-V2-0180",
+    "query": "Retrieve the Aqaar FAQ answer for: What is the minimum lease term?",
     "expected_entities": [
       "What is the minimum lease term?"
     ],
@@ -166,8 +1620,8 @@
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-018",
-    "query": "What payment methods does Aqaar accept for rent?",
+    "query_id": "RQ-V2-0181",
+    "query": "Retrieve the Aqaar FAQ answer for: What payment methods does Aqaar accept for rent?",
     "expected_entities": [
       "What payment methods does Aqaar accept for rent?"
     ],
@@ -175,8 +1629,8 @@
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-019",
-    "query": "How can I hand over my cheques if I lease or renew my contract online?",
+    "query_id": "RQ-V2-0182",
+    "query": "Retrieve the Aqaar FAQ answer for: How can I hand over my cheques if I lease or renew my contract online?",
     "expected_entities": [
       "How can I hand over my cheques if I lease or renew my contract online?"
     ],
@@ -184,22 +1638,111 @@
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-020",
-    "query": "What documents are required to lease a unit with Aqaar?",
+    "query_id": "RQ-V2-0183",
+    "query": "Retrieve the Aqaar FAQ answer for: Are there any additional fees apart from rent?",
     "expected_entities": [
-      "What documents are required to lease a unit?",
-      "Emirates ID"
+      "Are there any additional fees apart from rent?"
     ],
     "expected_source_type": "faq",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   },
   {
-    "query_id": "RQ-021",
-    "query": "Find commercial Aqaar options with official source attribution.",
+    "query_id": "RQ-V2-0184",
+    "query": "Retrieve the Aqaar FAQ answer for: Can I pay my rent in multiple installments?",
     "expected_entities": [
-      "commercial"
+      "Can I pay my rent in multiple installments?"
     ],
-    "expected_source_type": "project",
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0185",
+    "query": "Retrieve the Aqaar FAQ answer for: How do I report a maintenance issue?",
+    "expected_entities": [
+      "How do I report a maintenance issue?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0186",
+    "query": "Retrieve the Aqaar FAQ answer for: Is AC maintenance included in my lease?",
+    "expected_entities": [
+      "Is AC maintenance included in my lease?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0187",
+    "query": "Retrieve the Aqaar FAQ answer for: Is there any cost for the initial maintenance, and how long does it take?",
+    "expected_entities": [
+      "Is there any cost for the initial maintenance, and how long does it take?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0188",
+    "query": "Retrieve the Aqaar FAQ answer for: How can I renew my lease?",
+    "expected_entities": [
+      "How can I renew my lease?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0189",
+    "query": "Retrieve the Aqaar FAQ answer for: What is the notice period for vacating a unit?",
+    "expected_entities": [
+      "What is the notice period for vacating a unit?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0190",
+    "query": "Retrieve the Aqaar FAQ answer for: What happens if I need to terminate my lease early?",
+    "expected_entities": [
+      "What happens if I need to terminate my lease early?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0191",
+    "query": "Retrieve the Aqaar FAQ answer for: Is my lease contract registered with ARRA?",
+    "expected_entities": [
+      "Is my lease contract registered with ARRA?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0192",
+    "query": "Retrieve the Aqaar FAQ answer for: Can I sublease my unit?",
+    "expected_entities": [
+      "Can I sublease my unit?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0193",
+    "query": "Retrieve the Aqaar FAQ answer for: What happens if I fail to pay rent on time?",
+    "expected_entities": [
+      "What happens if I fail to pay rent on time?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-V2-0194",
+    "query": "Retrieve the Aqaar FAQ answer for: How do I contact Aqaar for leasing inquiries?",
+    "expected_entities": [
+      "How do I contact Aqaar for leasing inquiries?"
+    ],
+    "expected_source_type": "faq",
     "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
   }
 ]

@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "schema_version": "2.0",
+  "conversation_memory": {
+    "session_id": "string",
+    "created_at": "iso_datetime",
+    "last_updated_at": "iso_datetime",
+    "slots": {
+      "purpose": "Buy|Rent|Invest|Commercial|unknown",
+      "property_type": "string|unknown",
+      "unit_type": "string|unknown",
+      "project_id": "string|unknown",
+      "project_name": "string|unknown",
+      "location": "string|unknown",
+      "budget_min": "number|unknown",
+      "budget_max": "number|unknown",
+      "currency": "AED|unknown",
+      "timeline": "string|unknown",
+      "name": "string|unknown",
+      "phone": "string|unknown",
+      "email": "string|unknown",
+      "business_use": "string|unknown",
+      "investment_objective": "string|unknown"
+    },
+    "detected_entities": [
+      {
+        "entity_type": "string",
+        "value": "string",
+        "confidence": "number",
+        "source": "conversation|Aqaar KB"
+      }
+    ],
+    "recommendations": [
+      {
+        "property_id": "string",
+        "match_score": "number",
+        "source_url": "string"
+      }
+    ],
+    "unknown_fields": [
+      "string"
+    ],
+    "handoff": {
+      "lead_summary": "string",
+      "sales_handoff_message": "string",
+      "handoff_ready": "boolean"
+    }
+  },
+  "privacy_rules": [
+    "Do not store personal contact fields unless the user provides them.",
+    "Do not fabricate name, phone, or email.",
+    "Use unknown for missing values."
+  ]
+}

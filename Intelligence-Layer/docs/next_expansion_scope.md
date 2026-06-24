@@ -1,19 +1,20 @@
 # Next Expansion Scope
 
 Generated: 2026-06-24
+Version: 2.0
 
 ## Recommended Next Phase
 
-- Connect the concierge schema to a live conversation runtime.
+- Wire the V2 concierge schemas into the live chat runtime.
 - Add CRM/webhook integration for real Aqaar sales handoff.
-- Replace lexical retrieval testing with embedding retrieval, reranking, and answer-grounding checks.
-- Add authenticated lead capture and consent tracking before storing personal contact details.
-- Add dashboard frontend only after runtime data contracts are approved.
+- Replace lexical retrieval checks with embedding retrieval, reranking, and answer-grounding evaluation.
+- Add consent tracking before storing real customer name, phone, or email.
 - Add project-level amenity matching only if Aqaar publishes project-specific amenity relationships.
-- Add unit-level availability only if Aqaar publishes official unit inventory endpoints.
+- Add live unit availability only if Aqaar publishes official unit inventory endpoints.
+- Add dashboard frontend only after the V2 data contracts are approved.
 
 ## Guardrails
 
-- Do not infer ROI, legal, financing, service-charge, handover, or commute facts unless official Aqaar sources publish them.
+- Do not infer ROI, legal, financing, service-charge, handover, commute, or exact availability facts unless official Aqaar sources publish them.
 - Keep unavailable values as `unknown`.
 - Do not use PalmX or third-party data as facts.
