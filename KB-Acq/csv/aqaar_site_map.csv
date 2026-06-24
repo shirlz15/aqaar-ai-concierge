@@ -1,0 +1,8 @@
+page_id,page_title,url,page_type,last_verified
+robots_txt,robots.txt,https://www.aqaar.com/robots.txt,robots,2026-06-24
+sitemap_xml,sitemap.xml,https://www.aqaar.com/sitemap.xml,sitemap,2026-06-24
+sitemap_0_xml,sitemap-0.xml,https://www.aqaar.com/sitemap-0.xml,sitemap,2026-06-24
+server_sitemap_xml,server-sitemap.xml,https://www.aqaar.com/server-sitemap.xml,unavailable_sitemap,2026-06-24
+unknown,HOME | Aqaar,https://www.aqaar.com/,page,2026-06-24
+api_global_search,Aqaar globalSearch API,https://prodadmin-aqaar.realcube.estate/api/globalSearch,official_api,2026-06-24
+api_project_search_filters,Aqaar projectSearchFilters API,https://prodadmin-aqaar.realcube.estate/api/projectSearchFilters,official_api,2026-06-24

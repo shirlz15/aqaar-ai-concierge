@@ -1,0 +1,153 @@
+[
+  {
+    "persona_name": "First Time Buyer",
+    "goals": [
+      "Understand available Aqaar residential offerings",
+      "Compare official starting prices where published"
+    ],
+    "pain_points": [
+      "Unknown unit-level availability",
+      "Unpublished payment plans"
+    ],
+    "qualification_questions": [
+      "Are you buying or renting?",
+      "What is your budget?",
+      "Which Ajman location do you prefer?",
+      "Do you need a ready or future handover property?"
+    ],
+    "recommended_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2"
+    ]
+  },
+  {
+    "persona_name": "Investor",
+    "goals": [
+      "Shortlist Aqaar assets with official pricing or commercial potential",
+      "Compare status and location"
+    ],
+    "pain_points": [
+      "ROI is not officially published in the extracted sources",
+      "Service fees are not consistently public"
+    ],
+    "qualification_questions": [
+      "What budget range are you considering?",
+      "Do you prefer residential or commercial assets?",
+      "Is rental income or capital appreciation the priority?"
+    ],
+    "recommended_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2"
+    ]
+  },
+  {
+    "persona_name": "Luxury Buyer",
+    "goals": [
+      "Find premium Aqaar residences and branded/high-positioning assets"
+    ],
+    "pain_points": [
+      "Luxury amenities are not consistently structured in public records"
+    ],
+    "qualification_questions": [
+      "Do you prefer waterfront, tower, or villa living?",
+      "What is your preferred view or location?",
+      "Do you need furnished or unfurnished options?"
+    ],
+    "recommended_projects": [
+      "Ajman Corniche Residences",
+      "Al Madina Tower",
+      "Al Ofoq Tower",
+      "Al-Khour Tower C",
+      "AL-Khour Towers",
+      "City Towers",
+      "Corniche Tower",
+      "Dewan Towers"
+    ]
+  },
+  {
+    "persona_name": "Family Buyer",
+    "goals": [
+      "Find practical Aqaar homes near community infrastructure",
+      "Prioritize villas, residences, and family-oriented locations"
+    ],
+    "pain_points": [
+      "School and hospital proximity is not consistently published per property"
+    ],
+    "qualification_questions": [
+      "How many bedrooms do you need?",
+      "Do you prefer villa or apartment living?",
+      "Which schools or daily routes matter most?"
+    ],
+    "recommended_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2"
+    ]
+  },
+  {
+    "persona_name": "Commercial Buyer",
+    "goals": [
+      "Identify Aqaar commercial properties, shops, offices, warehouses, and showrooms"
+    ],
+    "pain_points": [
+      "Unit sizes and service charges are often unavailable publicly"
+    ],
+    "qualification_questions": [
+      "What commercial use do you need?",
+      "Do you need retail, office, showroom, or warehouse space?",
+      "What is the required size range?"
+    ],
+    "recommended_projects": [
+      "Al Bustan Shops",
+      "Al Jurf Show Room 1",
+      "Al Jurf Show Room 2",
+      "Al Khor Villas & Shops",
+      "Al Manama New Shops",
+      "Crystal",
+      "Crystal 1",
+      "Dewan Towers"
+    ]
+  },
+  {
+    "persona_name": "International Buyer",
+    "goals": [
+      "Understand official Aqaar offerings and contact channels remotely",
+      "Start enquiry with verified source data"
+    ],
+    "pain_points": [
+      "Ownership and financing details are not consistently published in public records"
+    ],
+    "qualification_questions": [
+      "What country are you enquiring from?",
+      "Are you buying for residence, investment, or relocation?",
+      "Do you require financing or remote documentation support?"
+    ],
+    "recommended_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2"
+    ]
+  }
+]

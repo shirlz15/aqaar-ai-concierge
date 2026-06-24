@@ -1,0 +1,97 @@
+[
+  {
+    "rule_id": "family_residential",
+    "buyer_profile": "Family Buyer",
+    "property_preference": "villa, residence, or community asset",
+    "recommended_aqaar_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2",
+      "Al Berouj 3",
+      "Al Berouj 4",
+      "Al Bustan",
+      "Al Bustan Shops"
+    ],
+    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+  },
+  {
+    "rule_id": "commercial_space",
+    "buyer_profile": "Commercial Buyer",
+    "property_preference": "office, shop, showroom, warehouse, or commercial asset",
+    "recommended_aqaar_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2",
+      "Al Berouj 3",
+      "Al Berouj 4",
+      "Al Bustan",
+      "Al Bustan Shops"
+    ],
+    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+  },
+  {
+    "rule_id": "published_price",
+    "buyer_profile": "Budget-led buyer",
+    "budget_signals": "requires official published starting price",
+    "recommended_aqaar_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2",
+      "Al Berouj 3",
+      "Al Berouj 4",
+      "Al Bustan",
+      "Al Dana"
+    ],
+    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+  },
+  {
+    "rule_id": "waterfront_lifestyle",
+    "buyer_profile": "Waterfront or lifestyle buyer",
+    "location_preference": "waterfront or corniche signal",
+    "recommended_aqaar_projects": [
+      "Ajman Corniche Residences",
+      "Ajman Pearl",
+      "Al-Khour Tower C",
+      "AL-Khour Towers",
+      "Corniche Tower",
+      "Beach Residence",
+      "Water Treatment Plant"
+    ],
+    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+  },
+  {
+    "rule_id": "investment_screening",
+    "buyer_profile": "Investor",
+    "investment_preference": "official project/status/price screening only",
+    "recommended_aqaar_projects": [
+      "Ajman Corniche Residences",
+      "Ajman One",
+      "Ajman Pearl",
+      "Ajman Uptown",
+      "Al Andalus 4",
+      "Al Arabi Building",
+      "Al Berouj 1",
+      "Al Berouj 2",
+      "Al Berouj 3",
+      "Al Berouj 4",
+      "Al Bustan",
+      "Al Bustan Shops"
+    ],
+    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+  }
+]
