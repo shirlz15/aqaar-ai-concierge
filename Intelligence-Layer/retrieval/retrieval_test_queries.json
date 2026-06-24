@@ -1,0 +1,205 @@
+[
+  {
+    "query_id": "RQ-001",
+    "query": "Tell me about Ajman One - PH II and its official starting price.",
+    "expected_entities": [
+      "Ajman One - PH II",
+      "316000"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-002",
+    "query": "Tell me about Ajman Uptown and its official starting price.",
+    "expected_entities": [
+      "Ajman Uptown",
+      "979000"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-003",
+    "query": "Tell me about Al Andalus 4 and its official starting price.",
+    "expected_entities": [
+      "Al Andalus 4",
+      "20000"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-004",
+    "query": "Tell me about Al Arabi Building and its official starting price.",
+    "expected_entities": [
+      "Al Arabi Building",
+      "35500"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-005",
+    "query": "Tell me about Al Berouj 1 and its official starting price.",
+    "expected_entities": [
+      "Al Berouj 1",
+      "19200"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-006",
+    "query": "Tell me about Al Berouj 2 and its official starting price.",
+    "expected_entities": [
+      "Al Berouj 2",
+      "15600"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-007",
+    "query": "Tell me about Al Berouj 3 and its official starting price.",
+    "expected_entities": [
+      "Al Berouj 3",
+      "15600"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-008",
+    "query": "Tell me about Al Berouj 4 and its official starting price.",
+    "expected_entities": [
+      "Al Berouj 4",
+      "15600"
+    ],
+    "expected_source_type": "project_inventory",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-009",
+    "query": "What location does Aqaar list for Ajman American International School?",
+    "expected_entities": [
+      "Ajman American International School",
+      "Ajman"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-010",
+    "query": "What location does Aqaar list for Ajman Corniche Residences?",
+    "expected_entities": [
+      "Ajman Corniche Residences",
+      "Ajman Corniche"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-011",
+    "query": "What location does Aqaar list for Ajman One?",
+    "expected_entities": [
+      "Ajman One",
+      "Ajman"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-012",
+    "query": "What location does Aqaar list for Ajman One - PH II?",
+    "expected_entities": [
+      "Ajman One - PH II",
+      "Ajman"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-013",
+    "query": "What location does Aqaar list for Ajman Pearl?",
+    "expected_entities": [
+      "Ajman Pearl",
+      "Ajman"
+    ],
+    "expected_source_type": "location",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-014",
+    "query": "What types of properties are available for lease with Aqaar?",
+    "expected_entities": [
+      "What types of properties are available for lease with Aqaar?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-015",
+    "query": "How can I apply for a lease?",
+    "expected_entities": [
+      "How can I apply for a lease?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-016",
+    "query": "What documents are required to lease a unit?",
+    "expected_entities": [
+      "What documents are required to lease a unit?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-017",
+    "query": "What is the minimum lease term?",
+    "expected_entities": [
+      "What is the minimum lease term?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-018",
+    "query": "What payment methods does Aqaar accept for rent?",
+    "expected_entities": [
+      "What payment methods does Aqaar accept for rent?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-019",
+    "query": "How can I hand over my cheques if I lease or renew my contract online?",
+    "expected_entities": [
+      "How can I hand over my cheques if I lease or renew my contract online?"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-020",
+    "query": "What documents are required to lease a unit with Aqaar?",
+    "expected_entities": [
+      "What documents are required to lease a unit?",
+      "Emirates ID"
+    ],
+    "expected_source_type": "faq",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  },
+  {
+    "query_id": "RQ-021",
+    "query": "Find commercial Aqaar options with official source attribution.",
+    "expected_entities": [
+      "commercial"
+    ],
+    "expected_source_type": "project",
+    "unknown_policy": "Return unknown for unavailable fields; do not use external/PalmX facts."
+  }
+]

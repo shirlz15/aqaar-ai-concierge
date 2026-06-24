@@ -1,0 +1,97 @@
+audit_id,entity_id,field_name,field_value,validation_rule,source_url,validated_at,result
+AI-AUD-00001,AQ-L-0001,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00002,AQ-L-0001,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00003,AQ-L-0001,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00004,AQ-L-0001,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00005,AQ-L-0002,project_name,Ajman Uptown,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00006,AQ-L-0002,location,Ajman,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00007,AQ-L-0002,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00008,AQ-L-0002,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00009,AQ-L-0003,project_name,Al Andalus 4,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00010,AQ-L-0003,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00011,AQ-L-0003,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00012,AQ-L-0003,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00013,AQ-L-0004,project_name,Al Arabi Building,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00014,AQ-L-0004,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00015,AQ-L-0004,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00016,AQ-L-0004,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00017,AQ-L-0005,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00018,AQ-L-0005,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00019,AQ-L-0005,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00020,AQ-L-0005,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00021,AQ-L-0006,project_name,Al Berouj 2,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00022,AQ-L-0006,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00023,AQ-L-0006,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00024,AQ-L-0006,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00025,AQ-L-0007,project_name,Al Berouj 3,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00026,AQ-L-0007,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00027,AQ-L-0007,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00028,AQ-L-0007,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00029,AQ-L-0008,project_name,Al Berouj 4,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00030,AQ-L-0008,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00031,AQ-L-0008,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00032,AQ-L-0008,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00033,AQ-L-0009,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00034,AQ-L-0009,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00035,AQ-L-0009,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00036,AQ-L-0009,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00037,AQ-L-0010,project_name,Al Dana,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00038,AQ-L-0010,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00039,AQ-L-0010,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00040,AQ-L-0010,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00041,AQ-L-0011,project_name,Al Durra,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00042,AQ-L-0011,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00043,AQ-L-0011,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00044,AQ-L-0011,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00045,AQ-L-0012,project_name,Al Fazzan,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Fazzan&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00046,AQ-L-0012,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Fazzan&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00047,AQ-L-0012,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Fazzan&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00048,AQ-L-0012,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Fazzan&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00049,AQ-L-0013,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00050,AQ-L-0013,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00051,AQ-L-0013,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00052,AQ-L-0013,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00053,AQ-L-0014,project_name,Al Humaidia Villa 1,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%201&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00054,AQ-L-0014,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%201&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00055,AQ-L-0014,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%201&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00056,AQ-L-0014,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%201&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00057,AQ-L-0015,project_name,Al Humaidia Villa 2,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00058,AQ-L-0015,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00059,AQ-L-0015,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%202&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00060,AQ-L-0015,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00061,AQ-L-0016,project_name,Al Itihad,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Itihad&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00062,AQ-L-0016,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Itihad&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00063,AQ-L-0016,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Itihad&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00064,AQ-L-0016,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Itihad&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00065,AQ-L-0017,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00066,AQ-L-0017,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00067,AQ-L-0017,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00068,AQ-L-0017,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00069,AQ-L-0018,project_name,Al Jurf 1,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%201&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00070,AQ-L-0018,location,Jurf 1,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%201&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00071,AQ-L-0018,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%201&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00072,AQ-L-0018,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%201&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00073,AQ-L-0019,project_name,Al Jurf 2,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00074,AQ-L-0019,location,Jurf 2,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00075,AQ-L-0019,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%202&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00076,AQ-L-0019,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%202&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00077,AQ-L-0020,project_name,Al Jurf 3,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%203&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00078,AQ-L-0020,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%203&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00079,AQ-L-0020,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%203&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00080,AQ-L-0020,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%203&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00081,AQ-L-0021,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00082,AQ-L-0021,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00083,AQ-L-0021,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00084,AQ-L-0021,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00085,AQ-L-0022,project_name,Al Jurf Residential Villas,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Residential%20Villas&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00086,AQ-L-0022,location,unknown,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Residential%20Villas&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00087,AQ-L-0022,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Residential%20Villas&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00088,AQ-L-0022,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Residential%20Villas&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00089,AQ-L-0023,project_name,Ajman One - PH II,must exist in aqaar_projects_master,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00090,AQ-L-0023,location,Ajman,must be official KB location or unknown,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00091,AQ-L-0023,budget,budget derived from official published price or unknown,https://www.aqaar.com/ajman-one-phase2,unknown,2026-06-24,pass
+AI-AUD-00092,AQ-L-0023,contact_fields,unknown,no synthetic personal data generated,https://www.aqaar.com/ajman-one-phase2,2026-06-24,pass
+AI-AUD-00093,AQ-L-0024,project_name,Ajman Uptown,must exist in aqaar_projects_master,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00094,AQ-L-0024,location,Ajman,must be official KB location or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,2026-06-24,pass
+AI-AUD-00095,AQ-L-0024,budget,budget derived from official published price or unknown,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,unknown,2026-06-24,pass
+AI-AUD-00096,AQ-L-0024,contact_fields,unknown,no synthetic personal data generated,https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100,2026-06-24,pass

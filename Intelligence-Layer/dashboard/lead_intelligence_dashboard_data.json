@@ -1,0 +1,1388 @@
+{
+  "generated_at": "2026-06-24",
+  "source_package": "AQAAR-KB-ACQ-FINAL",
+  "metrics": {
+    "total_leads": 24,
+    "last_24h_leads": 10,
+    "unique_contacts": 0,
+    "top_project": "Ajman One - PH II",
+    "top_project_leads": 7,
+    "top_location": "unknown",
+    "median_budget": 34316,
+    "currency": "AED"
+  },
+  "charts": {
+    "leads_over_time": [
+      {
+        "date": "2026-06-16",
+        "count": 1
+      },
+      {
+        "date": "2026-06-17",
+        "count": 4
+      },
+      {
+        "date": "2026-06-18",
+        "count": 3
+      },
+      {
+        "date": "2026-06-19",
+        "count": 3
+      },
+      {
+        "date": "2026-06-20",
+        "count": 3
+      },
+      {
+        "date": "2026-06-24",
+        "count": 10
+      }
+    ],
+    "top_projects": [
+      {
+        "label": "Ajman One - PH II",
+        "value": 7
+      },
+      {
+        "label": "Ajman Uptown",
+        "value": 2
+      },
+      {
+        "label": "Al Andalus 4",
+        "value": 1
+      },
+      {
+        "label": "Al Arabi Building",
+        "value": 1
+      },
+      {
+        "label": "Al Berouj 2",
+        "value": 1
+      },
+      {
+        "label": "Al Berouj 3",
+        "value": 1
+      },
+      {
+        "label": "Al Berouj 4",
+        "value": 1
+      },
+      {
+        "label": "Al Dana",
+        "value": 1
+      },
+      {
+        "label": "Al Durra",
+        "value": 1
+      },
+      {
+        "label": "Al Fazzan",
+        "value": 1
+      }
+    ],
+    "location_distribution": [
+      {
+        "label": "unknown",
+        "value": 13
+      },
+      {
+        "label": "Ajman",
+        "value": 9
+      },
+      {
+        "label": "Jurf 1",
+        "value": 1
+      },
+      {
+        "label": "Jurf 2",
+        "value": 1
+      }
+    ],
+    "unit_type_distribution": [
+      {
+        "label": "Commercial",
+        "value": 17
+      },
+      {
+        "label": "Villa",
+        "value": 3
+      },
+      {
+        "label": "Freehold",
+        "value": 2
+      },
+      {
+        "label": "Leasing",
+        "value": 2
+      }
+    ],
+    "purpose_distribution": [
+      {
+        "label": "Buy",
+        "value": 6
+      },
+      {
+        "label": "Commercial",
+        "value": 6
+      },
+      {
+        "label": "Invest",
+        "value": 6
+      },
+      {
+        "label": "Rent",
+        "value": 6
+      }
+    ],
+    "timeline_distribution": [
+      {
+        "label": "3_6_months",
+        "value": 5
+      },
+      {
+        "label": "30_days",
+        "value": 5
+      },
+      {
+        "label": "60_90_days",
+        "value": 5
+      },
+      {
+        "label": "immediate",
+        "value": 5
+      },
+      {
+        "label": "unknown",
+        "value": 4
+      }
+    ]
+  },
+  "lead_table": [
+    {
+      "lead_id": "AQ-L-0001",
+      "created_at": "2026-06-24T11:00:00.000Z",
+      "purpose": "Buy",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 284400,
+      "budget_max": 363400,
+      "timeline": "immediate",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0002",
+      "created_at": "2026-06-24T10:00:00.000Z",
+      "purpose": "Rent",
+      "project_name": "Ajman Uptown",
+      "location": "Ajman",
+      "budget_min": 881100,
+      "budget_max": 1125850,
+      "timeline": "30_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0003",
+      "created_at": "2026-06-24T09:00:00.000Z",
+      "purpose": "Invest",
+      "project_name": "Al Andalus 4",
+      "location": "unknown",
+      "budget_min": 18000,
+      "budget_max": 23000,
+      "timeline": "60_90_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0004",
+      "created_at": "2026-06-24T08:00:00.000Z",
+      "purpose": "Commercial",
+      "project_name": "Al Arabi Building",
+      "location": "unknown",
+      "budget_min": 31950,
+      "budget_max": 40825,
+      "timeline": "3_6_months",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0005",
+      "created_at": "2026-06-24T07:00:00.000Z",
+      "purpose": "Buy",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 17280,
+      "budget_max": 22080,
+      "timeline": "unknown",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0006",
+      "created_at": "2026-06-24T06:00:00.000Z",
+      "purpose": "Rent",
+      "project_name": "Al Berouj 2",
+      "location": "unknown",
+      "budget_min": 14040,
+      "budget_max": 17940,
+      "timeline": "immediate",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0007",
+      "created_at": "2026-06-24T05:00:00.000Z",
+      "purpose": "Invest",
+      "project_name": "Al Berouj 3",
+      "location": "unknown",
+      "budget_min": 14040,
+      "budget_max": 17940,
+      "timeline": "30_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0008",
+      "created_at": "2026-06-24T04:00:00.000Z",
+      "purpose": "Commercial",
+      "project_name": "Al Berouj 4",
+      "location": "unknown",
+      "budget_min": 14040,
+      "budget_max": 17940,
+      "timeline": "60_90_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0009",
+      "created_at": "2026-06-24T03:00:00.000Z",
+      "purpose": "Buy",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 32400,
+      "budget_max": 41400,
+      "timeline": "3_6_months",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0010",
+      "created_at": "2026-06-24T02:00:00.000Z",
+      "purpose": "Rent",
+      "project_name": "Al Dana",
+      "location": "unknown",
+      "budget_min": 12960,
+      "budget_max": 16560,
+      "timeline": "unknown",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0011",
+      "created_at": "2026-06-20T14:00:00.000Z",
+      "purpose": "Invest",
+      "project_name": "Al Durra",
+      "location": "unknown",
+      "budget_min": 23760,
+      "budget_max": 30360,
+      "timeline": "immediate",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0012",
+      "created_at": "2026-06-20T07:00:00.000Z",
+      "purpose": "Commercial",
+      "project_name": "Al Fazzan",
+      "location": "unknown",
+      "budget_min": 39600,
+      "budget_max": 50600,
+      "timeline": "30_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0013",
+      "created_at": "2026-06-20T00:00:00.000Z",
+      "purpose": "Buy",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 25200,
+      "budget_max": 32200,
+      "timeline": "60_90_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0014",
+      "created_at": "2026-06-19T17:00:00.000Z",
+      "purpose": "Rent",
+      "project_name": "Al Humaidia Villa 1",
+      "location": "unknown",
+      "budget_min": 97200,
+      "budget_max": 124200,
+      "timeline": "3_6_months",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0015",
+      "created_at": "2026-06-19T10:00:00.000Z",
+      "purpose": "Invest",
+      "project_name": "Al Humaidia Villa 2",
+      "location": "unknown",
+      "budget_min": 40500,
+      "budget_max": 51750,
+      "timeline": "unknown",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0016",
+      "created_at": "2026-06-19T03:00:00.000Z",
+      "purpose": "Commercial",
+      "project_name": "Al Itihad",
+      "location": "unknown",
+      "budget_min": 29700,
+      "budget_max": 37950,
+      "timeline": "immediate",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0017",
+      "created_at": "2026-06-18T20:00:00.000Z",
+      "purpose": "Buy",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 18360,
+      "budget_max": 23460,
+      "timeline": "30_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0018",
+      "created_at": "2026-06-18T13:00:00.000Z",
+      "purpose": "Rent",
+      "project_name": "Al Jurf 1",
+      "location": "Jurf 1",
+      "budget_min": 18000,
+      "budget_max": 23000,
+      "timeline": "60_90_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0019",
+      "created_at": "2026-06-18T06:00:00.000Z",
+      "purpose": "Invest",
+      "project_name": "Al Jurf 2",
+      "location": "Jurf 2",
+      "budget_min": 18900,
+      "budget_max": 24150,
+      "timeline": "3_6_months",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0020",
+      "created_at": "2026-06-17T23:00:00.000Z",
+      "purpose": "Commercial",
+      "project_name": "Al Jurf 3",
+      "location": "unknown",
+      "budget_min": 28512,
+      "budget_max": 36432,
+      "timeline": "unknown",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0021",
+      "created_at": "2026-06-17T16:00:00.000Z",
+      "purpose": "Buy",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 12600,
+      "budget_max": 16100,
+      "timeline": "immediate",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0022",
+      "created_at": "2026-06-17T09:00:00.000Z",
+      "purpose": "Rent",
+      "project_name": "Al Jurf Residential Villas",
+      "location": "unknown",
+      "budget_min": 102060,
+      "budget_max": 130410,
+      "timeline": "30_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0023",
+      "created_at": "2026-06-17T02:00:00.000Z",
+      "purpose": "Invest",
+      "project_name": "Ajman One - PH II",
+      "location": "Ajman",
+      "budget_min": 284400,
+      "budget_max": 363400,
+      "timeline": "60_90_days",
+      "contact_status": "unknown_contact"
+    },
+    {
+      "lead_id": "AQ-L-0024",
+      "created_at": "2026-06-16T19:00:00.000Z",
+      "purpose": "Commercial",
+      "project_name": "Ajman Uptown",
+      "location": "Ajman",
+      "budget_min": 881100,
+      "budget_max": 1125850,
+      "timeline": "3_6_months",
+      "contact_status": "unknown_contact"
+    }
+  ],
+  "lead_detail_drawer": [
+    {
+      "lead_id": "AQ-L-0001",
+      "detected": {
+        "purpose": "Buy",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 284400,
+        "budget_max": 363400,
+        "timeline": "immediate"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Buy lead for Ajman One - PH II; location Ajman; unit type Freehold; budget AED 284400-363400; timeline immediate; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0001. Purpose: Buy. Project: Ajman One - PH II. Location: Ajman. Budget: AED 284400-363400. Timeline: immediate. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00001",
+        "AI-AUD-00002",
+        "AI-AUD-00003",
+        "AI-AUD-00004"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0002",
+      "detected": {
+        "purpose": "Rent",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 881100,
+        "budget_max": 1125850,
+        "timeline": "30_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "2a565476_ed0f_ee11_a2be_00155d119f33",
+        "property_name": "Ajman Uptown",
+        "purpose_hint": "unknown",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "979000",
+        "currency": "AED",
+        "bedrooms_min": "unknown",
+        "bedrooms_max": "unknown",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Rent lead for Ajman Uptown; location Ajman; unit type Commercial; budget AED 881100-1125850; timeline 30_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0002. Purpose: Rent. Project: Ajman Uptown. Location: Ajman. Budget: AED 881100-1125850. Timeline: 30_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00005",
+        "AI-AUD-00006",
+        "AI-AUD-00007",
+        "AI-AUD-00008"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0003",
+      "detected": {
+        "purpose": "Invest",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 18000,
+        "budget_max": 23000,
+        "timeline": "60_90_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "f6b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Andalus 4",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "20000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Andalus%204&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Invest lead for Al Andalus 4; location unknown; unit type Commercial; budget AED 18000-23000; timeline 60_90_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0003. Purpose: Invest. Project: Al Andalus 4. Location: unknown. Budget: AED 18000-23000. Timeline: 60_90_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00009",
+        "AI-AUD-00010",
+        "AI-AUD-00011",
+        "AI-AUD-00012"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0004",
+      "detected": {
+        "purpose": "Commercial",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 31950,
+        "budget_max": 40825,
+        "timeline": "3_6_months"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "96b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Arabi Building",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "35500",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Arabi%20Building&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Commercial lead for Al Arabi Building; location unknown; unit type Commercial; budget AED 31950-40825; timeline 3_6_months; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0004. Purpose: Commercial. Project: Al Arabi Building. Location: unknown. Budget: AED 31950-40825. Timeline: 3_6_months. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00013",
+        "AI-AUD-00014",
+        "AI-AUD-00015",
+        "AI-AUD-00016"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0005",
+      "detected": {
+        "purpose": "Buy",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 17280,
+        "budget_max": 22080,
+        "timeline": "unknown"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Buy lead for Ajman One - PH II; location Ajman; unit type Commercial; budget AED 17280-22080; timeline unknown; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0005. Purpose: Buy. Project: Ajman One - PH II. Location: Ajman. Budget: AED 17280-22080. Timeline: unknown. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00017",
+        "AI-AUD-00018",
+        "AI-AUD-00019",
+        "AI-AUD-00020"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0006",
+      "detected": {
+        "purpose": "Rent",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 14040,
+        "budget_max": 17940,
+        "timeline": "immediate"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "3cb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Berouj 2",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "15600",
+        "currency": "AED",
+        "bedrooms_min": "0",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%202&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Rent lead for Al Berouj 2; location unknown; unit type Commercial; budget AED 14040-17940; timeline immediate; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0006. Purpose: Rent. Project: Al Berouj 2. Location: unknown. Budget: AED 14040-17940. Timeline: immediate. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00021",
+        "AI-AUD-00022",
+        "AI-AUD-00023",
+        "AI-AUD-00024"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0007",
+      "detected": {
+        "purpose": "Invest",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 14040,
+        "budget_max": 17940,
+        "timeline": "30_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "3eb8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Berouj 3",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "15600",
+        "currency": "AED",
+        "bedrooms_min": "0",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%203&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Invest lead for Al Berouj 3; location unknown; unit type Commercial; budget AED 14040-17940; timeline 30_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0007. Purpose: Invest. Project: Al Berouj 3. Location: unknown. Budget: AED 14040-17940. Timeline: 30_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00025",
+        "AI-AUD-00026",
+        "AI-AUD-00027",
+        "AI-AUD-00028"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0008",
+      "detected": {
+        "purpose": "Commercial",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 14040,
+        "budget_max": 17940,
+        "timeline": "60_90_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "40b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Berouj 4",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "15600",
+        "currency": "AED",
+        "bedrooms_min": "0",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Berouj%204&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Commercial lead for Al Berouj 4; location unknown; unit type Commercial; budget AED 14040-17940; timeline 60_90_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0008. Purpose: Commercial. Project: Al Berouj 4. Location: unknown. Budget: AED 14040-17940. Timeline: 60_90_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00029",
+        "AI-AUD-00030",
+        "AI-AUD-00031",
+        "AI-AUD-00032"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0009",
+      "detected": {
+        "purpose": "Buy",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 32400,
+        "budget_max": 41400,
+        "timeline": "3_6_months"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Buy lead for Ajman One - PH II; location Ajman; unit type Commercial; budget AED 32400-41400; timeline 3_6_months; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0009. Purpose: Buy. Project: Ajman One - PH II. Location: Ajman. Budget: AED 32400-41400. Timeline: 3_6_months. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00033",
+        "AI-AUD-00034",
+        "AI-AUD-00035",
+        "AI-AUD-00036"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0010",
+      "detected": {
+        "purpose": "Rent",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 12960,
+        "budget_max": 16560,
+        "timeline": "unknown"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "e6b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Dana",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "14400",
+        "currency": "AED",
+        "bedrooms_min": "0",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Dana&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Rent lead for Al Dana; location unknown; unit type Commercial; budget AED 12960-16560; timeline unknown; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0010. Purpose: Rent. Project: Al Dana. Location: unknown. Budget: AED 12960-16560. Timeline: unknown. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00037",
+        "AI-AUD-00038",
+        "AI-AUD-00039",
+        "AI-AUD-00040"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0011",
+      "detected": {
+        "purpose": "Invest",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 23760,
+        "budget_max": 30360,
+        "timeline": "immediate"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "feb7dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Durra",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "26400",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Durra&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Invest lead for Al Durra; location unknown; unit type Commercial; budget AED 23760-30360; timeline immediate; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0011. Purpose: Invest. Project: Al Durra. Location: unknown. Budget: AED 23760-30360. Timeline: immediate. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00041",
+        "AI-AUD-00042",
+        "AI-AUD-00043",
+        "AI-AUD-00044"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0012",
+      "detected": {
+        "purpose": "Commercial",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 39600,
+        "budget_max": 50600,
+        "timeline": "30_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "b0b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Fazzan",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "44000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Fazzan&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Commercial lead for Al Fazzan; location unknown; unit type Commercial; budget AED 39600-50600; timeline 30_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0012. Purpose: Commercial. Project: Al Fazzan. Location: unknown. Budget: AED 39600-50600. Timeline: 30_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00045",
+        "AI-AUD-00046",
+        "AI-AUD-00047",
+        "AI-AUD-00048"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0013",
+      "detected": {
+        "purpose": "Buy",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 25200,
+        "budget_max": 32200,
+        "timeline": "60_90_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Buy lead for Ajman One - PH II; location Ajman; unit type Leasing; budget AED 25200-32200; timeline 60_90_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0013. Purpose: Buy. Project: Ajman One - PH II. Location: Ajman. Budget: AED 25200-32200. Timeline: 60_90_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00049",
+        "AI-AUD-00050",
+        "AI-AUD-00051",
+        "AI-AUD-00052"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0014",
+      "detected": {
+        "purpose": "Rent",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 97200,
+        "budget_max": 124200,
+        "timeline": "3_6_months"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "76b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Humaidia Villa 1",
+        "purpose_hint": "unknown",
+        "property_type": "commercial",
+        "unit_type": "Villa",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "108000",
+        "currency": "AED",
+        "bedrooms_min": "unknown",
+        "bedrooms_max": "unknown",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%201&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Rent lead for Al Humaidia Villa 1; location unknown; unit type Villa; budget AED 97200-124200; timeline 3_6_months; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0014. Purpose: Rent. Project: Al Humaidia Villa 1. Location: unknown. Budget: AED 97200-124200. Timeline: 3_6_months. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00053",
+        "AI-AUD-00054",
+        "AI-AUD-00055",
+        "AI-AUD-00056"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0015",
+      "detected": {
+        "purpose": "Invest",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 40500,
+        "budget_max": 51750,
+        "timeline": "unknown"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "78b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Humaidia Villa 2",
+        "purpose_hint": "unknown",
+        "property_type": "commercial",
+        "unit_type": "Villa",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "45000",
+        "currency": "AED",
+        "bedrooms_min": "unknown",
+        "bedrooms_max": "unknown",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Humaidia%20Villa%202&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Invest lead for Al Humaidia Villa 2; location unknown; unit type Villa; budget AED 40500-51750; timeline unknown; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0015. Purpose: Invest. Project: Al Humaidia Villa 2. Location: unknown. Budget: AED 40500-51750. Timeline: unknown. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00057",
+        "AI-AUD-00058",
+        "AI-AUD-00059",
+        "AI-AUD-00060"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0016",
+      "detected": {
+        "purpose": "Commercial",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 29700,
+        "budget_max": 37950,
+        "timeline": "immediate"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "e8b7dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Itihad",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Leasing",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "33000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "Up to 6 Installments",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Itihad&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Commercial lead for Al Itihad; location unknown; unit type Leasing; budget AED 29700-37950; timeline immediate; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0016. Purpose: Commercial. Project: Al Itihad. Location: unknown. Budget: AED 29700-37950. Timeline: immediate. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00061",
+        "AI-AUD-00062",
+        "AI-AUD-00063",
+        "AI-AUD-00064"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0017",
+      "detected": {
+        "purpose": "Buy",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 18360,
+        "budget_max": 23460,
+        "timeline": "30_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Buy lead for Ajman One - PH II; location Ajman; unit type Commercial; budget AED 18360-23460; timeline 30_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0017. Purpose: Buy. Project: Ajman One - PH II. Location: Ajman. Budget: AED 18360-23460. Timeline: 30_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00065",
+        "AI-AUD-00066",
+        "AI-AUD-00067",
+        "AI-AUD-00068"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0018",
+      "detected": {
+        "purpose": "Rent",
+        "property_type": "commercial",
+        "location": "Jurf 1",
+        "budget_min": 18000,
+        "budget_max": 23000,
+        "timeline": "60_90_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "24b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Jurf 1",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "Jurf 1",
+        "city": "Ajman",
+        "price_min": "20000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%201&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Rent lead for Al Jurf 1; location Jurf 1; unit type Commercial; budget AED 18000-23000; timeline 60_90_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0018. Purpose: Rent. Project: Al Jurf 1. Location: Jurf 1. Budget: AED 18000-23000. Timeline: 60_90_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00069",
+        "AI-AUD-00070",
+        "AI-AUD-00071",
+        "AI-AUD-00072"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0019",
+      "detected": {
+        "purpose": "Invest",
+        "property_type": "commercial",
+        "location": "Jurf 2",
+        "budget_min": 18900,
+        "budget_max": 24150,
+        "timeline": "3_6_months"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "26b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Jurf 2",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "Jurf 2",
+        "city": "Ajman",
+        "price_min": "21000",
+        "currency": "AED",
+        "bedrooms_min": "0",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%202&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Invest lead for Al Jurf 2; location Jurf 2; unit type Commercial; budget AED 18900-24150; timeline 3_6_months; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0019. Purpose: Invest. Project: Al Jurf 2. Location: Jurf 2. Budget: AED 18900-24150. Timeline: 3_6_months. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00073",
+        "AI-AUD-00074",
+        "AI-AUD-00075",
+        "AI-AUD-00076"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0020",
+      "detected": {
+        "purpose": "Commercial",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 28512,
+        "budget_max": 36432,
+        "timeline": "unknown"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Jurf 3",
+        "purpose_hint": "rent",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "31680",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%203&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Commercial lead for Al Jurf 3; location unknown; unit type Commercial; budget AED 28512-36432; timeline unknown; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0020. Purpose: Commercial. Project: Al Jurf 3. Location: unknown. Budget: AED 28512-36432. Timeline: unknown. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00077",
+        "AI-AUD-00078",
+        "AI-AUD-00079",
+        "AI-AUD-00080"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0021",
+      "detected": {
+        "purpose": "Buy",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 12600,
+        "budget_max": 16100,
+        "timeline": "immediate"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Buy lead for Ajman One - PH II; location Ajman; unit type Commercial; budget AED 12600-16100; timeline immediate; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0021. Purpose: Buy. Project: Ajman One - PH II. Location: Ajman. Budget: AED 12600-16100. Timeline: immediate. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00081",
+        "AI-AUD-00082",
+        "AI-AUD-00083",
+        "AI-AUD-00084"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0022",
+      "detected": {
+        "purpose": "Rent",
+        "property_type": "commercial",
+        "location": "unknown",
+        "budget_min": 102060,
+        "budget_max": 130410,
+        "timeline": "30_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "20b8dd4b_0ad1_e811_a2b8_00155d119707",
+        "property_name": "Al Jurf Residential Villas",
+        "purpose_hint": "unknown",
+        "property_type": "commercial",
+        "unit_type": "Villa",
+        "location": "unknown",
+        "city": "Ajman",
+        "price_min": "113400",
+        "currency": "AED",
+        "bedrooms_min": "unknown",
+        "bedrooms_max": "unknown",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Al%20Jurf%20Residential%20Villas&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Rent lead for Al Jurf Residential Villas; location unknown; unit type Villa; budget AED 102060-130410; timeline 30_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0022. Purpose: Rent. Project: Al Jurf Residential Villas. Location: unknown. Budget: AED 102060-130410. Timeline: 30_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00085",
+        "AI-AUD-00086",
+        "AI-AUD-00087",
+        "AI-AUD-00088"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0023",
+      "detected": {
+        "purpose": "Invest",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 284400,
+        "budget_max": 363400,
+        "timeline": "60_90_days"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "22796319_20da_ee11_a2bf_00155d119841",
+        "property_name": "Ajman One - PH II",
+        "purpose_hint": "buy",
+        "property_type": "commercial",
+        "unit_type": "Freehold",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "316000",
+        "currency": "AED",
+        "bedrooms_min": "1",
+        "bedrooms_max": "3",
+        "payment_plan": "5% Down payment | 1% Monthly installment",
+        "availability_status": "active",
+        "source_url": "https://www.aqaar.com/ajman-one-phase2"
+      },
+      "lead_summary": "Invest lead for Ajman One - PH II; location Ajman; unit type Freehold; budget AED 284400-363400; timeline 60_90_days; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0023. Purpose: Invest. Project: Ajman One - PH II. Location: Ajman. Budget: AED 284400-363400. Timeline: 60_90_days. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00089",
+        "AI-AUD-00090",
+        "AI-AUD-00091",
+        "AI-AUD-00092"
+      ]
+    },
+    {
+      "lead_id": "AQ-L-0024",
+      "detected": {
+        "purpose": "Commercial",
+        "property_type": "commercial",
+        "location": "Ajman",
+        "budget_min": 881100,
+        "budget_max": 1125850,
+        "timeline": "3_6_months"
+      },
+      "contact": {
+        "name": "unknown",
+        "phone": "unknown",
+        "email": "unknown"
+      },
+      "project": {
+        "property_id": "2a565476_ed0f_ee11_a2be_00155d119f33",
+        "property_name": "Ajman Uptown",
+        "purpose_hint": "unknown",
+        "property_type": "commercial",
+        "unit_type": "Commercial",
+        "location": "Ajman",
+        "city": "Ajman",
+        "price_min": "979000",
+        "currency": "AED",
+        "bedrooms_min": "unknown",
+        "bedrooms_max": "unknown",
+        "payment_plan": "unknown",
+        "availability_status": "active",
+        "source_url": "https://prodadmin-aqaar.realcube.estate/api/globalSearch?search=Ajman%20Uptown&pageNumber=1&pageSize=100"
+      },
+      "lead_summary": "Commercial lead for Ajman Uptown; location Ajman; unit type Commercial; budget AED 881100-1125850; timeline 3_6_months; contact fields unknown.",
+      "sales_handoff_message": "Aqaar sales handoff: AQ-L-0024. Purpose: Commercial. Project: Ajman Uptown. Location: Ajman. Budget: AED 881100-1125850. Timeline: 3_6_months. Name: unknown. Phone: unknown. Email: unknown. Source verified from Aqaar KB.",
+      "audit_refs": [
+        "AI-AUD-00093",
+        "AI-AUD-00094",
+        "AI-AUD-00095",
+        "AI-AUD-00096"
+      ]
+    }
+  ]
+}
