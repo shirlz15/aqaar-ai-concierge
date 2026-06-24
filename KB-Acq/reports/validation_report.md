@@ -5,14 +5,15 @@ Generated: 2026-06-24
 ## Checks Run
 
 - Schema preservation for existing CSV files
-- Dusit Thani brochure copied into package assets
-- Dusit project metadata corrected from brochure
-- Dusit floorplan prices and gross areas populated from brochure pages 10, 12, 14, 16, 18, 20, and 22
-- Dusit payment plan populated from brochure page 26
-- Dusit amenities populated from brochure pages 8 and 25
-- Dusit location/distances populated from brochure pages 6 and 7
+- Mawjan brochure copied into package assets
+- Mawjan project metadata corrected from brochure
+- Mawjan unit types, floorplan gross areas, and starting prices populated from brochure pages 26, 28, 29, 33, 34, 35, and 38
+- Mawjan location/lifestyle data populated from brochure page 8
+- Mawjan developer data populated from brochure page 3
+- Dusit Thani brochure facts preserved
 - Source attribution regenerated for all CSV row fields
 - RAG chunks regenerated
+- No disallowed reference data or local test URLs found by validation scan
 
 ## Results
 
@@ -20,4 +21,6 @@ Generated: 2026-06-24
 
 ## Residual Unknowns
 
-Unknown values remain for facts not published in the brochure or official Aqaar sources, including bathrooms, exact handover date, latitude/longitude, and service charges.
+Unknown values remain for facts not published in the Mawjan brochure or official Aqaar sources, including payment plan, exact handover date, exact drive distances, bathrooms, latitude/longitude, and service charges.
+
+

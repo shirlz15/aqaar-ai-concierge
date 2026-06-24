@@ -2,25 +2,28 @@
 
 Generated: 2026-06-24
 
-## Dusit Thani Brochure V2 Update
+## Mawjan Brochure V3 Update
 
-- Dusit Thani brochure source added: assets/Dusit-Thani-Brochure.pdf
-- Dusit project metadata corrected and enriched
-- Dusit floorplan/unit rows added: 7
-- Dusit starting prices captured: 7
-- Dusit payment plan captured: 7 payment milestones
-- Dusit brochure amenities added: 5
-- Dusit location distances captured: 8 distance entries
+- Mawjan brochure source added: assets/Mawjan-Brochure.pdf
+- Mawjan project metadata corrected and enriched
+- Mawjan floorplan/unit rows added: 7
+- Mawjan starting prices captured: 7
+- Mawjan brochure amenities/lifestyle signals added: 5
+- Mawjan location intelligence captured from brochure page 8
+- Dusit Thani brochure fields preserved
 - Official projects retained: 141
-- Amenities total: 18
-- Asset rows total: 104
-- Audit rows generated: 5418
-- RAG chunks generated: 238
+- Units/inventory rows total: 153
+- Amenities total: 23
+- Asset rows total: 114
+- Audit rows generated: 5617
+- RAG chunks generated: 239
 
 ## Unknown Policy
 
-Unavailable values remain exactly `unknown`. Brochure data replaced unknown values only where the brochure supplied verified facts. Bathrooms, exact handover date, latitude/longitude, and service-charge facts remain unknown where not published in the brochure or official Aqaar sources.
+Unavailable values remain exactly `unknown`. Mawjan payment plan, exact handover date, exact distances, bathrooms, and service-charge facts remain unknown where not published in the brochure or official Aqaar sources.
 
 ## Source Policy
 
-Primary sources are Aqaar official website/API sources and the uploaded Dusit Thani brochure stored in the package assets. No PalmX, third-party, generated mock, or non-Aqaar facts are used.
+Primary sources are Aqaar official website/API sources, the Dusit Thani brochure already stored in package assets, and the uploaded Mawjan brochure stored in package assets. No third-party, generated mock, local test URL, or non-Aqaar facts are used.
+
+
