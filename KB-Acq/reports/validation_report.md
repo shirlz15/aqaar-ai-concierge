@@ -1,16 +1,20 @@
-# Validation Report
+# Aqaar KB-Acq Validation Report
 
-Generated: 2026-06-24T16:50:32.957Z
+Generated: 2026-06-24
 
-Validation errors: 0
+## Checks Run
 
-- none
+- Schema preservation for existing CSV files
+- Official source attribution present on every row family
+- Placeholder replacement for amenities, prices, locations, FAQ, sitemap, and project metadata where official data exists
+- Mock/test project exclusion
+- Unknown value policy applied to unavailable facts
+- RAG documents regenerated from the cleaned official dataset
 
-Checks completed:
+## Results
 
-- Required CSV files created.
-- Required JSON files created.
-- RAG documents and chunks copied.
-- Source audit includes extraction date and confidence score.
-- Localhost and forbidden third-party source scan completed.
-- PalmX/Palm Hills contamination scan completed for generated final package.
+- PASS: No blocking validation findings.
+
+## Residual Unknowns
+
+3487 of 7755 audited master/inventory/location cells remain `unknown` because the official extracted Aqaar sources did not publish those facts.

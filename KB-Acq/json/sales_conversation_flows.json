@@ -3,7 +3,7 @@
     "Capture buyer/renter name and contact preference",
     "Confirm budget, location, property type, and timeline",
     "Use only official Aqaar KB fields",
-    "Escalate unavailable facts as unknown/on_request",
+    "Escalate unavailable facts as unknown",
     "Present matched official Aqaar sales records",
     "Ask whether to arrange an Aqaar advisor follow-up"
   ],
@@ -11,37 +11,35 @@
     "Capture buyer/renter name and contact preference",
     "Confirm budget, location, property type, and timeline",
     "Use only official Aqaar KB fields",
-    "Escalate unavailable facts as unknown/on_request",
-    "Present official leasing/rental records when available",
-    "Ask for move-in date and required documents"
+    "Use official FAQ answers for leasing process questions",
+    "Escalate unavailable facts as unknown",
+    "Present official leasing/rental records when available"
   ],
   "investor_flow": [
     "Capture buyer/renter name and contact preference",
     "Confirm budget, location, property type, and timeline",
     "Use only official Aqaar KB fields",
-    "Escalate unavailable facts as unknown/on_request",
-    "Separate official published price from unknown/on_request fields",
+    "Separate official published price from unknown fields",
     "Do not provide ROI unless officially sourced"
   ],
   "luxury_flow": [
     "Capture buyer/renter name and contact preference",
     "Confirm budget, location, property type, and timeline",
     "Use only official Aqaar KB fields",
-    "Escalate unavailable facts as unknown/on_request",
     "Filter for premium/lifestyle signals from official project names and descriptions"
   ],
   "family_flow": [
     "Capture buyer/renter name and contact preference",
     "Confirm budget, location, property type, and timeline",
     "Use only official Aqaar KB fields",
-    "Escalate unavailable facts as unknown/on_request",
-    "Ask bedrooms, schools, commute, and community needs"
+    "Ask bedrooms, schools, commute, and community needs",
+    "Mark distance/commute facts unknown unless official source provides them"
   ],
   "international_buyer_flow": [
     "Capture buyer/renter name and contact preference",
     "Confirm budget, location, property type, and timeline",
     "Use only official Aqaar KB fields",
-    "Escalate unavailable facts as unknown/on_request",
-    "Ask country, residency objective, financing need, and remote purchase support needs"
+    "Ask country, residency objective, financing need, and remote purchase support needs",
+    "Escalate legal/visa/finance facts unless officially supplied"
   ]
 }

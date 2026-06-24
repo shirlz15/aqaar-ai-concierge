@@ -1,24 +1,24 @@
-# AQAAR KB-ACQ FINAL REPORT
+# Aqaar KB-Acq Coverage Report
 
-Generated: 2026-06-24T16:50:32.957Z
+Generated: 2026-06-24
 
-## Summary
+## Data Quality Pass
 
-| Metric | Value |
-| --- | ---: |
-| Projects Found | 143 |
-| Properties Found | 143 |
-| Assets Found | 85 |
-| FAQs Found | 1 |
-| Pages Found | 7 |
-| Pricing Coverage | 62.24% |
-| Missing Data | 55.56% |
-| Validation Errors | 0 |
-| Confidence Score | 82% |
+- Official projects retained: 141
+- Mock/test records removed: 2 (PRJ-RP, Online Test Project)
+- Amenities resolved from official projectSearchFilters: 13
+- Location mappings resolved from project text, coordinates, official filters, and Aqaar project pages: 27/141
+- Projects with official published starting price: 89/141
+- Projects with bedroom range parsed from official project body: 65/141
+- Official FAQ rows extracted: 18
+- Site map entries covered: 26
+- Official image assets indexed: 94
+- Audit rows generated: 5198
 
-## Data Policy
+## Unknown Policy
 
-- PalmX assets and data were not copied.
-- No localhost URLs are present in final asset, site map, or audit files.
-- Unknown public values remain `unknown`; unpublished prices remain `on_request` or `sold_out`.
-- Recommendations and personas are derived only from official Aqaar extracted offerings.
+Unavailable values remain exactly `unknown`. Unknown fields are limited to facts not published in the extracted official Aqaar sources, including most bathrooms, exact unit areas, many handover dates, service charges, commute distances, and project-level amenity assignments.
+
+## Source Policy
+
+Primary sources are Aqaar official website pages and official Aqaar/Reacube public API endpoints. No PalmX, third-party, generated mock, or non-Aqaar facts are used.

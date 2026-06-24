@@ -6,31 +6,29 @@
       "Compare official starting prices where published"
     ],
     "pain_points": [
-      "Unknown unit-level availability",
-      "Unpublished payment plans"
+      "Unit-level availability is not fully published",
+      "Some handover/service fields remain unknown"
     ],
     "qualification_questions": [
       "Are you buying or renting?",
       "What is your budget?",
-      "Which Ajman location do you prefer?",
-      "Do you need a ready or future handover property?"
+      "Which Aqaar location do you prefer?",
+      "Do you need ready or upcoming property?"
     ],
     "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
+      "Al Helio Villas",
+      "Al Jurf Buildings 20 / A7 (Labor City)",
+      "Al Jurf Buildings 20 / B7 (Labor City)",
+      "Beach Residence",
+      "Lake Tower C4",
+      "Mawjan"
     ]
   },
   {
     "persona_name": "Investor",
     "goals": [
       "Shortlist Aqaar assets with official pricing or commercial potential",
-      "Compare status and location"
+      "Compare status and source-backed location signals"
     ],
     "pain_points": [
       "ROI is not officially published in the extracted sources",
@@ -42,14 +40,18 @@
       "Is rental income or capital appreciation the priority?"
     ],
     "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
+      "Traditional Houses - Al Manama",
+      "Rawdat Al Reef Flats & Shops",
+      "Al Manama Buildings",
+      "Dewan Towers",
+      "Houses and Flats Masfoot",
+      "Al Monaliza",
+      "Al Nakheel 2",
+      "Al Jurf Complex",
+      "Al Yasmeen Complex",
+      "Al Dana",
+      "Al Manama Old Clinic",
+      "Al Shorouq"
     ]
   },
   {
@@ -58,7 +60,7 @@
       "Find premium Aqaar residences and branded/high-positioning assets"
     ],
     "pain_points": [
-      "Luxury amenities are not consistently structured in public records"
+      "Amenity-by-project mappings are not published in the official extracted records"
     ],
     "qualification_questions": [
       "Do you prefer waterfront, tower, or villa living?",
@@ -67,87 +69,61 @@
     ],
     "recommended_projects": [
       "Ajman Corniche Residences",
-      "Al Madina Tower",
-      "Al Ofoq Tower",
-      "Al-Khour Tower C",
-      "AL-Khour Towers",
-      "City Towers",
+      "Beach Residence",
       "Corniche Tower",
-      "Dewan Towers"
+      "Dusit Thani Residences Ajman",
+      "Gulfa Warehouses",
+      "Mawjan"
     ]
   },
   {
     "persona_name": "Family Buyer",
     "goals": [
-      "Find practical Aqaar homes near community infrastructure",
-      "Prioritize villas, residences, and family-oriented locations"
+      "Find official Aqaar residential options",
+      "Compare bedroom signals when published"
     ],
     "pain_points": [
-      "School and hospital proximity is not consistently published per property"
+      "School/commute distances are mostly not published in the extracted official sources"
     ],
     "qualification_questions": [
       "How many bedrooms do you need?",
-      "Do you prefer villa or apartment living?",
-      "Which schools or daily routes matter most?"
+      "Do you prefer rent or purchase?",
+      "Which location is preferred?"
     ],
     "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
+      "Al Helio Villas",
+      "Al Jurf Buildings 20 / A7 (Labor City)",
+      "Al Jurf Buildings 20 / B7 (Labor City)",
+      "Beach Residence",
+      "Lake Tower C4",
+      "Mawjan"
     ]
   },
   {
     "persona_name": "Commercial Buyer",
     "goals": [
-      "Identify Aqaar commercial properties, shops, offices, warehouses, and showrooms"
+      "Identify Aqaar commercial, retail, office, warehouse, and land records"
     ],
     "pain_points": [
-      "Unit sizes and service charges are often unavailable publicly"
+      "Unit-level specifications may be unknown in official public data"
     ],
     "qualification_questions": [
-      "What commercial use do you need?",
-      "Do you need retail, office, showroom, or warehouse space?",
-      "What is the required size range?"
-    ],
-    "recommended_projects": [
-      "Al Bustan Shops",
-      "Al Jurf Show Room 1",
-      "Al Jurf Show Room 2",
-      "Al Khor Villas & Shops",
-      "Al Manama New Shops",
-      "Crystal",
-      "Crystal 1",
-      "Dewan Towers"
-    ]
-  },
-  {
-    "persona_name": "International Buyer",
-    "goals": [
-      "Understand official Aqaar offerings and contact channels remotely",
-      "Start enquiry with verified source data"
-    ],
-    "pain_points": [
-      "Ownership and financing details are not consistently published in public records"
-    ],
-    "qualification_questions": [
-      "What country are you enquiring from?",
-      "Are you buying for residence, investment, or relocation?",
-      "Do you require financing or remote documentation support?"
+      "What business use do you need?",
+      "Do you need office, retail, warehouse, showroom, or land?"
     ],
     "recommended_projects": [
       "Ajman Corniche Residences",
       "Ajman One",
+      "Ajman One - PH II",
       "Ajman Pearl",
+      "Ajman Society Cooperative (Rumailah)",
       "Ajman Uptown",
       "Al Andalus 4",
       "Al Arabi Building",
       "Al Berouj 1",
-      "Al Berouj 2"
+      "Al Berouj 2",
+      "Al Berouj 3",
+      "Al Berouj 4"
     ]
   }
 ]

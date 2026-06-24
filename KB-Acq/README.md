@@ -1,25 +1,18 @@
-# AQAAR Knowledge Acquisition Repository
+# AQAAR Knowledge Acquisition Package
 
-This repository is dedicated to Aqaar KB acquisition only.
+This repository contains the Aqaar KB-Acq package only. Data is sourced from official Aqaar website pages and official Aqaar/Reacube public API endpoints.
 
-Folders:
+Generated: 2026-06-24
 
-- csv: source-attributed Aqaar datasets
-- json: Aqaar-only personas, intents, recommendation rules, and sales flows
-- rag: markdown source documents and JSONL retrieval chunks
-- reports: coverage and validation reports
+## Contents
+
+- csv: official structured project, inventory, location, amenity, FAQ, site map, asset, and audit datasets
+- json: source-backed intent/persona/rule/flow artifacts for later intelligence-layer work
+- rag: source-backed RAG documents and JSONL chunks
+- reports: coverage and validation outputs
 - assets: official Aqaar asset manifest
-- scripts: acquisition, finalization, and validation scripts
-- docs: audit and structure documentation
+- scripts: package and validation utilities
 
-Run from the repository root:
+## Data Quality Policy
 
-```bash
-node KB-Acq/scripts/build_csv.mjs
-node KB-Acq/scripts/build_final_package.mjs
-node KB-Acq/scripts/validate_final_package.mjs
-```
-
-Final package:
-
-- KB-Acq/AQAAR-KB-ACQ-FINAL.zip
+No PalmX content, third-party content, generated mock data, or inferred pricing is used. Values unavailable in official Aqaar sources are marked as `unknown`.

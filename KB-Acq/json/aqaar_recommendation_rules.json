@@ -2,40 +2,34 @@
   {
     "rule_id": "family_residential",
     "buyer_profile": "Family Buyer",
-    "property_preference": "villa, residence, or community asset",
+    "property_preference": "official residential signal",
     "recommended_aqaar_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2",
-      "Al Berouj 3",
-      "Al Berouj 4",
-      "Al Bustan",
-      "Al Bustan Shops"
+      "Al Helio Villas",
+      "Al Jurf Buildings 20 / A7 (Labor City)",
+      "Al Jurf Buildings 20 / B7 (Labor City)",
+      "Beach Residence",
+      "Lake Tower C4",
+      "Mawjan"
     ],
     "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
   },
   {
     "rule_id": "commercial_space",
     "buyer_profile": "Commercial Buyer",
-    "property_preference": "office, shop, showroom, warehouse, or commercial asset",
+    "property_preference": "office, shop, showroom, warehouse, land, or commercial signal",
     "recommended_aqaar_projects": [
       "Ajman Corniche Residences",
       "Ajman One",
+      "Ajman One - PH II",
       "Ajman Pearl",
+      "Ajman Society Cooperative (Rumailah)",
       "Ajman Uptown",
       "Al Andalus 4",
       "Al Arabi Building",
       "Al Berouj 1",
       "Al Berouj 2",
       "Al Berouj 3",
-      "Al Berouj 4",
-      "Al Bustan",
-      "Al Bustan Shops"
+      "Al Berouj 4"
     ],
     "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
   },
@@ -44,54 +38,49 @@
     "buyer_profile": "Budget-led buyer",
     "budget_signals": "requires official published starting price",
     "recommended_aqaar_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2",
-      "Al Berouj 3",
-      "Al Berouj 4",
-      "Al Bustan",
-      "Al Dana"
+      "Traditional Houses - Al Manama",
+      "Rawdat Al Reef Flats & Shops",
+      "Al Manama Buildings",
+      "Dewan Towers",
+      "Houses and Flats Masfoot",
+      "Al Monaliza",
+      "Al Nakheel 2",
+      "Al Jurf Complex",
+      "Al Yasmeen Complex",
+      "Al Dana",
+      "Al Manama Old Clinic",
+      "Al Shorouq"
     ],
-    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+    "source_policy": "Uses official published start_price only; unknown prices stay unknown."
   },
   {
     "rule_id": "waterfront_lifestyle",
     "buyer_profile": "Waterfront or lifestyle buyer",
-    "location_preference": "waterfront or corniche signal",
+    "location_preference": "waterfront, corniche, beach, or Arabian Gulf signal",
     "recommended_aqaar_projects": [
       "Ajman Corniche Residences",
-      "Ajman Pearl",
-      "Al-Khour Tower C",
-      "AL-Khour Towers",
-      "Corniche Tower",
       "Beach Residence",
-      "Water Treatment Plant"
+      "Corniche Tower",
+      "Dusit Thani Residences Ajman",
+      "Gulfa Warehouses",
+      "Mawjan"
     ],
-    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+    "source_policy": "Uses official project name/body/description signals only."
   },
   {
-    "rule_id": "investment_screening",
-    "buyer_profile": "Investor",
-    "investment_preference": "official project/status/price screening only",
+    "rule_id": "leasing_faq_support",
+    "buyer_profile": "Tenant or renter",
+    "leasing_need": "documents, rent payment, cheques, maintenance, renewal, vacating, ARRA, sublease, late payment, or Aqaar contact",
     "recommended_aqaar_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
+      "Ajman American International School",
+      "Ajman Society Cooperative (Rumailah)",
       "Al Andalus 4",
       "Al Arabi Building",
       "Al Berouj 1",
       "Al Berouj 2",
       "Al Berouj 3",
-      "Al Berouj 4",
-      "Al Bustan",
-      "Al Bustan Shops"
+      "Al Berouj 4"
     ],
-    "source_policy": "Recommendations are derived from official Aqaar extracted records only; no ROI, availability, or price estimate is inferred."
+    "source_policy": "Uses official Aqaar FAQ and leasing records only."
   }
 ]

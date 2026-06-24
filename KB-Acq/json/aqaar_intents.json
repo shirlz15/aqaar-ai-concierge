@@ -5,11 +5,12 @@
       "buy",
       "purchase",
       "own",
-      "available for sale"
+      "available for sale",
+      "freehold"
     ],
     "qualification_questions": [
       "What budget range?",
-      "Which location?",
+      "Which official Aqaar location?",
       "Which property type?"
     ],
     "next_steps": [
@@ -19,12 +20,16 @@
     "recommended_projects": [
       "Ajman Corniche Residences",
       "Ajman One",
+      "Ajman One - PH II",
       "Ajman Pearl",
       "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
+      "AL-Khour Towers",
+      "Beach Residence",
+      "City Towers",
+      "Corniche Tower",
+      "Dusit Thani Residences Ajman",
+      "Falcon Towers",
+      "Garden City"
     ]
   },
   {
@@ -37,30 +42,34 @@
     "qualification_questions": [
       "When do you need to move?",
       "What property type?",
-      "What monthly budget?"
+      "What yearly budget?"
     ],
     "next_steps": [
       "Check official Aqaar leasing availability",
       "Route to Aqaar contact"
     ],
     "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
+      "Ajman American International School",
+      "Ajman Society Cooperative (Rumailah)",
       "Al Andalus 4",
       "Al Arabi Building",
       "Al Berouj 1",
-      "Al Berouj 2"
+      "Al Berouj 2",
+      "Al Berouj 3",
+      "Al Berouj 4",
+      "Al Bustan",
+      "Al Bustan Shops",
+      "Al Dana",
+      "Al Durra"
     ]
   },
   {
     "intent": "Investment",
     "trigger_phrases": [
       "invest",
-      "roi",
-      "yield",
-      "capital appreciation"
+      "official price",
+      "published starting price",
+      "freehold"
     ],
     "qualification_questions": [
       "Budget?",
@@ -72,151 +81,37 @@
       "Avoid ROI estimates unless officially supplied"
     ],
     "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
+      "Traditional Houses - Al Manama",
+      "Rawdat Al Reef Flats & Shops",
+      "Al Manama Buildings",
+      "Dewan Towers",
+      "Houses and Flats Masfoot",
+      "Al Monaliza",
+      "Al Nakheel 2",
+      "Al Jurf Complex",
+      "Al Yasmeen Complex",
+      "Al Dana",
+      "Al Manama Old Clinic",
+      "Al Shorouq"
     ]
   },
   {
-    "intent": "Commercial",
+    "intent": "FAQ",
     "trigger_phrases": [
-      "office",
-      "shop",
-      "retail",
-      "warehouse",
-      "showroom"
+      "documents",
+      "lease term",
+      "cheques",
+      "maintenance",
+      "renewal",
+      "notice period"
     ],
     "qualification_questions": [
-      "Use type?",
-      "Required size?",
-      "Preferred district?"
+      "Which leasing topic do you need help with?"
     ],
     "next_steps": [
-      "Shortlist commercial Aqaar records",
-      "Escalate unit-level questions"
+      "Answer only from Aqaar official FAQ rows",
+      "Escalate unavailable facts as unknown"
     ],
-    "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
-    ]
-  },
-  {
-    "intent": "Relocation",
-    "trigger_phrases": [
-      "relocate",
-      "move to ajman",
-      "family move"
-    ],
-    "qualification_questions": [
-      "Family size?",
-      "School proximity?",
-      "Preferred commute?"
-    ],
-    "next_steps": [
-      "Shortlist residential/community records",
-      "Ask for timeline"
-    ],
-    "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Al Humaidia Villa 1",
-      "Al Humaidia Villa 2",
-      "Al Jurf Residential Villas",
-      "Al Jurf Villas",
-      "Al Jurf Villas 2",
-      "Al Khor Villas & Shops",
-      "Al Madina Tower"
-    ]
-  },
-  {
-    "intent": "Luxury Living",
-    "trigger_phrases": [
-      "luxury",
-      "premium",
-      "branded",
-      "waterfront"
-    ],
-    "qualification_questions": [
-      "Preferred lifestyle?",
-      "View preference?",
-      "Budget?"
-    ],
-    "next_steps": [
-      "Shortlist premium official records",
-      "Confirm available details with Aqaar"
-    ],
-    "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Al Madina Tower",
-      "Al Ofoq Tower",
-      "Al-Khour Tower C",
-      "AL-Khour Towers",
-      "City Towers",
-      "Corniche Tower",
-      "Dewan Towers"
-    ]
-  },
-  {
-    "intent": "Waterfront Living",
-    "trigger_phrases": [
-      "waterfront",
-      "beach",
-      "corniche",
-      "sea"
-    ],
-    "qualification_questions": [
-      "Waterfront or city view?",
-      "Apartment or villa?",
-      "Move-in timeline?"
-    ],
-    "next_steps": [
-      "Shortlist official waterfront/corniche records"
-    ],
-    "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman Pearl",
-      "Al-Khour Tower C",
-      "AL-Khour Towers",
-      "Corniche Tower",
-      "Beach Residence",
-      "Water Treatment Plant"
-    ]
-  },
-  {
-    "intent": "Family Community",
-    "trigger_phrases": [
-      "family",
-      "school",
-      "community",
-      "villa"
-    ],
-    "qualification_questions": [
-      "Bedrooms?",
-      "Schools?",
-      "Outdoor/community needs?"
-    ],
-    "next_steps": [
-      "Shortlist family-oriented official records"
-    ],
-    "recommended_projects": [
-      "Ajman Corniche Residences",
-      "Ajman One",
-      "Ajman Pearl",
-      "Ajman Uptown",
-      "Al Andalus 4",
-      "Al Arabi Building",
-      "Al Berouj 1",
-      "Al Berouj 2"
-    ]
+    "recommended_projects": []
   }
 ]
