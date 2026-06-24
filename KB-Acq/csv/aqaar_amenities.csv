@@ -12,3 +12,8 @@ amenity_id,amenity_name,source_url,last_verified
 118140010,Security Staff,https://prodadmin-aqaar.realcube.estate/api/projectSearchFilters,2026-06-24
 118140011,Free Maintenance,https://prodadmin-aqaar.realcube.estate/api/projectSearchFilters,2026-06-24
 118140012,Waste Disposal,https://prodadmin-aqaar.realcube.estate/api/projectSearchFilters,2026-06-24
+dusit_kids_club,Kids Club,assets/Dusit-Thani-Brochure.pdf#page=25,2026-06-24
+dusit_gym_yoga_treatment_salon,"Gym, Yoga & Treatment Salon",assets/Dusit-Thani-Brochure.pdf#page=25,2026-06-24
+dusit_cafe_lounge,Cafe Lounge,assets/Dusit-Thani-Brochure.pdf#page=25,2026-06-24
+dusit_private_balconies,Private Balconies,assets/Dusit-Thani-Brochure.pdf#page=8,2026-06-24
+dusit_resident_parking,Resident Parking,assets/Dusit-Thani-Brochure.pdf#page=8,2026-06-24

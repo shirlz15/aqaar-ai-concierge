@@ -5,11 +5,14 @@ Generated: 2026-06-24
 ## Checks Run
 
 - Schema preservation for existing CSV files
-- Official source attribution present on every row family
-- Placeholder replacement for amenities, prices, locations, FAQ, sitemap, and project metadata where official data exists
-- Mock/test project exclusion
-- Unknown value policy applied to unavailable facts
-- RAG documents regenerated from the cleaned official dataset
+- Dusit Thani brochure copied into package assets
+- Dusit project metadata corrected from brochure
+- Dusit floorplan prices and gross areas populated from brochure pages 10, 12, 14, 16, 18, 20, and 22
+- Dusit payment plan populated from brochure page 26
+- Dusit amenities populated from brochure pages 8 and 25
+- Dusit location/distances populated from brochure pages 6 and 7
+- Source attribution regenerated for all CSV row fields
+- RAG chunks regenerated
 
 ## Results
 
@@ -17,4 +20,4 @@ Generated: 2026-06-24
 
 ## Residual Unknowns
 
-3487 of 7755 audited master/inventory/location cells remain `unknown` because the official extracted Aqaar sources did not publish those facts.
+Unknown values remain for facts not published in the brochure or official Aqaar sources, including bathrooms, exact handover date, latitude/longitude, and service charges.

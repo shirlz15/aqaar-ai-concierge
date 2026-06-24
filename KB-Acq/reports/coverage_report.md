@@ -2,23 +2,25 @@
 
 Generated: 2026-06-24
 
-## Data Quality Pass
+## Dusit Thani Brochure V2 Update
 
+- Dusit Thani brochure source added: assets/Dusit-Thani-Brochure.pdf
+- Dusit project metadata corrected and enriched
+- Dusit floorplan/unit rows added: 7
+- Dusit starting prices captured: 7
+- Dusit payment plan captured: 7 payment milestones
+- Dusit brochure amenities added: 5
+- Dusit location distances captured: 8 distance entries
 - Official projects retained: 141
-- Mock/test records removed: 2 (PRJ-RP, Online Test Project)
-- Amenities resolved from official projectSearchFilters: 13
-- Location mappings resolved from project text, coordinates, official filters, and Aqaar project pages: 27/141
-- Projects with official published starting price: 89/141
-- Projects with bedroom range parsed from official project body: 65/141
-- Official FAQ rows extracted: 18
-- Site map entries covered: 26
-- Official image assets indexed: 94
-- Audit rows generated: 5198
+- Amenities total: 18
+- Asset rows total: 104
+- Audit rows generated: 5418
+- RAG chunks generated: 238
 
 ## Unknown Policy
 
-Unavailable values remain exactly `unknown`. Unknown fields are limited to facts not published in the extracted official Aqaar sources, including most bathrooms, exact unit areas, many handover dates, service charges, commute distances, and project-level amenity assignments.
+Unavailable values remain exactly `unknown`. Brochure data replaced unknown values only where the brochure supplied verified facts. Bathrooms, exact handover date, latitude/longitude, and service-charge facts remain unknown where not published in the brochure or official Aqaar sources.
 
 ## Source Policy
 
-Primary sources are Aqaar official website pages and official Aqaar/Reacube public API endpoints. No PalmX, third-party, generated mock, or non-Aqaar facts are used.
+Primary sources are Aqaar official website/API sources and the uploaded Dusit Thani brochure stored in the package assets. No PalmX, third-party, generated mock, or non-Aqaar facts are used.
