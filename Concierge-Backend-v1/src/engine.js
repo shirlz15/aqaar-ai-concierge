@@ -1,4 +1,5 @@
 import { isKnown, knownOrUnknown } from "./csv.js";
+import { GEMINI_MODEL, generateWithGemini } from "./gemini.js";
 
 const sessions = new Map();
 
@@ -492,7 +493,7 @@ function deriveSeedIntent(row) {
   return "invest";
 }
 
-export function chat(data, input = {}) {
+export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
@@ -521,10 +522,29 @@ export function chat(data, input = {}) {
   const nextQuestion = nextQuestionFor(session.memory, activePurpose);
   const response = buildContextualResponse(data, message, session.memory, retrieved, recs, nextQuestion);
   if (response.recommendations?.length) session.lastProfiles = response.recommendations.map((item) => item.project.property_id);
+  const rag = retrieveRagContext(data, message, session.memory, response, recs, 8);
+  const prompt = buildGroundedPrompt({
+    message,
+    memory: session.memory,
+    detected,
+    response,
+    cards: response.cards,
+    rag,
+    nextQuestion
+  });
+  const llmResult = await generateWithGemini({ prompt });
+  const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : response.answer);
+  const finalAnswer = groundedAnswer || response.answer || "This is not published in the verified Aqaar KB.";
+  const sourcePool = uniqueSources([
+    ...retrieved.sources,
+    ...recs.sources,
+    ...rag.sources
+  ]);
   return {
     session_id: sessionId,
-    answer: response.answer,
-    reply: response.answer,
+    answer: finalAnswer,
+    reply: finalAnswer,
+    follow_up: nextQuestion,
     response_type: response.type,
     response_cards: response.cards,
     intent: { ...detected, intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent },
@@ -538,9 +558,142 @@ export function chat(data, input = {}) {
       captured_fields: session.memory.lead_capture,
       source: "Concierge-Backend-v1 session memory plus KB-backed recommendations"
     },
-    sources: uniqueSources([...retrieved.sources, ...recs.sources]),
+    sources: sourcePool,
+    sources_used: cleanSourceLabels(sourcePool),
+    rag: {
+      model_context: rag.chunks,
+      chunks_used: rag.chunks.length,
+      query: rag.query
+    },
+    llm: {
+      provider: llmResult.provider,
+      model: llmResult.model || GEMINI_MODEL,
+      used: llmResult.used,
+      reason: llmResult.reason
+    },
     validation: validation("kb_checked_before_response")
   };
+}
+
+function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
+  const query = buildMemoryQuery(message, memory);
+  const parsed = mergeKnown(parseSlots(query), memory || {});
+  const queryTokens = expandQueryTokens(tokens(query), parsed);
+  const preferredNames = new Set([
+    ...(response.cards || []).map((card) => norm(card.project)),
+    ...(recs.recommendations || []).map((item) => norm(item.project.project_name))
+  ].filter(Boolean));
+
+  const scoredChunks = data.ragChunks.map((chunk, index) => {
+    const text = chunk.text || chunk.content || JSON.stringify(chunk);
+    const title = chunk.title || chunk.project || chunk.document || "";
+    const nameBoost = [...preferredNames].some((name) => name !== "unknown" && norm(`${title} ${text}`).includes(name)) ? 8 : 0;
+    return {
+      score: matchScore(queryTokens, `${title} ${text}`) + nameBoost,
+      index,
+      chunk
+    };
+  });
+
+  const chunks = scoredChunks
+    .filter((entry) => entry.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ chunk, index, score }) => ({
+      chunk_id: knownOrUnknown(chunk.chunk_id || chunk.id || `chunk_${index}`),
+      title: knownOrUnknown(chunk.title || chunk.project || chunk.document || `KB chunk ${index + 1}`),
+      project: knownOrUnknown(chunk.project || chunk.project_name || chunk.title),
+      section: knownOrUnknown(chunk.section || chunk.chunk_type),
+      text: knownOrUnknown(chunk.text || chunk.content || JSON.stringify(chunk)).slice(0, 900),
+      source: sourceFromChunk(chunk, index),
+      source_label: sourceLabel(chunk.source_url || chunk.source || chunk.document),
+      score
+    }));
+
+  const cardSources = (response.recommendations || recs.recommendations || [])
+    .map((item) => item.source || item.project?.source)
+    .filter(Boolean);
+
+  return {
+    query,
+    chunks,
+    sources: uniqueSources([...chunks.map((chunk) => chunk.source), ...cardSources])
+  };
+}
+
+function buildGroundedPrompt({ message, memory, detected, response, cards, rag, nextQuestion }) {
+  const context = {
+    user_message: message,
+    detected_intent: detected?.intent || "unknown",
+    conversation_memory: memory,
+    response_type: response.type,
+    allowed_project_cards: cards || [],
+    retrieved_chunks: rag.chunks.map((chunk) => ({
+      title: chunk.title,
+      project: chunk.project,
+      section: chunk.section,
+      text: chunk.text,
+      source_label: chunk.source_label
+    })),
+    required_follow_up: nextQuestion
+  };
+
+  return [
+    "You are the Aqaar AI Concierge, a senior real estate sales advisor.",
+    "Answer only from the verified Aqaar KB context below.",
+    "Do not invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
+    "Do not print raw URLs. Refer to sources by clean label only.",
+    "If the answer is absent from the context, say exactly: This is not published in the verified Aqaar KB.",
+    "Only discuss projects shown in allowed_project_cards or retrieved_chunks.",
+    "Give a natural, concise answer that directly answers the user's latest question.",
+    "If relevant projects are present, briefly explain why each matches using only card/chunk fields.",
+    "Ask exactly one useful follow-up question at the end.",
+    "",
+    "VERIFIED_CONTEXT_JSON:",
+    JSON.stringify(context, null, 2)
+  ].join("\n");
+}
+
+function sanitizeAnswer(text) {
+  const cleaned = String(text || "")
+    .replace(/https?:\/\/\S+/gi, "")
+    .replace(/\s+\n/g, "\n")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+  return cleaned;
+}
+
+function sourceLabel(raw) {
+  const value = String(raw || "").replace(/\\/g, "/");
+  const lower = value.toLowerCase();
+  if (lower.includes("mawjan")) return "Mawjan brochure";
+  if (lower.includes("dusit")) return "Dusit Thani brochure";
+  if (lower.includes("aqaar_projects_master")) return "Aqaar projects master";
+  if (lower.includes("aqaar_properties_inventory")) return "Aqaar properties inventory";
+  if (lower.includes("aqaar_locations")) return "Aqaar locations";
+  if (lower.includes("aqaar_amenities")) return "Aqaar amenities";
+  if (lower.includes("aqaar_rag_chunks")) return "Aqaar RAG chunks";
+  if (lower.includes("aqaar") || lower.startsWith("http")) return "Aqaar official KB";
+  return "Verified Aqaar KB";
+}
+
+function cleanSourceLabels(sources) {
+  const seen = new Set();
+  return sources
+    .map((source) => ({
+      entity_type: source.entity_type || "kb_record",
+      entity_name: knownOrUnknown(source.entity_name),
+      source_label: sourceLabel(source.source_url || source.source || source.entity_name),
+      last_verified: knownOrUnknown(source.last_verified),
+      confidence_score: knownOrUnknown(source.confidence_score)
+    }))
+    .filter((source) => {
+      const key = `${source.entity_type}:${source.entity_name}:${source.source_label}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0, 8);
 }
 
 function parseSlots(message) {
@@ -572,11 +725,11 @@ function parseSlots(message) {
 }
 
 function parseBedrooms(text) {
-  const direct = text.match(/\b(\d+)\s*(?:bed|beds|bedroom|bedrooms|br)\b/)?.[1];
+  const direct = text.match(/\b(\d+)[\s-]*(?:bed|beds|bedroom|bedrooms|br)\b/)?.[1];
   if (direct) return Number(direct);
   const words = { studio: 0, one: 1, two: 2, three: 3, four: 4, five: 5 };
   for (const [word, value] of Object.entries(words)) {
-    if (new RegExp(`\\b${word}\\s*(?:bed|bedroom|br)?\\b`).test(text)) return value;
+    if (new RegExp(`\\b${word}[\\s-]*(?:bed|bedroom|br)?\\b`).test(text)) return value;
   }
   return null;
 }
@@ -669,9 +822,9 @@ function scoreProfile(profile, criteria = {}) {
   }
   if (criteria.budget && budgetMatches(profile, criteria.budget)) {
     score += 10;
-    reasons.push(`has published pricing within AED ${Number(criteria.budget).toLocaleString()}`);
+    reasons.push(`has published pricing within AED ${Number(criteria.budget).toLocaleString("en-US")}`);
   } else if (criteria.budget && profile.price_min !== "unknown") {
-    reasons.push(`published pricing starts from AED ${Number(profile.price_min).toLocaleString()}`);
+    reasons.push(`published pricing starts from AED ${Number(profile.price_min).toLocaleString("en-US")}`);
   }
   for (const amenity of criteria.amenities || []) {
     if (hasTerm(profile.corpus, amenity) || (AMENITY_ALIASES[amenity] || []).some((alias) => hasTerm(profile.corpus, alias))) {
@@ -933,7 +1086,7 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
   if (!items.length && retrieved.results.length === 0) {
     return {
       type: "out_of_scope",
-      answer: "Not published in the verified Aqaar KB.",
+      answer: "This is not published in the verified Aqaar KB.",
       cards: [],
       recommendations: []
     };
@@ -944,7 +1097,7 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
 function noMatch(type = "search") {
   return {
     type,
-    answer: "No matching Aqaar project found.",
+    answer: "This is not published in the verified Aqaar KB.",
     cards: [],
     recommendations: []
   };
@@ -991,7 +1144,7 @@ function priceResponse(profiles, criteria = {}) {
   if (!profiles.length) {
     return {
       type: "price",
-      answer: "Not published in the verified Aqaar KB.",
+      answer: "This is not published in the verified Aqaar KB.",
       cards: [],
       recommendations: []
     };
@@ -1020,7 +1173,7 @@ function landmarkResponse(profiles) {
   if (!profiles.length) {
     return {
       type: "nearby_landmarks",
-      answer: "Not published in the verified Aqaar KB.",
+      answer: "This is not published in the verified Aqaar KB.",
       cards: [],
       recommendations: []
     };
@@ -1143,7 +1296,7 @@ function formatProjectPrice(profile, units = profile.units) {
   if (!prices.length) return "Not published by Aqaar";
   const min = Math.min(...prices);
   const max = Math.max(...prices);
-  return min === max ? `AED ${min.toLocaleString()}` : `AED ${min.toLocaleString()} - ${max.toLocaleString()}`;
+  return min === max ? `AED ${min.toLocaleString("en-US")}` : `AED ${min.toLocaleString("en-US")} - ${max.toLocaleString("en-US")}`;
 }
 
 function unitTypesFor(profile) {
@@ -1188,7 +1341,7 @@ function buildAdvisorAnswer(memory, retrieved, recs, nextQuestion) {
   for (const item of recs.recommendations.slice(0, 3)) {
     const p = item.project;
     const unit = item.units[0] || {};
-    const price = isKnown(unit.price_min) ? `${unit.currency || p.currency || "AED"} ${Number(unit.price_min).toLocaleString()}` : (isKnown(p.price_min) ? `${p.currency || "AED"} ${Number(p.price_min).toLocaleString()}` : "Contact Aqaar for details");
+    const price = isKnown(unit.price_min) ? `${unit.currency || p.currency || "AED"} ${Number(unit.price_min).toLocaleString("en-US")}` : (isKnown(p.price_min) ? `${p.currency || "AED"} ${Number(p.price_min).toLocaleString("en-US")}` : "Contact Aqaar for details");
     const payment = isKnown(unit.payment_plan) ? unit.payment_plan : (isKnown(p.payment_plan) ? p.payment_plan : "Contact Aqaar for details");
     const amenities = item.matched_amenities.length ? item.matched_amenities.join(", ") : (p.amenities.length ? p.amenities.slice(0, 4).join(", ") : "Contact Aqaar for details");
     const brochure = isKnown(p.brochure) ? p.brochure : "Contact Aqaar for details";
@@ -1282,7 +1435,7 @@ function formatBudget(min, max, currency = "AED") {
   const low = Number(min);
   const high = Number(max);
   if (Number.isFinite(low) && Number.isFinite(high) && low > 0 && high > 0) {
-    return low === high ? `${currency} ${low.toLocaleString()}` : `${currency} ${low.toLocaleString()}-${high.toLocaleString()}`;
+    return low === high ? `${currency} ${low.toLocaleString("en-US")}` : `${currency} ${low.toLocaleString("en-US")}-${high.toLocaleString("en-US")}`;
   }
   return "unknown";
 }

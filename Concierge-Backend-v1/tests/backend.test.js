@@ -143,9 +143,25 @@ describe("AQAAR Concierge Backend v1", () => {
   it("does not expose raw URLs in chat answers and returns no-match text", async () => {
     const impossible = await request("/chat", { session_id: "intent-none", message: "Villa under AED 1000" });
     const payment = await request("/chat", { session_id: "intent-payment", message: "Payment plans" });
-    assert.equal(impossible.answer, "Not published in the verified Aqaar KB.");
+    assert.equal(impossible.answer, "This is not published in the verified Aqaar KB.");
     assert.doesNotMatch(payment.answer, /https?:\/\//i);
     assert.ok(payment.response_cards.some((card) => card.payment_plan !== "unknown"));
+  });
+
+  it("returns Gemini RAG metadata without exposing credentials", async () => {
+    const result = await request("/chat", {
+      session_id: "rag-gemini-contract",
+      message: "Dusit payment plan"
+    });
+
+    assert.equal(result.llm.provider, "gemini");
+    assert.match(result.llm.model, /gemini/i);
+    assert.ok(!("api_key" in result.llm));
+    assert.ok(result.rag.chunks_used > 0);
+    assert.ok(result.rag.model_context.every((chunk) => chunk.text && chunk.source_label));
+    assert.ok(result.sources_used.length > 0);
+    assert.ok(result.sources_used.every((source) => source.source_label && !/^https?:\/\//i.test(source.source_label)));
+    assert.ok(result.follow_up);
   });
 
   it("captures lead details only into session memory", async () => {

@@ -2,7 +2,7 @@
 
 Aqaar AI Concierge is a data-grounded real estate concierge repository built around four production layers: a verified knowledge acquisition package, a strict intelligence layer, a backend API service, and an API-driven frontend experience. The system is designed to answer, qualify, search, recommend, display, and report only from the approved Aqaar knowledge base and intelligence files.
 
-Missing or unpublished data is represented as `unknown` in backend responses and as `Contact Aqaar for details.` in frontend UI surfaces.
+Missing or unpublished data is represented as `unknown` in data objects and as grounded user-facing copy such as `This is not published in the verified Aqaar KB.` or `Available on enquiry`.
 
 ## Features
 
@@ -11,6 +11,7 @@ Missing or unpublished data is represented as `unknown` in backend responses and
 - Backend APIs for chat, search, recommendations, qualification, lead scoring, and dashboard metrics.
 - Existing Vite frontend with Home, AI Concierge, Properties, Dashboard, property cards, enquiry modal, charts, lead table, downloads, and responsive layout.
 - RAG-style lexical retrieval over KB project records and RAG chunks.
+- Gemini API grounded generation for `/chat`, using only the retrieved Aqaar KB context.
 - Source attribution returned where KB records provide source fields.
 - Context memory for multi-turn chat sessions.
 - Buy, Rent, Invest, and Commercial intent support from the intelligence layer.
@@ -66,7 +67,9 @@ flowchart TD
     KB --> API["Concierge-Backend-v1<br/>Node API service"]
     INT --> API
     API --> UI["frontend<br/>Vite web app"]
-    API --> CHAT["/chat<br/>multi-turn concierge"]
+    API --> RAG["RAG retrieval<br/>KB chunks + source labels"]
+    RAG --> LLM["Gemini Flash<br/>grounded answer generation"]
+    LLM --> CHAT["/chat<br/>multi-turn concierge"]
     API --> SEARCH["/search<br/>KB/RAG retrieval"]
     API --> REC["/recommend<br/>KB-validated recommendations"]
     API --> QUAL["/qualify<br/>qualification trees"]
@@ -82,7 +85,7 @@ flowchart TD
 
 The backend service is located in `Concierge-Backend-v1`.
 
-- `POST /chat` - Multi-turn concierge endpoint with intent detection, memory, retrieval, recommendations, qualification, and lead capture.
+- `POST /chat` - Multi-turn concierge endpoint with intent detection, memory, RAG retrieval, Gemini grounded generation, recommendations, qualification, source labels, and lead capture.
 - `POST /recommend` - Returns recommendations from the intelligence package and validates referenced projects against the KB.
 - `POST /qualify` - Returns qualification questions and next steps from the intelligence layer.
 - `POST /lead-score` - Returns `unknown` score and grade because scoring weights are not published in the current intelligence package.
@@ -92,6 +95,7 @@ The backend service is located in `Concierge-Backend-v1`.
 ## Tech Stack
 
 - Node.js
+- Gemini API, server-side only through `GEMINI_API_KEY`
 - Native Node HTTP server
 - Native Node test runner
 - Vite frontend
@@ -192,15 +196,48 @@ Optional backend environment variables:
 
 ```powershell
 $env:PORT="8080"
+$env:GEMINI_API_KEY="your-gemini-api-key"
+$env:GEMINI_MODEL="gemini-1.5-flash"
 $env:AQAAR_KB_ROOT="C:\path\to\aqaar\KB-Acq"
 $env:AQAAR_INTELLIGENCE_ROOT="C:\path\to\aqaar\Intelligence-Layer-v2"
 ```
+
+## LLM And RAG
+
+The AI Concierge uses Gemini Flash from the backend only. The frontend never receives or stores the API key.
+
+Default model:
+
+```text
+gemini-1.5-flash
+```
+
+RAG pipeline:
+
+```mermaid
+flowchart LR
+    MSG["User message"] --> INTENT["Detect intent and entities"]
+    INTENT --> RET["Search Aqaar KB projects, inventory, and RAG chunks"]
+    RET --> TOP["Select top relevant chunks and project cards"]
+    TOP --> PROMPT["Build grounded prompt"]
+    PROMPT --> GEM["Call Gemini API"]
+    GEM --> RESP["Return answer, cards, follow-up, and clean source labels"]
+```
+
+Grounding rules:
+
+- Gemini receives only selected Aqaar KB/RAG context, conversation memory, and validated project cards.
+- Gemini is instructed not to invent projects, prices, ROI, payment plans, amenities, locations, dates, or URLs.
+- If the requested fact is missing from the retrieved KB context, the answer must say: `This is not published in the verified Aqaar KB.`
+- Raw source URLs are not displayed in chat; the response returns clean labels such as `Mawjan brochure`, `Dusit Thani brochure`, or `Aqaar official KB`.
+- When `GEMINI_API_KEY` is not set, `/chat` keeps working through the deterministic KB-only fallback and returns `llm.used: false`.
 
 ## Run Commands
 
 From `Concierge-Backend-v1`:
 
 ```powershell
+$env:GEMINI_API_KEY="your-gemini-api-key"
 npm test
 npm run validate
 npm start

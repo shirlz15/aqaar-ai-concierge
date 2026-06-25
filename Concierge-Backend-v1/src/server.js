@@ -42,7 +42,7 @@ export async function createServer(options = {}) {
       if (req.method === "GET" && url.pathname === "/health") {
         return sendJson(res, 200, { ok: true, kb_only: true });
       }
-      if (req.method === "POST" && url.pathname === "/chat") return sendJson(res, 200, chat(data, input));
+      if (req.method === "POST" && url.pathname === "/chat") return sendJson(res, 200, await chat(data, input));
       if (req.method === "POST" && url.pathname === "/recommend") return sendJson(res, 200, recommend(data, input));
       if (req.method === "POST" && url.pathname === "/qualify") return sendJson(res, 200, qualify(data, input));
       if (req.method === "POST" && url.pathname === "/lead-score") return sendJson(res, 200, leadScore(data, input));

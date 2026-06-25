@@ -194,7 +194,7 @@ function renderChips() {
   });
 }
 
-function appendRenderedMessage({ role, content, time, cards }) {
+function appendRenderedMessage({ role, content, time, cards, sources, followUp }) {
   const inner = document.getElementById('messages-inner');
   if (!inner) return;
   const isUser = role === 'user';
@@ -206,7 +206,7 @@ function appendRenderedMessage({ role, content, time, cards }) {
   div.innerHTML = `
     <div class="message-avatar" aria-hidden="true">${avatar}</div>
     <div>
-      <div class="message-bubble">${formatMessage(content)}${renderResponseCards(cards)}</div>
+      <div class="message-bubble">${formatMessage(content)}${renderResponseCards(cards)}${renderSources(sources)}${renderFollowUp(followUp)}</div>
       <div class="message-time">${timeStr}</div>
     </div>
   `;
@@ -214,8 +214,8 @@ function appendRenderedMessage({ role, content, time, cards }) {
   scrollToBottom();
 }
 
-function appendAIMessage(text, cards = []) {
-  const msg = { role: 'ai', content: text, cards, time: now() };
+function appendAIMessage(text, cards = [], sources = [], followUp = '') {
+  const msg = { role: 'ai', content: text, cards, sources, followUp, time: now() };
   if (state.messages.length === 0 || state.messages[state.messages.length - 1]?.content !== text) {
     state.messages.push(msg);
   }
@@ -279,8 +279,8 @@ async function sendMessage() {
 
       hideTyping();
 
-      const reply = res?.reply || res?.response || res?.message || 'No matching Aqaar project found.';
-      appendAIMessage(reply, res?.response_cards || []);
+      const reply = res?.reply || res?.response || res?.message || 'This is not published in the verified Aqaar KB.';
+      appendAIMessage(reply, res?.response_cards || [], res?.sources_used || [], res?.follow_up || '');
 
       // Check if AI is asking for contact details
       const lowerReply = reply.toLowerCase();
@@ -411,9 +411,42 @@ function renderResponseCards(cards) {
   `;
 }
 
+function renderSources(sources) {
+  if (!Array.isArray(sources) || sources.length === 0) return '';
+  const labels = [...new Set(sources.map(source => cleanSourceLabel(source)).filter(Boolean))].slice(0, 5);
+  if (!labels.length) return '';
+  return `
+    <div class="chat-source-list" aria-label="Sources used">
+      <span>Sources:</span>
+      ${labels.map(label => `<strong>${escapeHtml(label)}</strong>`).join('')}
+    </div>
+  `;
+}
+
+function renderFollowUp(followUp) {
+  if (!followUp) return '';
+  return `<div class="chat-follow-up">${formatMessage(followUp)}</div>`;
+}
+
+function cleanSourceLabel(source) {
+  const raw = typeof source === 'string'
+    ? source
+    : (source?.source_label || source?.entity_name || source?.source_url || '');
+  const value = String(raw || '').replace(/\\/g, '/');
+  const lower = value.toLowerCase();
+  if (lower.includes('mawjan')) return 'Mawjan brochure';
+  if (lower.includes('dusit')) return 'Dusit Thani brochure';
+  if (lower.includes('aqaar_projects_master')) return 'Aqaar projects master';
+  if (lower.includes('aqaar_properties_inventory')) return 'Aqaar properties inventory';
+  if (lower.includes('aqaar_locations')) return 'Aqaar locations';
+  if (lower.includes('aqaar_amenities')) return 'Aqaar amenities';
+  if (lower.startsWith('http')) return 'Aqaar official KB';
+  return value || 'Verified Aqaar KB';
+}
+
 function displayCardValue(value) {
   if (value === undefined || value === null || value === '' || String(value).toLowerCase() === 'unknown') {
-    return 'Not published by Aqaar';
+    return 'Available on enquiry';
   }
   return value;
 }

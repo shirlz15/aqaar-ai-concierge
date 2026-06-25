@@ -1006,6 +1006,29 @@ img { max-width: 100%; display: block; }
   color: var(--text-secondary);
   font-size: 12px;
 }
+.chat-source-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.chat-source-list strong {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 2px 7px;
+  font-weight: 600;
+}
+.chat-follow-up {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  color: var(--text-primary);
+  font-weight: 600;
+}
 
 .message-time {
   font-size: 11px;
