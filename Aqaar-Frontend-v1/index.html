@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Aqaar AI Concierge</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <header class="topbar">
+      <button type="button" class="icon-button" data-action="scroll" data-target="#concierge" aria-label="Open concierge">☰</button>
+      <a class="brand" href="#intro" aria-label="Aqaar AI Concierge">
+        <span class="brand-mark">A</span>
+        <span>
+          <strong>AQAAR</strong>
+          <small>AI Concierge</small>
+        </span>
+      </a>
+      <nav class="nav">
+        <a href="#concierge">Concierge</a>
+        <a href="#recommendations">Recommendations</a>
+        <a href="#dashboard">Dashboard</a>
+        <a href="#verified">Sources</a>
+      </nav>
+      <button type="button" class="primary-pill" data-action="open-lead-modal">Enquire</button>
+    </header>
+
+    <main>
+      <section id="intro" class="hero module" data-module="01 Landing / intro page">
+        <div class="hero-copy">
+          <p class="eyebrow">Verified Aqaar intelligence</p>
+          <h1>A premium AI concierge grounded in Aqaar data.</h1>
+          <p>
+            Explore Aqaar projects, compare KB-backed details, qualify buyer needs, capture leads, and hand off enquiries without inventing unavailable facts.
+          </p>
+          <div class="hero-actions">
+            <button type="button" class="accent-button" data-action="scroll" data-target="#concierge">Start concierge</button>
+            <button type="button" class="ghost-button" data-action="scroll" data-target="#dashboard">View dashboard</button>
+          </div>
+        </div>
+        <div class="hero-panel" aria-label="Aqaar product flow">
+          <div class="status-row">
+            <span>KB</span><strong id="heroProjectCount">loading</strong>
+          </div>
+          <div class="pulse-card">
+            <span>Current flow</span>
+            <strong>Intro → Concierge → Intelligence → Handoff</strong>
+          </div>
+          <div class="metric-strip">
+            <span>Search</span>
+            <span>Recommend</span>
+            <span>Qualify</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="concierge" class="module split" data-module="02 AI Concierge chat">
+        <div class="panel chat-panel">
+          <div class="section-heading">
+            <p class="eyebrow">Concierge</p>
+            <h2>AI Concierge Chat</h2>
+            <p>Ask about Buy, Rent, Invest, or Commercial needs. The assistant cites KB-backed sources and keeps unavailable facts as unknown.</p>
+          </div>
+          <div id="chatLog" class="chat-log"></div>
+          <form id="chatForm" class="composer">
+            <input id="chatInput" type="text" placeholder="Ask about Mawjan, Dusit, 2 bedroom, rent, invest..." autocomplete="off" />
+            <button type="submit" class="round-send" aria-label="Send">➜</button>
+          </form>
+          <div class="helper-row">
+            <button type="button" data-action="prompt" data-prompt="I want to buy a waterfront property">Buy waterfront</button>
+            <button type="button" data-action="prompt" data-prompt="Show investment options with published prices">Invest</button>
+            <button type="button" data-action="prompt" data-prompt="I need commercial property in Ajman">Commercial</button>
+          </div>
+        </div>
+
+        <aside class="panel guide-panel" data-module="03 Guided buyer flow">
+          <p class="eyebrow">Guided flow</p>
+          <h2>Buyer Journey</h2>
+          <div class="intent-grid" id="intentGrid"></div>
+          <ol class="flow-list" id="flowList"></ol>
+        </aside>
+      </section>
+
+      <section class="module" data-module="04 Buy / Rent / Invest / Commercial intent flows">
+        <div class="section-heading row-heading">
+          <div>
+            <p class="eyebrow">Intent flows</p>
+            <h2>Choose a purpose</h2>
+          </div>
+          <div class="segmented" id="purposeTabs">
+            <button type="button" class="active" data-purpose="Buy Property">Buy</button>
+            <button type="button" data-purpose="Rent Property">Rent</button>
+            <button type="button" data-purpose="Investment">Invest</button>
+            <button type="button" data-purpose="Commercial">Commercial</button>
+          </div>
+        </div>
+        <div id="qualificationPanel" class="panel qualification-panel"></div>
+      </section>
+
+      <section id="recommendations" class="module" data-module="05 Property recommendation results">
+        <div class="section-heading row-heading">
+          <div>
+            <p class="eyebrow">Recommendations</p>
+            <h2>Project Recommendations</h2>
+          </div>
+          <div class="search-box">
+            <input id="searchInput" type="search" placeholder="Search: aj, mawjan, dusit, 2 bedroom" />
+            <button type="button" class="accent-button" data-action="search">Search</button>
+          </div>
+        </div>
+        <div class="helper-row search-examples">
+          <span>Try:</span>
+          <button type="button" data-action="search-example" data-query="aj">aj</button>
+          <button type="button" data-action="search-example" data-query="mawjan">mawjan</button>
+          <button type="button" data-action="search-example" data-query="dusit">dusit</button>
+          <button type="button" data-action="search-example" data-query="2 bedroom">2 bedroom</button>
+        </div>
+        <div id="recommendationGrid" class="cards-grid"></div>
+        <div id="emptyRecommendations" class="empty-state" hidden>
+          <h3>No KB match yet</h3>
+          <p>Try a broader search such as Ajman, waterfront, 2 bedroom, buy, rent, invest, or commercial.</p>
+        </div>
+      </section>
+
+      <section class="module split" data-module="06 Project comparison view">
+        <div class="panel">
+          <p class="eyebrow">Compare</p>
+          <h2>Project Comparison</h2>
+          <div id="comparisonView" class="comparison-view"></div>
+        </div>
+        <div class="panel lead-panel" data-module="07 Lead capture form">
+          <p class="eyebrow">Lead capture</p>
+          <h2>Capture enquiry</h2>
+          <form id="leadForm" class="lead-form">
+            <input name="name" placeholder="Name" />
+            <input name="phone" placeholder="Phone" />
+            <input name="email" placeholder="Email" />
+            <select name="purpose">
+              <option>Buy Property</option>
+              <option>Rent Property</option>
+              <option>Investment</option>
+              <option>Commercial</option>
+            </select>
+            <textarea name="message" placeholder="Requirement or project context"></textarea>
+            <button class="accent-button" type="submit">Create lead summary</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="module split">
+        <div class="panel" data-module="08 Lead summary card">
+          <p class="eyebrow">Lead summary</p>
+          <h2>Lead Summary Card</h2>
+          <div id="leadSummary" class="summary-card empty">
+            <p>No lead captured yet. Use Enquire or the lead form.</p>
+          </div>
+        </div>
+        <div class="panel" data-module="09 Sales handoff message">
+          <p class="eyebrow">Sales handoff</p>
+          <h2>Sales Handoff Message</h2>
+          <div id="handoffMessage" class="summary-card empty">
+            <p>Sales handoff is generated only from captured user fields and backend validation. Unknown backend template fields remain unknown.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="dashboard" class="module" data-module="10 Admin dashboard">
+        <div class="section-heading row-heading">
+          <div>
+            <p class="eyebrow">Admin</p>
+            <h2>Lead Intelligence Dashboard</h2>
+          </div>
+          <div class="toolbar">
+            <button type="button" class="ghost-button" data-action="refresh-dashboard">Refresh</button>
+            <button type="button" class="primary-pill" data-action="export-csv">Export CSV</button>
+          </div>
+        </div>
+        <div id="metricCards" class="metric-cards"></div>
+      </section>
+
+      <section class="module" data-module="11 Lead intelligence dashboard">
+        <div class="analytics-grid">
+          <div class="panel chart-panel" data-chart="leads-over-time">
+            <h3>Leads over time</h3>
+            <canvas id="leadsChart" width="520" height="220"></canvas>
+          </div>
+          <div class="panel chart-panel" data-chart="intent-distribution">
+            <h3>Intent distribution</h3>
+            <div id="intentChart" class="bar-chart"></div>
+          </div>
+          <div class="panel chart-panel" data-chart="top-projects">
+            <h3>Top projects</h3>
+            <div id="topProjectsChart" class="bar-chart"></div>
+          </div>
+          <div class="panel chart-panel" data-chart="location-distribution">
+            <h3>Location distribution</h3>
+            <div id="locationChart" class="bar-chart"></div>
+          </div>
+          <div class="panel chart-panel" data-chart="unit-type-distribution">
+            <h3>Unit type distribution</h3>
+            <div id="unitTypeChart" class="bar-chart"></div>
+          </div>
+          <div class="panel chart-panel" data-chart="timeline-distribution">
+            <h3>Timeline distribution</h3>
+            <div id="timelineChart" class="bar-chart"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="module" data-module="12 Lead table">
+        <div class="section-heading row-heading">
+          <div>
+            <p class="eyebrow">Leads</p>
+            <h2>Lead Table</h2>
+          </div>
+          <div class="search-box compact">
+            <input id="leadFilter" type="search" placeholder="Filter captured leads" />
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Purpose</th>
+                <th>Project context</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="leadTable"></tbody>
+          </table>
+        </div>
+        <div id="emptyLeads" class="empty-state">
+          <h3>No captured leads yet</h3>
+          <p>Use the Enquire button, lead form, or chat to capture user-provided contact details.</p>
+        </div>
+      </section>
+
+      <section class="module" data-module="15 Runtime activity/events section">
+        <div class="panel">
+          <p class="eyebrow">Runtime</p>
+          <h2>Activity and Events</h2>
+          <div id="runtimeEvents" class="runtime-list"></div>
+        </div>
+      </section>
+
+      <section id="verified" class="module verified" data-module="18 Download guide/brochure">
+        <p class="eyebrow">System source of truth</p>
+        <h2>Verified Intelligence</h2>
+        <p>Every visible project, unit, recommendation, dashboard count, and assistant response is requested through the Aqaar backend APIs.</p>
+        <div class="verified-grid" id="verifiedGrid"></div>
+        <button type="button" class="accent-button" data-action="download-guide">Download guide</button>
+      </section>
+    </main>
+
+    <aside id="leadDrawer" class="drawer" data-module="13 Lead detail drawer" aria-hidden="true">
+      <button type="button" class="icon-button drawer-close" data-action="close-drawer" aria-label="Close lead detail">×</button>
+      <div id="leadDrawerContent"></div>
+    </aside>
+
+    <dialog id="leadModal" data-module="19 Toast notifications">
+      <form method="dialog" class="modal-card">
+        <button class="icon-button modal-close" value="cancel" aria-label="Close">×</button>
+        <p class="eyebrow">Enquire</p>
+        <h2>Request Aqaar follow-up</h2>
+        <input id="modalName" placeholder="Name" />
+        <input id="modalPhone" placeholder="Phone" />
+        <input id="modalEmail" placeholder="Email" />
+        <textarea id="modalMessage" placeholder="Project or requirement"></textarea>
+        <button class="accent-button" value="default" data-action="modal-submit">Save enquiry</button>
+      </form>
+    </dialog>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>

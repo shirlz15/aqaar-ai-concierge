@@ -1,0 +1,6 @@
+{
+  "name": "AQAAR Frontend v1",
+  "built_at": "2026-06-25T11:26:34.024Z",
+  "source_policy": "Frontend reads Aqaar data through Concierge-Backend-v1 APIs only.",
+  "entry": "index.html"
+}
