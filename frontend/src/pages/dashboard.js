@@ -69,7 +69,7 @@ function renderDashboardView() {
   const main = document.getElementById('dashboard-main');
   if (!main || !dashboardData) return;
 
-  const m = dashboardData.metrics || {};
+  const m = normalizeMetrics(dashboardData.metrics || {});
   const leads = dashboardData.leads || [];
   state.leads = leads;
 
@@ -85,27 +85,27 @@ function renderDashboardView() {
     <div class="kpi-grid">
       <div class="kpi-card">
         <div class="kpi-icon">👥</div>
-        <div class="kpi-value">${m.total_leads || leads.length || 0}</div>
+        <div class="kpi-value">${m.total_leads || 'unknown'}</div>
         <div class="kpi-label">Total Leads Captured</div>
-        <div class="kpi-delta up">↑ 12% this week</div>
+        <div class="kpi-delta">From dashboard metrics</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">⭐</div>
-        <div class="kpi-value">${m.qualified_leads || leads.filter(l => l.score >= 50).length || 0}</div>
+        <div class="kpi-value">${m.qualified_leads || 'unknown'}</div>
         <div class="kpi-label">Qualified Leads</div>
-        <div class="kpi-delta up">↑ 8% this week</div>
+        <div class="kpi-delta">Scoring unavailable in KB</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">🎯</div>
-        <div class="kpi-value" style="text-transform:capitalize;">${getTopIntent(m.intents) || 'Buy'}</div>
+        <div class="kpi-value" style="text-transform:capitalize;">${getTopIntent(m.intents) || 'unknown'}</div>
         <div class="kpi-label">Top Intent</div>
-        <div class="kpi-delta down">↓ 2% from Rent</div>
+        <div class="kpi-delta">Runtime leads unavailable</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">💬</div>
-        <div class="kpi-value">${m.total_sessions || 142}</div>
+        <div class="kpi-value">${m.total_sessions || 'unknown'}</div>
         <div class="kpi-label">Active Chat Sessions</div>
-        <div class="kpi-delta up">↑ 24% this week</div>
+        <div class="kpi-delta">Runtime sessions unavailable</div>
       </div>
     </div>
 
@@ -171,12 +171,29 @@ function renderDashboardView() {
 
   // Render Charts
   setTimeout(() => {
-    renderActivityLineChart('activity-chart', dashboardData);
-    renderIntentBarChart('intent-chart', dashboardData.metrics);
-    renderProjectDoughnutChart('projects-chart', dashboardData.metrics);
+    renderActivityLineChart('activity-chart', { activity: m.activity || [] });
+    renderIntentBarChart('intent-chart', { intents: m.intents || { buy: 0, rent: 0, invest: 0, commercial: 0 } });
+    renderProjectDoughnutChart('projects-chart', { top_projects: m.top_projects || [] });
   }, 50);
 
   renderLeadsTable();
+}
+
+function normalizeMetrics(metrics) {
+  if (!Array.isArray(metrics)) return metrics || {};
+  const map = Object.fromEntries(metrics.map(metric => [metric.metric_id || metric.metric_name, metric.metric_value]));
+  return {
+    total_leads: map.total_leads || 'unknown',
+    qualified_leads: 'unknown',
+    total_sessions: 'unknown',
+    intents: { buy: 0, rent: 0, invest: 0, commercial: 0 },
+    activity: [],
+    top_projects: [
+      { name: 'Project records', value: Number(map.project_records || 0) },
+      { name: 'Inventory records', value: Number(map.inventory_records || 0) },
+      { name: 'RAG chunks', value: Number(map.rag_chunks || 0) },
+    ],
+  };
 }
 
 function renderLeadsTable() {

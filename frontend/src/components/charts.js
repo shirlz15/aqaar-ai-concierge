@@ -94,7 +94,7 @@ export function renderProjectDoughnutChart(canvasId, data) {
   const projects = data?.top_projects || data?.projects || [];
   const limited = projects.slice(0, 6);
   const labels = limited.map(p => (p.name || p.title || 'Unknown').substring(0, 20));
-  const values = limited.map(p => p.count || p.queries || Math.floor(Math.random() * 50 + 10));
+  const values = limited.map(p => Number(p.count || p.queries || p.value || 0));
 
   const colors = [
     ACCENT,
@@ -157,17 +157,12 @@ export function renderActivityLineChart(canvasId, data) {
   if (!ctx) return;
 
   const sessions = data?.sessions_by_day || data?.activity || [];
-  // Generate last 7 day labels if no data
   const labels = sessions.length > 0
     ? sessions.map(s => s.date || s.day)
-    : Array.from({ length: 7 }, (_, i) => {
-        const d = new Date();
-        d.setDate(d.getDate() - (6 - i));
-        return d.toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
-      });
+    : ['Unknown'];
   const values = sessions.length > 0
     ? sessions.map(s => s.count || s.sessions)
-    : [4, 7, 5, 12, 9, 15, 11];
+    : [0];
 
   const chart = new Chart(ctx, {
     type: 'line',

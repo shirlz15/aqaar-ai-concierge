@@ -1,7 +1,7 @@
 /**
  * Aqaar AI Concierge — Landing Page (Page 1)
  */
-import { search } from '../api.js';
+import { search, getDashboard } from '../api.js';
 import { renderPropertyCard } from '../components/card.js';
 import { openEnquiryModal } from '../components/modal.js';
 import { showToast } from '../toast.js';
@@ -115,8 +115,8 @@ export async function renderLanding() {
             </div>
             <div class="hero-stats">
               <div class="hero-stat">
-                <div class="hero-stat-number">500+</div>
-                <div class="hero-stat-label">Properties Listed</div>
+                <div class="hero-stat-number" id="hero-project-count">Loading</div>
+                <div class="hero-stat-label">KB Projects</div>
               </div>
               <div class="hero-stat">
                 <div class="hero-stat-number">24/7</div>
@@ -342,6 +342,7 @@ export async function renderLanding() {
 
   // ── Load properties ────────────────────────────────────────
   loadProperties(cfg.query);
+  loadDashboardStats();
 }
 
 async function loadProperties(query) {
@@ -378,6 +379,22 @@ async function loadProperties(query) {
         <a href="#/concierge" style="color:var(--accent)">Chat with AI</a> or call Aqaar directly.</p>
       </div>`;
     console.warn('Properties load error:', err.message);
+  }
+}
+
+async function loadDashboardStats() {
+  try {
+    const data = await getDashboard();
+    const metrics = data?.metrics || [];
+    const projectCount = metrics.find(m => m.metric_id === 'project_records')?.metric_value;
+    const ragCount = metrics.find(m => m.metric_id === 'rag_chunks')?.metric_value;
+    const projectEl = document.getElementById('hero-project-count');
+    const verifiedEl = document.querySelectorAll('.hero-stat-number')[2];
+    if (projectEl) projectEl.textContent = projectCount || 'Contact Aqaar';
+    if (verifiedEl) verifiedEl.textContent = ragCount ? `${ragCount}` : 'Verified';
+  } catch (err) {
+    const projectEl = document.getElementById('hero-project-count');
+    if (projectEl) projectEl.textContent = 'Contact Aqaar';
   }
 }
 

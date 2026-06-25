@@ -793,6 +793,29 @@ img { max-width: 100%; display: block; }
   font-style: italic;
 }
 
+.property-card-source {
+  margin: -4px 0 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.helper-chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.helper-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 /* ── Concierge Chat ──────────────────────────────────────────── */
 .chat-page {
   min-height: 100vh;

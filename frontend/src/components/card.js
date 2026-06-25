@@ -17,18 +17,25 @@ const GRADIENT_STYLES = [
  * @param {function} onEnquire - Callback when Enquire is clicked
  */
 export function renderPropertyCard(property, index = 0, onEnquire) {
-  const name = property.title || property.property_name || 'Contact Aqaar for details';
+  const project = property.project || property;
+  const unit = Array.isArray(property.units) ? property.units.find(u => u && Object.values(u).some(v => v && v !== 'unknown')) : null;
+  const summary = property.summary || {};
+  const source = property.source || project.source || unit?.source || {};
+
+  const name = project.project_name || project.property_name || property.title || 'Contact Aqaar for details';
   const location = [
-    property.summary?.city,
-    property.summary?.district,
-    property.summary?.community,
+    project.city || summary.city,
+    project.district || summary.district,
+    project.community || summary.community,
   ].filter(v => v && v !== 'unknown').join(', ') || 'Contact Aqaar for details';
 
-  const status = property.summary?.status || property.status || null;
-  const unitType = property.summary?.property_type || property.property_type || null;
-  const bedrooms = property.summary?.bedrooms || null;
-  const price = property.summary?.price_min || property.price || null;
-  const developer = property.summary?.developer || null;
+  const status = project.status || summary.status || property.status || null;
+  const unitType = unit?.unit_type || project.sub_type || project.property_type || summary.property_type || property.property_type || null;
+  const bedrooms = unit?.bedrooms_min || summary.bedrooms || null;
+  const price = unit?.price_min || summary.price_min || property.price || null;
+  const currency = unit?.currency && unit.currency !== 'unknown' ? unit.currency : 'AED';
+  const developer = project.developer || summary.developer || null;
+  const sourceUrl = source.source_url || project.source_url || unit?.source?.source_url || property.source_url || null;
 
   const icon = PROPERTY_ICONS[index % PROPERTY_ICONS.length];
   const gradient = GRADIENT_STYLES[index % GRADIENT_STYLES.length];
@@ -56,9 +63,10 @@ export function renderPropertyCard(property, index = 0, onEnquire) {
       </div>
       <div class="property-card-price">
         ${price && price !== 'unknown'
-          ? `AED ${Number(price).toLocaleString()}<span class="property-card-price-label">starting</span>`
+          ? `${currency} ${Number(price).toLocaleString()}<span class="property-card-price-label">published</span>`
           : `<span class="property-card-unknown">Contact Aqaar for details</span>`}
       </div>
+      ${sourceUrl && sourceUrl !== 'unknown' ? `<p class="property-card-source">Source: ${sourceUrl}</p>` : ''}
       <div class="property-card-footer">
         <button class="btn btn-primary btn-sm enquire-btn" id="enquire-${index}" aria-label="Enquire about ${name}">
           Enquire Now

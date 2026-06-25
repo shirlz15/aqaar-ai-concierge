@@ -20,7 +20,7 @@ export async function renderProperties() {
 
         <div class="properties-filters" style="display:flex;gap:12px;margin-bottom:32px;flex-wrap:wrap;">
           <div class="search-box" style="flex:1;min-width:280px;position:relative;">
-            <input type="text" id="prop-search-input" class="form-input" placeholder="Search projects, locations, or types..." />
+            <input type="text" id="prop-search-input" class="form-input" placeholder="Search: aj, mawjan, dusit, 2 bedroom..." />
             <button id="prop-search-btn" class="btn btn-primary" style="position:absolute;right:4px;top:4px;bottom:4px;padding:0 16px;">Search</button>
           </div>
           <select class="form-input" id="prop-intent-select" style="width:160px;">
@@ -30,6 +30,10 @@ export async function renderProperties() {
             <option value="invest" ${state.intent === 'invest' ? 'selected' : ''}>Invest</option>
             <option value="commercial" ${state.intent === 'commercial' ? 'selected' : ''}>Commercial</option>
           </select>
+        </div>
+        <div class="search-helper-row" style="display:flex;gap:8px;flex-wrap:wrap;margin:-18px 0 28px;">
+          <span style="color:var(--text-muted);font-size:13px;">Try:</span>
+          ${['aj', 'mawjan', 'dusit', '2 bedroom'].map(q => `<button class="helper-chip" data-query="${q}">${q}</button>`).join('')}
         </div>
 
         <div class="properties-grid" id="all-properties-grid" role="list">
@@ -52,6 +56,12 @@ export async function renderProperties() {
   };
 
   searchBtn?.addEventListener('click', doSearch);
+  document.querySelectorAll('.helper-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (searchInput) searchInput.value = btn.dataset.query;
+      doSearch();
+    });
+  });
   searchInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') doSearch();
   });
@@ -60,6 +70,13 @@ export async function renderProperties() {
   // Initial load
   loadProperties('', state.intent || 'all');
 }
+
+const INTENT_QUERY = {
+  buy: 'Buy Property',
+  rent: 'Rent Property',
+  invest: 'Investment',
+  commercial: 'Commercial',
+};
 
 async function loadProperties(query, intent) {
   const grid = document.getElementById('all-properties-grid');
@@ -72,10 +89,21 @@ async function loadProperties(query, intent) {
     if (query) {
       const data = await search({ query, limit: 12 });
       results = data?.results || [];
+      if (!results.length || query.length <= 2) {
+        const fallback = await recommend({ limit: 50 });
+        const needle = query.toLowerCase();
+        results = (fallback?.recommendations || [])
+          .filter(item => JSON.stringify(item).toLowerCase().includes(needle))
+          .slice(0, 12);
+      }
     } else {
       const targetIntent = intent === 'all' ? 'buy' : intent;
-      const data = await recommend({ intent: targetIntent, limit: 12 });
+      const data = await recommend({ intent: INTENT_QUERY[targetIntent] || targetIntent, limit: 12 });
       results = data?.recommendations || [];
+      if (!results.length) {
+        const fallback = await recommend({ limit: 12 });
+        results = fallback?.recommendations || [];
+      }
     }
 
     if (!results.length) {
