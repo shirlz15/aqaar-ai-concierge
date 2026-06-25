@@ -2,6 +2,7 @@ import http from "node:http";
 import { fileURLToPath, URL } from "node:url";
 import { dashboard, chat, leadScore, qualify, recommend, search } from "./engine.js";
 import { loadData } from "./data.js";
+import { initializeGemini, testGemini } from "./gemini.js";
 
 function sendJson(res, status, body) {
   const payload = JSON.stringify(body, null, 2);
@@ -24,6 +25,7 @@ async function readBody(req) {
 }
 
 export async function createServer(options = {}) {
+  initializeGemini({ log: Boolean(options.logGemini) });
   const data = await loadData(options);
   return http.createServer(async (req, res) => {
     try {
@@ -41,6 +43,15 @@ export async function createServer(options = {}) {
 
       if (req.method === "GET" && url.pathname === "/health") {
         return sendJson(res, 200, { ok: true, kb_only: true });
+      }
+      if (req.method === "GET" && url.pathname === "/test-gemini") {
+        const result = await testGemini();
+        return sendJson(res, result.used ? 200 : 502, {
+          ok: result.used,
+          model: result.model,
+          response: result.text,
+          error: result.error || null
+        });
       }
       if (req.method === "POST" && url.pathname === "/chat") return sendJson(res, 200, await chat(data, input));
       if (req.method === "POST" && url.pathname === "/recommend") return sendJson(res, 200, recommend(data, input));
@@ -60,8 +71,13 @@ export async function createServer(options = {}) {
 
 if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const port = Number(process.env.PORT || 8080);
-  const server = await createServer();
-  server.listen(port, () => {
-    console.log(`Aqaar Concierge Backend listening on http://localhost:${port}`);
-  });
+  try {
+    const server = await createServer({ logGemini: true });
+    server.listen(port, () => {
+      console.log(`Aqaar Concierge Backend listening on http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
 }

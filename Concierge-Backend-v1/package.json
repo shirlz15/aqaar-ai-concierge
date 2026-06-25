@@ -9,6 +9,10 @@
     "validate": "node scripts/validate.mjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@google/genai": "^2.10.0",
+    "dotenv": "^17.4.2"
   }
 }

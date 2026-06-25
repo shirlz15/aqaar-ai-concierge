@@ -136,6 +136,7 @@ function projectProfile(data, project) {
     description: knownOrUnknown(description),
     property_type: knownOrUnknown(project.property_type),
     sub_type: knownOrUnknown(project.sub_type),
+    ownership_type: knownOrUnknown(project.ownership_type),
     status: knownOrUnknown(project.status),
     completion: knownOrUnknown(project.completion_status || project.handover_year),
     nearby_schools: knownOrUnknown(location.schools_nearby || location.education_nearby),
@@ -173,6 +174,7 @@ function projectProfile(data, project) {
       project.community,
       project.property_type,
       project.sub_type,
+      project.ownership_type,
       project.status,
       location.schools_nearby,
       location.hospitals_nearby,
@@ -522,18 +524,30 @@ export async function chat(data, input = {}) {
   const nextQuestion = nextQuestionFor(session.memory, activePurpose);
   const response = buildContextualResponse(data, message, session.memory, retrieved, recs, nextQuestion);
   if (response.recommendations?.length) session.lastProfiles = response.recommendations.map((item) => item.project.property_id);
-  const rag = retrieveRagContext(data, message, session.memory, response, recs, 8);
+  const rag = retrieveRagContext(data, message, session.memory, response, recs, 6);
   const prompt = buildGroundedPrompt({
     message,
     memory: session.memory,
+    extractedEntities: incoming,
     detected,
     response,
     cards: response.cards,
     rag,
     nextQuestion
   });
-  const llmResult = await generateWithGemini({ prompt });
-  const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : response.answer);
+  const hasGroundedContext = response.cards.length > 0 || rag.chunks.length > 0;
+  const unsupported = response.cards.length === 0 && /^This is not published in the verified Aqaar KB\.$/.test(response.answer);
+  const llmResult = hasGroundedContext && !unsupported
+    ? await generateWithGemini({ prompt })
+    : {
+        provider: "gemini",
+        model: GEMINI_MODEL,
+        used: false,
+        reason: unsupported ? "unsupported_by_kb" : "no_retrieved_context",
+        text: ""
+      };
+  const fallbackAnswer = buildGroundedFallback(response, nextQuestion);
+  const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : fallbackAnswer);
   const finalAnswer = groundedAnswer || response.answer || "This is not published in the verified Aqaar KB.";
   const sourcePool = uniqueSources([
     ...retrieved.sources,
@@ -579,17 +593,19 @@ function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
   const query = buildMemoryQuery(message, memory);
   const parsed = mergeKnown(parseSlots(query), memory || {});
   const queryTokens = expandQueryTokens(tokens(query), parsed);
-  const preferredNames = new Set([
-    ...(response.cards || []).map((card) => norm(card.project)),
-    ...(recs.recommendations || []).map((item) => norm(item.project.project_name))
-  ].filter(Boolean));
+  const cardNames = (response.cards || []).map((card) => norm(card.project)).filter(Boolean);
+  const recommendationNames = (recs.recommendations || []).map((item) => norm(item.project.project_name)).filter(Boolean);
+  const preferredNames = new Set(cardNames.length ? cardNames : recommendationNames);
 
+  const hasPreferredCards = preferredNames.size > 0;
   const scoredChunks = data.ragChunks.map((chunk, index) => {
     const text = chunk.text || chunk.content || JSON.stringify(chunk);
     const title = chunk.title || chunk.project || chunk.document || "";
-    const nameBoost = [...preferredNames].some((name) => name !== "unknown" && norm(`${title} ${text}`).includes(name)) ? 8 : 0;
+    const matchesPreferred = [...preferredNames].some((name) => name !== "unknown" && norm(`${title} ${text}`).includes(name));
+    const nameBoost = matchesPreferred ? 8 : 0;
     return {
       score: matchScore(queryTokens, `${title} ${text}`) + nameBoost,
+      matchesPreferred,
       index,
       chunk
     };
@@ -597,6 +613,7 @@ function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
 
   const chunks = scoredChunks
     .filter((entry) => entry.score > 0)
+    .filter((entry) => !hasPreferredCards || entry.matchesPreferred)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map(({ chunk, index, score }) => ({
@@ -604,7 +621,7 @@ function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
       title: knownOrUnknown(chunk.title || chunk.project || chunk.document || `KB chunk ${index + 1}`),
       project: knownOrUnknown(chunk.project || chunk.project_name || chunk.title),
       section: knownOrUnknown(chunk.section || chunk.chunk_type),
-      text: knownOrUnknown(chunk.text || chunk.content || JSON.stringify(chunk)).slice(0, 900),
+      text: knownOrUnknown(chunk.text || chunk.content || JSON.stringify(chunk)).slice(0, 700),
       source: sourceFromChunk(chunk, index),
       source_label: sourceLabel(chunk.source_url || chunk.source || chunk.document),
       score
@@ -621,10 +638,11 @@ function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
   };
 }
 
-function buildGroundedPrompt({ message, memory, detected, response, cards, rag, nextQuestion }) {
+function buildGroundedPrompt({ message, memory, extractedEntities, detected, response, cards, rag, nextQuestion }) {
   const context = {
     user_message: message,
     detected_intent: detected?.intent || "unknown",
+    extracted_entities: extractedEntities || {},
     conversation_memory: memory,
     response_type: response.type,
     allowed_project_cards: cards || [],
@@ -644,7 +662,10 @@ function buildGroundedPrompt({ message, memory, detected, response, cards, rag, 
     "Do not invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
     "Do not print raw URLs. Refer to sources by clean label only.",
     "If the answer is absent from the context, say exactly: This is not published in the verified Aqaar KB.",
-    "Only discuss projects shown in allowed_project_cards or retrieved_chunks.",
+    "If allowed_project_cards is empty, do not recommend or name any property.",
+    "For property/project recommendations, mention only project names from allowed_project_cards.",
+    "Use retrieved_chunks only as evidence for allowed_project_cards, or for a direct non-property fact requested by the user.",
+    "Prioritize allowed_project_cards for project names, prices, payment plans, amenities, locations, and statuses.",
     "Give a natural, concise answer that directly answers the user's latest question.",
     "If relevant projects are present, briefly explain why each matches using only card/chunk fields.",
     "Ask exactly one useful follow-up question at the end.",
@@ -661,6 +682,29 @@ function sanitizeAnswer(text) {
     .replace(/[ \t]{2,}/g, " ")
     .trim();
   return cleaned;
+}
+
+function buildGroundedFallback(response, nextQuestion) {
+  if (!response.cards?.length) return response.answer || "This is not published in the verified Aqaar KB.";
+  const lines = [];
+  if (response.type === "payment_plans") {
+    lines.push("Published payment plans in the verified Aqaar KB:");
+    for (const card of response.cards) lines.push(`- ${card.project}: ${card.payment_plan}`);
+  } else if (response.type === "price") {
+    lines.push("Published price records matching your request:");
+    for (const card of response.cards) lines.push(`- ${card.project}: ${card.price}`);
+  } else if (response.type === "compare") {
+    return response.answer;
+  } else if (response.type === "nearby_landmarks") {
+    for (const card of response.cards) lines.push(`${card.project} is published in the Aqaar KB as ${card.unit_types} in ${card.location}.`);
+  } else {
+    lines.push(response.cards.length === 1 ? "Closest published Aqaar KB match:" : "Published Aqaar KB matches:");
+    for (const card of response.cards) {
+      lines.push(`- ${card.project}: ${card.location}; ${card.unit_types}; price ${card.price}; payment plan ${card.payment_plan}; status ${card.status}.`);
+    }
+  }
+  if (nextQuestion) lines.push(nextQuestion);
+  return lines.join("\n");
 }
 
 function sourceLabel(raw) {
@@ -1072,7 +1116,10 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
   }
 
   if (type === "location_freehold") {
-    items = filterProfiles(profiles, parsed).slice(0, 6);
+    items = profiles
+      .filter((profile) => norm(profile.ownership_type).includes("freehold") || norm(profile.sub_type).includes("freehold") || hasTerm(profile.corpus, "freehold"))
+      .filter((profile) => matchesStrict(profile, parsed))
+      .slice(0, 6);
     return listResponse("Location and ownership matches from Aqaar KB", items, parsed, nextQuestion);
   }
 
