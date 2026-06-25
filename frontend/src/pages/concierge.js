@@ -194,7 +194,7 @@ function renderChips() {
   });
 }
 
-function appendRenderedMessage({ role, content, time }) {
+function appendRenderedMessage({ role, content, time, cards }) {
   const inner = document.getElementById('messages-inner');
   if (!inner) return;
   const isUser = role === 'user';
@@ -206,7 +206,7 @@ function appendRenderedMessage({ role, content, time }) {
   div.innerHTML = `
     <div class="message-avatar" aria-hidden="true">${avatar}</div>
     <div>
-      <div class="message-bubble">${formatMessage(content)}</div>
+      <div class="message-bubble">${formatMessage(content)}${renderResponseCards(cards)}</div>
       <div class="message-time">${timeStr}</div>
     </div>
   `;
@@ -214,8 +214,8 @@ function appendRenderedMessage({ role, content, time }) {
   scrollToBottom();
 }
 
-function appendAIMessage(text) {
-  const msg = { role: 'ai', content: text, time: now() };
+function appendAIMessage(text, cards = []) {
+  const msg = { role: 'ai', content: text, cards, time: now() };
   if (state.messages.length === 0 || state.messages[state.messages.length - 1]?.content !== text) {
     state.messages.push(msg);
   }
@@ -280,7 +280,7 @@ async function sendMessage() {
       hideTyping();
 
       const reply = res?.reply || res?.response || res?.message || 'Contact Aqaar for details on this query.';
-      appendAIMessage(reply);
+      appendAIMessage(reply, res?.response_cards || []);
 
       // Check if AI is asking for contact details
       const lowerReply = reply.toLowerCase();
@@ -386,6 +386,37 @@ function formatMessage(text) {
     .replace(/\n/g, '<br/>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>');
+}
+
+function renderResponseCards(cards) {
+  if (!Array.isArray(cards) || cards.length === 0) return '';
+  return `
+    <div class="chat-result-cards">
+      ${cards.map(card => `
+        <article class="chat-result-card">
+          <div class="chat-result-title">${escapeHtml(card.project || 'unknown')}</div>
+          <div class="chat-result-grid">
+            <span>Location</span><strong>${escapeHtml(card.location || 'unknown')}</strong>
+            <span>Price</span><strong>${escapeHtml(card.price || 'unknown')}</strong>
+            <span>Unit types</span><strong>${escapeHtml(card.unit_types || 'unknown')}</strong>
+            <span>Bedrooms</span><strong>${escapeHtml(card.bedrooms || 'unknown')}</strong>
+            <span>Amenities</span><strong>${escapeHtml(card.amenities || 'unknown')}</strong>
+            <span>Payment plan</span><strong>${escapeHtml(card.payment_plan || 'unknown')}</strong>
+            <span>Status</span><strong>${escapeHtml(card.status || 'unknown')}</strong>
+          </div>
+          <p class="chat-result-why">${escapeHtml(card.why_recommended || 'published in Aqaar KB')}</p>
+        </article>
+      `).join('')}
+    </div>
+  `;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 function scrollToBottom() {

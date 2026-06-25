@@ -85,10 +85,36 @@ describe("AQAAR Concierge Backend v1", () => {
     const first = await request("/chat", { session_id: sessionId, message: "Show 2 bedroom apartments" });
     const second = await request("/chat", { session_id: sessionId, message: "Budget 1.2M AED" });
     const third = await request("/chat", { session_id: sessionId, message: "Waterfront only" });
-    assert.match(first.answer, /searched the Aqaar KB/i);
+    assert.doesNotMatch(first.answer, /I searched the Aqaar KB/i);
     assert.equal(second.memory.budget, 1200000);
     assert.ok(third.memory.amenities.includes("waterfront"));
     assert.ok(third.recommendations.every((item) => fixture.projectById.has(item.project.property_id)));
+  });
+
+  it("answers distinct concierge intents with filtered cards", async () => {
+    const apartment = await request("/chat", { session_id: "intent-apartment", message: "2 bedroom apartments" });
+    const corniche = await request("/chat", { session_id: "intent-corniche", message: "Projects in Ajman Corniche" });
+    const schools = await request("/chat", { session_id: "intent-schools", message: "Schools nearby" });
+    const compare = await request("/chat", { session_id: "intent-compare", message: "Compare Mawjan and Dusit" });
+    const amenities = await request("/chat", { session_id: "intent-amenities", message: "What amenities does Mawjan have?" });
+
+    assert.equal(apartment.response_type, "project_search");
+    assert.ok(apartment.response_cards.length > 0);
+    assert.ok(apartment.response_cards.every((card) => String(card.bedrooms).includes("2") || card.unit_types.toLowerCase().includes("bedroom")));
+    assert.ok(corniche.response_cards.every((card) => card.location.toLowerCase().includes("corniche")));
+    assert.equal(schools.response_type, "school");
+    assert.ok(schools.response_cards.every((card) => card.project.toLowerCase().includes("school") || card.unit_types.toLowerCase().includes("education")));
+    assert.equal(compare.response_type, "compare");
+    assert.deepEqual(compare.response_cards.map((card) => card.project).sort(), ["Dusit Thani Residences Ajman", "Mawjan"].sort());
+    assert.equal(amenities.response_cards[0].project, "Mawjan");
+  });
+
+  it("does not expose raw URLs in chat answers and returns no-match text", async () => {
+    const impossible = await request("/chat", { session_id: "intent-none", message: "Villa under AED 1000" });
+    const payment = await request("/chat", { session_id: "intent-payment", message: "Payment plans" });
+    assert.equal(impossible.answer, "No matching Aqaar project found.");
+    assert.doesNotMatch(payment.answer, /https?:\/\//i);
+    assert.ok(payment.response_cards.some((card) => card.payment_plan !== "unknown"));
   });
 
   it("captures lead details only into session memory", async () => {

@@ -85,6 +85,7 @@ export async function loadData(options = {}) {
     if (!assetsByProject.has(asset.property_id)) assetsByProject.set(asset.property_id, []);
     assetsByProject.get(asset.property_id).push(asset);
   }
+  const locationsByProject = new Map(locations.map((location) => [location.property_id, location]));
   const ragByProject = new Map();
   for (const chunk of ragChunks) {
     const projectId = chunk.document_id || chunk.project_id;
@@ -120,6 +121,7 @@ export async function loadData(options = {}) {
     projectsByName,
     unitsByProject,
     assetsByProject,
+    locationsByProject,
     ragByProject
   };
 }

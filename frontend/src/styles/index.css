@@ -958,11 +958,53 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--border);
   border-bottom-left-radius: 4px;
 }
+.message.ai .message-bubble {
+  max-width: min(860px, 82vw);
+}
 .message.user .message-bubble {
   background: var(--accent);
   color: var(--text-inverse);
   border-bottom-right-radius: 4px;
   font-weight: 500;
+}
+
+.chat-result-cards {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+.chat-result-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+}
+.chat-result-title {
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+.chat-result-grid {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: 7px 12px;
+  align-items: start;
+}
+.chat-result-grid span {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.chat-result-grid strong {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 600;
+  word-break: break-word;
+}
+.chat-result-why {
+  margin-top: 10px;
+  color: var(--text-secondary);
+  font-size: 12px;
 }
 
 .message-time {

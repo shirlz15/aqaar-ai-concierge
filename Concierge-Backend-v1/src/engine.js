@@ -47,6 +47,8 @@ const AMENITY_ALIASES = {
   retail: ["retail", "shopping", "mall"]
 };
 
+const PROJECT_TYPES = ["residential", "commercial", "education", "healthcare", "hospitality"];
+
 function tokens(text) {
   return String(text || "")
     .toLowerCase()
@@ -110,6 +112,7 @@ function projectProfile(data, project) {
   const units = data.unitsByProject.get(project.property_id) || [];
   const assets = data.assetsByProject.get(project.property_id) || [];
   const chunks = data.ragByProject.get(project.property_id) || [];
+  const location = data.locationsByProject?.get(project.property_id) || {};
   const ragText = chunks.map((chunk) => chunk.text || chunk.content || "").join("\n");
   const images = assets.filter((asset) => norm(asset.asset_type).includes("image"));
   const floorplans = assets.filter((asset) => norm(asset.asset_type).includes("floor") || norm(asset.asset_label).includes("floor"));
@@ -134,6 +137,11 @@ function projectProfile(data, project) {
     sub_type: knownOrUnknown(project.sub_type),
     status: knownOrUnknown(project.status),
     completion: knownOrUnknown(project.completion_status || project.handover_year),
+    nearby_schools: knownOrUnknown(location.schools_nearby || location.education_nearby),
+    nearby_hospitals: knownOrUnknown(location.hospitals_nearby || location.healthcare_nearby),
+    nearby_retail: knownOrUnknown(location.retail_nearby),
+    connectivity: knownOrUnknown(location.connectivity || location.roads_connectivity),
+    landmarks: knownOrUnknown(location.landmarks_nearby || location.leisure_nearby),
     bedrooms: summarizeRange(units, "bedrooms_min", "bedrooms_max"),
     bathrooms: summarizeRange(units, "bathrooms_min", "bathrooms_max"),
     area: summarizeArea(units),
@@ -165,6 +173,12 @@ function projectProfile(data, project) {
       project.property_type,
       project.sub_type,
       project.status,
+      location.schools_nearby,
+      location.hospitals_nearby,
+      location.healthcare_nearby,
+      location.retail_nearby,
+      location.landmarks_nearby,
+      location.connectivity,
       description,
       amenities.join(" "),
       ragText,
@@ -470,19 +484,22 @@ export function chat(data, input = {}) {
   sessions.set(sessionId, session);
 
   const nextQuestion = nextQuestionFor(session.memory, activePurpose);
-  const answer = buildAdvisorAnswer(session.memory, retrieved, recs, nextQuestion);
+  const response = buildContextualResponse(data, message, session.memory, retrieved, recs, nextQuestion);
+  if (response.recommendations?.length) session.lastProfiles = response.recommendations.map((item) => item.project.property_id);
   return {
     session_id: sessionId,
-    answer,
-    reply: answer,
+    answer: response.answer,
+    reply: response.answer,
+    response_type: response.type,
+    response_cards: response.cards,
     intent: { ...detected, intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent },
     memory: session.memory,
-    recommendations: recs.recommendations,
+    recommendations: response.recommendations || recs.recommendations,
     qualification,
     lead_capture: session.memory.lead_capture,
     sales_handoff: {
       status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
-      summary: buildSalesSummary(session.memory, recs.recommendations),
+      summary: buildSalesSummary(session.memory, response.recommendations || recs.recommendations),
       captured_fields: session.memory.lead_capture,
       source: "Concierge-Backend-v1 session memory plus KB-backed recommendations"
     },
@@ -498,9 +515,9 @@ function parseSlots(message) {
   if (/\b(rent|lease)\b/.test(text)) slots.purpose = "rent";
   if (/\b(invest|investment|roi|yield)\b/.test(text)) slots.purpose = "invest";
   if (/\b(commercial|office|retail|clinic|warehouse|shop)\b/.test(text)) slots.purpose = "commercial";
-  if (/\bvilla\b/.test(text)) slots.property_type = "villa";
-  if (/\b(apartment|flat|studio)\b/.test(text)) slots.property_type = "apartment";
-  if (/\btownhouse\b/.test(text)) slots.property_type = "townhouse";
+  if (/\bvillas?\b/.test(text)) slots.property_type = "villa";
+  if (/\b(apartments?|flats?|studio|studios)\b/.test(text)) slots.property_type = "apartment";
+  if (/\btownhouses?\b/.test(text)) slots.property_type = "townhouse";
   if (/\b(office|retail|clinic|warehouse|shop)\b/.test(text)) slots.commercial_type = text.match(/\b(office|retail|clinic|warehouse|shop)\b/)?.[1];
   const bedrooms = parseBedrooms(text);
   if (bedrooms !== null) slots.bedrooms = bedrooms;
@@ -530,7 +547,7 @@ function parseBedrooms(text) {
 }
 
 function parseBudget(text) {
-  const match = text.match(/(?:aed|budget|under|below|around|up to)?\s*([\d,.]+)\s*(m|million|k|thousand)?/i);
+  const match = text.match(/(?:budget|under|below|around|up to)?\s*(?:aed)?\s*([\d,.]+)\s*(m|million|k|thousand)?/i);
   if (!match) return null;
   let value = Number(match[1].replace(/,/g, ""));
   if (!Number.isFinite(value)) return null;
@@ -646,10 +663,18 @@ function projectHasBedrooms(profile, bedrooms) {
 }
 
 function budgetMatches(profile, budget) {
-  return profile.units.some((unit) => {
-    const min = Number(unit.price_min || unit.price_max);
-    return Number.isFinite(min) && min > 0 && min <= budget;
-  });
+  const ceiling = Number(budget);
+  if (!Number.isFinite(ceiling) || ceiling <= 0) return false;
+  return minPublishedPrice(profile) <= ceiling;
+}
+
+function minPublishedPrice(profile) {
+  const unitPrices = profile.units
+    .flatMap((unit) => [Number(unit.price_min), Number(unit.price_max)])
+    .filter((value) => Number.isFinite(value) && value > 0);
+  const profilePrice = Number(profile.price_min);
+  if (Number.isFinite(profilePrice) && profilePrice > 0) unitPrices.push(profilePrice);
+  return unitPrices.length ? Math.min(...unitPrices) : Number.POSITIVE_INFINITY;
 }
 
 function matchingUnits(profile, criteria) {
@@ -746,6 +771,282 @@ function nextQuestionFor(memory, purpose) {
     if (!memory[slot]) return FLOW_QUESTIONS[slot];
   }
   return "Would you like me to prepare a sales handoff summary for this shortlist?";
+}
+
+function classifyQuestion(message) {
+  const text = norm(message);
+  if (/\bcompare\b/.test(text)) return "compare";
+  if (/\bamenit|facilit|gym|pool|kids|parking\b/.test(text)) return "amenities";
+  if (/\bpayment plan|installment|instalment|down payment|cheque|cheques\b/.test(text)) return "payment_plans";
+  if (/\bschools?\b/.test(text)) return "schools";
+  if (/\bhospitals?|healthcare|clinic\b/.test(text) && !/\bcommercial\b/.test(text)) return "hospitals";
+  if (/\bcheapest|lowest price|least expensive|affordable\b/.test(text)) return "cheapest";
+  if (/\bluxury|premium|branded\b/.test(text)) return "luxury";
+  if (/\binvest|investment|roi|yield\b/.test(text)) return "investment";
+  if (/\bcommercial|office|retail|warehouse|clinic\b/.test(text)) return "commercial";
+  if (/\bbeachfront|waterfront|beach|sea view|corniche\b/.test(text)) return "waterfront";
+  return "project_search";
+}
+
+function buildContextualResponse(data, message, memory, retrieved, recs, nextQuestion) {
+  const type = classifyQuestion(message);
+  const parsed = mergeKnown(parseSlots(message), memory || {});
+  const profiles = allProfiles(data);
+  let items = [];
+  let answer = "";
+
+  if (type === "compare") {
+    items = findNamedProjects(profiles, message);
+    if (items.length < 2) return noMatch("compare");
+    return compareResponse(items.slice(0, 2));
+  }
+
+  if (type === "amenities") {
+    items = findNamedProjects(profiles, message);
+    if (!items.length) items = filterProfiles(profiles, parsed).slice(0, 3);
+    return amenitiesResponse(items);
+  }
+
+  if (type === "payment_plans") {
+    items = filterProfiles(profiles, parsed)
+      .filter((profile) => isKnown(profile.payment_plan) || profile.units.some((unit) => isKnown(unit.payment_plan)))
+      .slice(0, 5);
+    return paymentPlanResponse(items);
+  }
+
+  if (type === "schools") {
+    items = profiles.filter((profile) => norm(profile.property_type).includes("education") || norm(profile.sub_type).includes("education"));
+    return facilityResponse(items, "Schools found in Aqaar KB", "school");
+  }
+
+  if (type === "hospitals") {
+    items = profiles.filter((profile) => norm(profile.property_type).includes("healthcare") || norm(profile.project_name).includes("hospital"));
+    return facilityResponse(items, "Healthcare records found in Aqaar KB", "hospital");
+  }
+
+  if (type === "cheapest") {
+    items = filterProfiles(profiles, { ...parsed, property_type: parsed.property_type || "apartment" })
+      .filter((profile) => isKnown(profile.price_min))
+      .sort((a, b) => Number(a.price_min) - Number(b.price_min))
+      .slice(0, 5);
+    return listResponse("Lowest published prices matching your request", items, parsed);
+  }
+
+  if (type === "luxury") {
+    items = profiles
+      .filter((profile) => /\bluxury|premium|branded|beachfront|waterfront\b/i.test(profile.corpus))
+      .sort((a, b) => Number(b.price_min || 0) - Number(a.price_min || 0))
+      .slice(0, 5);
+    return listResponse("Luxury-positioned Aqaar projects", items, parsed);
+  }
+
+  if (type === "investment") {
+    items = filterProfiles(profiles, { ...parsed, purpose: "invest" })
+      .filter((profile) => /\bresidential|villa|freehold|branded|waterfront|beachfront\b/i.test(`${profile.property_type} ${profile.sub_type} ${profile.completion} ${profile.project_name}`))
+      .filter((profile) => !/\bcommercial|education|school|healthcare|hospital|clinic\b/i.test(`${profile.property_type} ${profile.sub_type} ${profile.project_name}`))
+      .slice(0, 5);
+    answer = "For investment, I can only use published KB signals such as project status, location, pricing, unit mix, waterfront/branded positioning, and available payment plans. ROI is not published in the KB.";
+    return cardResponse(type, answer, items, parsed, nextQuestion);
+  }
+
+  if (type === "commercial") {
+    items = filterProfiles(profiles, { ...parsed, purpose: "commercial", property_type: "commercial" }).slice(0, 6);
+    return listResponse("Commercial Aqaar projects matching the request", items, { ...parsed, property_type: "commercial" });
+  }
+
+  if (type === "waterfront") {
+    items = filterProfiles(profiles, { ...parsed, amenities: [...new Set([...(parsed.amenities || []), "waterfront"])] }).slice(0, 5);
+    return listResponse("Waterfront and Corniche matches", items, parsed);
+  }
+
+  items = filterProfiles(profiles, parsed).slice(0, 5);
+  if (!items.length && !hasExplicitFilters(parsed) && recs.recommendations.length) items = recs.recommendations.map((item) => item.project).slice(0, 5);
+  return listResponse("Matching Aqaar projects", items, parsed, nextQuestion);
+}
+
+function noMatch(type = "search") {
+  return {
+    type,
+    answer: "No matching Aqaar project found.",
+    cards: [],
+    recommendations: []
+  };
+}
+
+function hasExplicitFilters(criteria = {}) {
+  return Boolean(criteria.property_type || criteria.commercial_type || criteria.location || criteria.bedrooms !== undefined || criteria.budget || criteria.amenities?.length);
+}
+
+function listResponse(title, profiles, criteria = {}, nextQuestion = null) {
+  if (!profiles.length) return noMatch("project_search");
+  const filtered = profiles.map((profile) => recommendationFromProfile(profile, 1, whyForProfile(profile, criteria), criteria));
+  const detail = profiles.length === 1 ? "Here is the closest published match." : `I found ${profiles.length} published match${profiles.length === 1 ? "" : "es"}.`;
+  const followUp = nextQuestion ? `\n\n${nextQuestion}` : "";
+  return {
+    type: "project_search",
+    answer: `${title}. ${detail}${followUp}`,
+    cards: profiles.map((profile) => cleanCard(profile, criteria)),
+    recommendations: filtered
+  };
+}
+
+function cardResponse(type, intro, profiles, criteria = {}, nextQuestion = null) {
+  if (!profiles.length) return noMatch(type);
+  return {
+    type,
+    answer: `${intro}${nextQuestion ? `\n\n${nextQuestion}` : ""}`,
+    cards: profiles.map((profile) => cleanCard(profile, criteria)),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, whyForProfile(profile, criteria), criteria))
+  };
+}
+
+function paymentPlanResponse(profiles) {
+  if (!profiles.length) return noMatch("payment_plans");
+  return {
+    type: "payment_plans",
+    answer: "Published payment plans are available for these Aqaar records. Values not published in the KB are left out.",
+    cards: profiles.map((profile) => cleanCard(profile, {}, { focus: "payment" })),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, ["has a published payment plan"], {}))
+  };
+}
+
+function amenitiesResponse(profiles) {
+  if (!profiles.length) return noMatch("amenities");
+  return {
+    type: "amenities",
+    answer: profiles.length === 1
+      ? `Amenities published for ${profiles[0].project_name}.`
+      : "Amenities published for the matching Aqaar projects.",
+    cards: profiles.map((profile) => cleanCard(profile, {}, { focus: "amenities" })),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, ["amenity data requested"], {}))
+  };
+}
+
+function facilityResponse(profiles, title, type) {
+  if (!profiles.length) return noMatch(type);
+  return {
+    type,
+    answer: `${title}. Distances are shown only where the KB publishes them.`,
+    cards: profiles.slice(0, 8).map((profile) => cleanCard(profile, {}, { focus: type })),
+    recommendations: profiles.slice(0, 8).map((profile) => recommendationFromProfile(profile, 1, [`${type} record in KB`], {}))
+  };
+}
+
+function compareResponse(profiles) {
+  const rows = profiles.map((profile) => {
+    const unitTypes = unitTypesFor(profile).join(", ") || "unknown";
+    const amenities = profile.amenities.length ? profile.amenities.join(", ") : "unknown";
+    return `${profile.project_name}: location ${cleanLocation(profile)}; price ${formatProjectPrice(profile)}; units ${unitTypes}; bedrooms ${profile.bedrooms}; amenities ${amenities}; payment plan ${isKnown(profile.payment_plan) ? profile.payment_plan : "unknown"}; status ${profile.status}.`;
+  });
+  return {
+    type: "compare",
+    answer: `Side-by-side KB comparison:\n${rows.join("\n")}`,
+    cards: profiles.map((profile) => cleanCard(profile, {}, { focus: "compare" })),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, ["directly requested for comparison"], {}))
+  };
+}
+
+function filterProfiles(profiles, criteria = {}) {
+  const budget = Number(criteria.budget);
+  return profiles
+    .filter((profile) => matchesStrict(profile, criteria))
+    .filter((profile) => !Number.isFinite(budget) || budget <= 0 || minPublishedPrice(profile) <= budget)
+    .map((profile) => ({ profile, score: scoreProfile(profile, { ...criteria, queryTokens: expandQueryTokens([], criteria) }).score }))
+    .sort((a, b) => b.score - a.score || Number(a.profile.price_min || Infinity) - Number(b.profile.price_min || Infinity))
+    .map((entry) => entry.profile);
+}
+
+function matchesStrict(profile, criteria = {}) {
+  if (criteria.property_type) {
+    const wanted = norm(criteria.property_type);
+    if (wanted === "apartment" && !/\bapartment|residence|residential|studio|bedroom\b/i.test(profile.corpus)) return false;
+    else if (wanted === "villa" && !/\bvilla\b/i.test(profile.corpus)) return false;
+    else if (wanted === "commercial" && !/\bcommercial|office|retail|shop|clinic|warehouse\b/i.test(profile.corpus)) return false;
+    else if (!["apartment", "villa", "commercial"].includes(wanted) && !hasTerm(profile.corpus, wanted)) return false;
+  }
+  if (criteria.purpose === "commercial" && !/\bcommercial|office|retail|shop|clinic|warehouse\b/i.test(profile.corpus)) return false;
+  if (criteria.location && !norm(profile.corpus).includes(norm(criteria.location))) return false;
+  if (criteria.bedrooms !== undefined && !projectHasBedrooms(profile, criteria.bedrooms)) return false;
+  if (criteria.budget && !budgetMatches(profile, criteria.budget)) return false;
+  for (const amenity of criteria.amenities || []) {
+    if (!hasTerm(profile.corpus, amenity) && !(AMENITY_ALIASES[amenity] || []).some((alias) => hasTerm(profile.corpus, alias))) return false;
+  }
+  return PROJECT_TYPES.some((type) => norm(profile.property_type).includes(type)) || profile.project_name !== "unknown";
+}
+
+function findNamedProjects(profiles, message) {
+  const text = norm(message);
+  return profiles.filter((profile) => {
+    const name = norm(profile.project_name);
+    if (name !== "unknown" && text.includes(name)) return true;
+    if (name.includes("dusit") && text.includes("dusit")) return true;
+    if (name.includes("mawjan") && text.includes("mawjan")) return true;
+    return false;
+  });
+}
+
+function cleanCard(profile, criteria = {}, options = {}) {
+  const units = matchingUnits(profile, criteria);
+  const why = options.focus === "payment"
+    ? paymentWhy(profile)
+    : options.focus === "amenities"
+      ? amenityWhy(profile)
+      : options.focus === "school" || options.focus === "hospital"
+        ? facilityWhy(profile)
+        : whyForProfile(profile, criteria).join("; ");
+  return {
+    project: profile.project_name,
+    location: cleanLocation(profile),
+    price: formatProjectPrice(profile, units),
+    unit_types: unitTypesFor(profile).join(", ") || "unknown",
+    bedrooms: criteria.bedrooms !== undefined ? String(criteria.bedrooms) : profile.bedrooms,
+    amenities: profile.amenities.length ? profile.amenities.join(", ") : "unknown",
+    payment_plan: isKnown(profile.payment_plan) ? profile.payment_plan : "unknown",
+    status: profile.status,
+    why_recommended: why
+  };
+}
+
+function cleanLocation(profile) {
+  return [profile.community, profile.district, profile.city].filter(isKnown).filter((value, index, arr) => arr.indexOf(value) === index).join(", ") || "unknown";
+}
+
+function formatProjectPrice(profile, units = profile.units) {
+  const prices = units.flatMap((unit) => [Number(unit.price_min), Number(unit.price_max)]).filter((value) => Number.isFinite(value) && value > 0);
+  if (!prices.length && isKnown(profile.price_min)) prices.push(Number(profile.price_min));
+  if (!prices.length) return "unknown";
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return min === max ? `AED ${min.toLocaleString()}` : `AED ${min.toLocaleString()} - ${max.toLocaleString()}`;
+}
+
+function unitTypesFor(profile) {
+  return [...new Set(profile.units.map((unit) => unit.unit_type).filter(isKnown))].slice(0, 5);
+}
+
+function whyForProfile(profile, criteria = {}) {
+  const reasons = [];
+  if (criteria.property_type) reasons.push(`matches ${criteria.property_type}`);
+  if (criteria.bedrooms !== undefined) reasons.push(`has ${criteria.bedrooms} bedroom inventory`);
+  if (criteria.budget) reasons.push(`within published budget where pricing is available`);
+  if (criteria.location) reasons.push(`located in ${criteria.location}`);
+  for (const amenity of criteria.amenities || []) reasons.push(`matches ${amenity}`);
+  if (!reasons.length && profile.description !== "unknown") reasons.push("matches the published Aqaar profile");
+  if (!reasons.length) reasons.push("published in Aqaar KB");
+  return reasons;
+}
+
+function paymentWhy(profile) {
+  const plans = [...new Set(profile.units.map((unit) => unit.payment_plan).filter(isKnown))];
+  return plans.length ? `published plan: ${plans[0]}` : "payment plan not published in KB";
+}
+
+function amenityWhy(profile) {
+  return profile.amenities.length ? `published amenities: ${profile.amenities.join(", ")}` : "amenities not published in KB";
+}
+
+function facilityWhy(profile) {
+  return [profile.nearby_schools, profile.nearby_hospitals, profile.connectivity, profile.landmarks].filter(isKnown).join("; ") || "facility record published in KB";
 }
 
 function buildAdvisorAnswer(memory, retrieved, recs, nextQuestion) {
