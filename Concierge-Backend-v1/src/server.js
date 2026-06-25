@@ -1,5 +1,5 @@
 import http from "node:http";
-import { URL } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 import { dashboard, chat, leadScore, qualify, recommend, search } from "./engine.js";
 import { loadData } from "./data.js";
 
@@ -7,6 +7,9 @@ function sendJson(res, status, body) {
   const payload = JSON.stringify(body, null, 2);
   res.writeHead(status, {
     "content-type": "application/json; charset=utf-8",
+    "access-control-allow-origin": "*",
+    "access-control-allow-methods": "GET,POST,OPTIONS",
+    "access-control-allow-headers": "content-type",
     "content-length": Buffer.byteLength(payload)
   });
   res.end(payload);
@@ -25,6 +28,14 @@ export async function createServer(options = {}) {
   return http.createServer(async (req, res) => {
     try {
       const url = new URL(req.url, "http://localhost");
+      if (req.method === "OPTIONS") {
+        res.writeHead(204, {
+          "access-control-allow-origin": "*",
+          "access-control-allow-methods": "GET,POST,OPTIONS",
+          "access-control-allow-headers": "content-type"
+        });
+        return res.end();
+      }
       const body = req.method === "POST" ? await readBody(req) : {};
       const input = { ...Object.fromEntries(url.searchParams.entries()), ...body };
 
@@ -47,7 +58,7 @@ export async function createServer(options = {}) {
   });
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (fileURLToPath(import.meta.url) === process.argv[1]) {
   const port = Number(process.env.PORT || 8080);
   const server = await createServer();
   server.listen(port, () => {

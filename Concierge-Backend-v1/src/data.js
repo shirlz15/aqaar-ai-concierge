@@ -35,52 +35,7 @@ export async function loadData(options = {}) {
     amenities,
     locations,
     faqs,
-    sourcesAudit,
-    ragChunks,
-    intents,
-    personas,
-    qualificationTrees,
-    recommendationEngine,
-    leadScoringRules,
-    conversationFlows,
-    salesPlaybook,
-    objectionHandling,
-    dashboardMetrics
-  ] = await Promise.all([
-    readCsv(path.join(kbRoot, "csv", "aqaar_projects_master.csv")),
-    readCsv(path.join(kbRoot, "csv", "aqaar_properties_inventory.csv")),
-    readCsv(path.join(kbRoot, "csv", "aqaar_amenities.csv")),
-    readCsv(path.join(kbRoot, "csv", "aqaar_locations.csv")),
-    readCsv(path.join(kbRoot, "csv", "aqaar_faqs.csv")),
-    readCsv(path.join(kbRoot, "csv", "aqaar_sources_audit.csv")),
-    readJsonl(path.join(kbRoot, "rag", "aqaar_rag_chunks.jsonl")),
-    readJson(path.join(intelligenceRoot, "json", "intent_detection_rules.json")),
-    readJson(path.join(intelligenceRoot, "json", "buyer_personas.json")),
-    readJson(path.join(intelligenceRoot, "json", "qualification_trees.json")),
-    readJson(path.join(intelligenceRoot, "json", "recommendation_engine.json")),
-    readJson(path.join(intelligenceRoot, "json", "lead_scoring_rules.json")),
-    readJson(path.join(intelligenceRoot, "json", "conversation_flows.json")),
-    readJson(path.join(intelligenceRoot, "json", "sales_playbook.json")),
-    readJson(path.join(intelligenceRoot, "json", "objection_handling.json")),
-    readCsv(path.join(intelligenceRoot, "csv", "dashboard_metrics.csv"))
-  ]);
-
-  const projectById = new Map(projects.map((project) => [project.property_id, project]));
-  const projectsByName = new Map(projects.map((project) => [knownOrUnknown(project.property_name).toLowerCase(), project]));
-  const unitsByProject = new Map();
-  for (const unit of units) {
-    if (!unitsByProject.has(unit.property_id)) unitsByProject.set(unit.property_id, []);
-    unitsByProject.get(unit.property_id).push(unit);
-  }
-
-  return {
-    kbRoot,
-    intelligenceRoot,
-    projects,
-    units,
-    amenities,
-    locations,
-    faqs,
+    assets,
     sourcesAudit,
     ragChunks,
     intents,
@@ -92,8 +47,79 @@ export async function loadData(options = {}) {
     salesPlaybook,
     objectionHandling,
     dashboardMetrics,
+    leadsSeed,
+    runtimeEvents,
+    intelligenceAudit
+  ] = await Promise.all([
+    readCsv(path.join(kbRoot, "csv", "aqaar_projects_master.csv")),
+    readCsv(path.join(kbRoot, "csv", "aqaar_properties_inventory.csv")),
+    readCsv(path.join(kbRoot, "csv", "aqaar_amenities.csv")),
+    readCsv(path.join(kbRoot, "csv", "aqaar_locations.csv")),
+    readCsv(path.join(kbRoot, "csv", "aqaar_faqs.csv")),
+    readCsv(path.join(kbRoot, "csv", "aqaar_assets.csv")),
+    readCsv(path.join(kbRoot, "csv", "aqaar_sources_audit.csv")),
+    readJsonl(path.join(kbRoot, "rag", "aqaar_rag_chunks.jsonl")),
+    readJson(path.join(intelligenceRoot, "json", "intent_detection_rules.json")),
+    readJson(path.join(intelligenceRoot, "json", "buyer_personas.json")),
+    readJson(path.join(intelligenceRoot, "json", "qualification_trees.json")),
+    readJson(path.join(intelligenceRoot, "json", "recommendation_engine.json")),
+    readJson(path.join(intelligenceRoot, "json", "lead_scoring_rules.json")),
+    readJson(path.join(intelligenceRoot, "json", "conversation_flows.json")),
+    readJson(path.join(intelligenceRoot, "json", "sales_playbook.json")),
+    readJson(path.join(intelligenceRoot, "json", "objection_handling.json")),
+    readCsv(path.join(intelligenceRoot, "csv", "dashboard_metrics.csv")),
+    readCsv(path.join(intelligenceRoot, "csv", "aqaar_leads_seed.csv")),
+    readCsv(path.join(intelligenceRoot, "csv", "aqaar_runtime_events.csv")),
+    readCsv(path.join(intelligenceRoot, "csv", "aqaar_audit.csv"))
+  ]);
+
+  const projectById = new Map(projects.map((project) => [project.property_id, project]));
+  const projectsByName = new Map(projects.map((project) => [knownOrUnknown(project.property_name).toLowerCase(), project]));
+  const unitsByProject = new Map();
+  for (const unit of units) {
+    if (!unitsByProject.has(unit.property_id)) unitsByProject.set(unit.property_id, []);
+    unitsByProject.get(unit.property_id).push(unit);
+  }
+  const assetsByProject = new Map();
+  for (const asset of assets) {
+    if (!assetsByProject.has(asset.property_id)) assetsByProject.set(asset.property_id, []);
+    assetsByProject.get(asset.property_id).push(asset);
+  }
+  const ragByProject = new Map();
+  for (const chunk of ragChunks) {
+    const projectId = chunk.document_id || chunk.project_id;
+    if (!projectId) continue;
+    if (!ragByProject.has(projectId)) ragByProject.set(projectId, []);
+    ragByProject.get(projectId).push(chunk);
+  }
+
+  return {
+    kbRoot,
+    intelligenceRoot,
+    projects,
+    units,
+    amenities,
+    locations,
+    faqs,
+    assets,
+    sourcesAudit,
+    ragChunks,
+    intents,
+    personas,
+    qualificationTrees,
+    recommendationEngine,
+    leadScoringRules,
+    conversationFlows,
+    salesPlaybook,
+    objectionHandling,
+    dashboardMetrics,
+    leadsSeed,
+    runtimeEvents,
+    intelligenceAudit,
     projectById,
     projectsByName,
-    unitsByProject
+    unitsByProject,
+    assetsByProject,
+    ragByProject
   };
 }

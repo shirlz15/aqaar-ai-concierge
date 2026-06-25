@@ -295,7 +295,7 @@ async function sendMessage() {
   } catch (err) {
     hideTyping();
     const errMsg = err.message?.includes('fetch') || err.message?.includes('Failed')
-      ? 'Could not reach the Aqaar backend. Please ensure the server is running on port 3000. Contact Aqaar for details.'
+      ? 'Could not reach the Aqaar backend. Please ensure the server is running on port 8080. Contact Aqaar for details.'
       : `Contact Aqaar for details. (${err.message})`;
     appendAIMessage(errMsg);
     console.error('Chat error:', err);

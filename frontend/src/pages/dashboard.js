@@ -69,7 +69,7 @@ function renderDashboardView() {
   const main = document.getElementById('dashboard-main');
   if (!main || !dashboardData) return;
 
-  const m = normalizeMetrics(dashboardData.metrics || {});
+  const m = normalizeMetrics(dashboardData);
   const leads = dashboardData.leads || [];
   state.leads = leads;
 
@@ -92,20 +92,20 @@ function renderDashboardView() {
       <div class="kpi-card">
         <div class="kpi-icon">⭐</div>
         <div class="kpi-value">${m.qualified_leads || 'unknown'}</div>
-        <div class="kpi-label">Qualified Leads</div>
-        <div class="kpi-delta">Scoring unavailable in KB</div>
+        <div class="kpi-label">Projects Represented</div>
+        <div class="kpi-delta">From Intelligence seed data</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">🎯</div>
         <div class="kpi-value" style="text-transform:capitalize;">${getTopIntent(m.intents) || 'unknown'}</div>
         <div class="kpi-label">Top Intent</div>
-        <div class="kpi-delta">Runtime leads unavailable</div>
+        <div class="kpi-delta">Derived from KB seed rows</div>
       </div>
       <div class="kpi-card">
         <div class="kpi-icon">💬</div>
         <div class="kpi-value">${m.total_sessions || 'unknown'}</div>
-        <div class="kpi-label">Active Chat Sessions</div>
-        <div class="kpi-delta">Runtime sessions unavailable</div>
+        <div class="kpi-label">Published Price Rows</div>
+        <div class="kpi-delta">From Intelligence seed data</div>
       </div>
     </div>
 
@@ -179,16 +179,19 @@ function renderDashboardView() {
   renderLeadsTable();
 }
 
-function normalizeMetrics(metrics) {
-  if (!Array.isArray(metrics)) return metrics || {};
+function normalizeMetrics(payload) {
+  const metrics = payload?.metrics || payload || [];
+  if (!Array.isArray(metrics)) return payload || {};
   const map = Object.fromEntries(metrics.map(metric => [metric.metric_id || metric.metric_name, metric.metric_value]));
+  const seed = payload?.seed_metrics || {};
+  const charts = payload?.chart_data || {};
   return {
-    total_leads: map.total_leads || 'unknown',
-    qualified_leads: 'unknown',
-    total_sessions: 'unknown',
-    intents: { buy: 0, rent: 0, invest: 0, commercial: 0 },
-    activity: [],
-    top_projects: [
+    total_leads: seed.total_leads || map.total_leads || 'unknown',
+    qualified_leads: seed.projects_represented || 'unknown',
+    total_sessions: seed.units_with_published_budget || 'unknown',
+    intents: charts.intents || { buy: 0, rent: 0, invest: 0, commercial: 0 },
+    activity: charts.activity || [],
+    top_projects: charts.top_projects || [
       { name: 'Project records', value: Number(map.project_records || 0) },
       { name: 'Inventory records', value: Number(map.inventory_records || 0) },
       { name: 'RAG chunks', value: Number(map.rag_chunks || 0) },

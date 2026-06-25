@@ -49,11 +49,13 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.ok(Array.isArray(second.recommendations));
   });
 
-  it("returns recommendations from intelligence rules only", async () => {
-    const result = await request("/recommend", { message: "waterfront lifestyle buyer" });
-    assert.equal(result.validation.basis, "kb_recommendation_rules");
+  it("returns ranked KB recommendations with advisor evidence", async () => {
+    const result = await request("/recommend", { message: "waterfront 2 bedroom apartment in Ajman", limit: 5 });
+    assert.equal(result.validation.basis, "kb_recommendation_ranked");
     assert.ok(result.recommendations.length > 0);
     assert.ok(result.recommendations.every((item) => item.matched_rule.kb_source));
+    assert.ok(result.recommendations.every((item) => fixture.projectById.has(item.project.property_id)));
+    assert.ok(result.recommendations.some((item) => item.project.project_name.toLowerCase().includes("mawjan") || item.project.project_name.toLowerCase().includes("dusit")));
   });
 
   it("returns unknown for unpublished lead scoring", async () => {
@@ -62,17 +64,39 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.equal(result.lead_grade, "unknown");
   });
 
-  it("serves dashboard metrics from the intelligence package", async () => {
+  it("serves dashboard metrics from the intelligence seed package", async () => {
     const response = await fetch(`${baseUrl}/dashboard`);
     assert.equal(response.status, 200);
     const result = await response.json();
-    assert.equal(result.validation.basis, "kb_dashboard_metrics");
+    assert.equal(result.validation.basis, "intelligence_seed_dashboard");
     assert.ok(result.metrics.length > 0);
+    assert.ok(result.leads.length > 0);
+    assert.ok(result.chart_data.top_projects.length > 0);
   });
 
   it("qualifies using KB qualification trees", async () => {
     const result = await request("/qualify", { intent: "Buy Property" });
     assert.equal(result.validation.basis, "kb_qualification_tree");
     assert.ok(result.qualification_questions.length > 0);
+  });
+
+  it("keeps conversation memory while filtering previous results", async () => {
+    const sessionId = `memory-${Date.now()}`;
+    const first = await request("/chat", { session_id: sessionId, message: "Show 2 bedroom apartments" });
+    const second = await request("/chat", { session_id: sessionId, message: "Budget 1.2M AED" });
+    const third = await request("/chat", { session_id: sessionId, message: "Waterfront only" });
+    assert.match(first.answer, /searched the Aqaar KB/i);
+    assert.equal(second.memory.budget, 1200000);
+    assert.ok(third.memory.amenities.includes("waterfront"));
+    assert.ok(third.recommendations.every((item) => fixture.projectById.has(item.project.property_id)));
+  });
+
+  it("captures lead details only into session memory", async () => {
+    const result = await request("/chat", {
+      session_id: `lead-${Date.now()}`,
+      message: "My name is Sara and my phone is +971 50 123 4567 and email sara@example.com"
+    });
+    assert.equal(result.lead_capture.email, "sara@example.com");
+    assert.match(result.sales_handoff.summary, /Purpose:/);
   });
 });
