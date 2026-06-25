@@ -406,21 +406,39 @@ export function dashboard(data) {
   const locationCounts = countBy(seed, "location");
   const unitTypeCounts = countBy(seed, "unit_type");
   const priced = seed.map((row) => Number(row.budget_min || row.budget_max)).filter((value) => Number.isFinite(value) && value > 0);
-  const leads = seed.slice(0, 50).map((row) => ({
-    id: row.lead_id,
-    name: row.name,
-    phone: row.phone,
-    email: row.email,
-    intent: row.purpose,
-    budget: formatBudget(row.budget_min, row.budget_max, row.currency),
-    property_name: row.project_name,
-    unit_type: row.unit_type,
-    location: row.location,
-    score: row.lead_score,
-    date: data.dashboardMetrics[0]?.generated_at || row.last_verified || "unknown",
-    status: "KB seed",
-    source_url: row.source_url
-  }));
+  const generatedAt = data.dashboardMetrics.find((metric) => isKnown(metric.generated_at))?.generated_at || data.intelligenceAudit.find((row) => isKnown(row.extraction_date))?.extraction_date;
+  const leads = seed.slice(0, 50).map((row, index) => {
+    const intent = deriveSeedIntent(row);
+    const budget = formatBudget(row.budget_min, row.budget_max, row.currency);
+    const displayName = isKnown(row.name) ? row.name : `KB seed lead ${String(index + 1).padStart(3, "0")}`;
+    return {
+      id: row.lead_id,
+      name: displayName,
+      contact: [row.phone, row.email].filter(isKnown).join(" / ") || "Not published by Aqaar",
+      phone: isKnown(row.phone) ? row.phone : "",
+      email: isKnown(row.email) ? row.email : "",
+      intent,
+      purpose: intent,
+      interested_project: knownOrDisplay(row.project_name),
+      property_name: knownOrDisplay(row.project_name),
+      project_name: knownOrDisplay(row.project_name),
+      budget: budget === "unknown" ? "Not published by Aqaar" : budget,
+      location: knownOrDisplay(row.location),
+      region: knownOrDisplay(row.location),
+      unit_type: knownOrDisplay(row.unit_type),
+      bedrooms: knownOrDisplay(row.bedrooms_min),
+      area_sqft: knownOrDisplay(row.area_sqft),
+      timeline: knownOrDisplay(row.timeline),
+      tags: [row.source_record_type, row.kb_source].filter(isKnown).join(" | ") || "Verified Aqaar KB seed",
+      score: isKnown(row.lead_score) ? row.lead_score : "",
+      lead_score: isKnown(row.lead_score) ? row.lead_score : "",
+      lead_grade: knownOrDisplay(row.lead_grade),
+      date: generatedAt || "Not published by Aqaar",
+      status: "Demo intelligence data from verified Aqaar KB",
+      source_file: knownOrDisplay(row.kb_source),
+      unknown_fields: knownOrDisplay(row.unknown_fields)
+    };
+  });
 
   const metrics = data.dashboardMetrics.map((metric) => ({
     metric_id: knownOrUnknown(metric.metric_id),
@@ -436,10 +454,13 @@ export function dashboard(data) {
     metrics,
     seed_metrics: {
       total_leads: seed.length,
-      unique_contacts: 0,
+      unique_contacts: new Set(seed.flatMap((row) => [row.phone, row.email]).filter(isKnown)).size,
       projects_represented: Object.keys(projectCounts).length,
       units_with_published_budget: priced.length,
-      median_budget: median(priced) || "unknown"
+      median_budget: median(priced) || "Not published by Aqaar",
+      qualified_leads: priced.length,
+      active_chats: (data.runtimeEvents || []).filter((event) => isKnown(event.event_id)).length || seed.length,
+      data_label: "Demo intelligence data from verified Aqaar KB"
     },
     chart_data: {
       activity: bucketSequence(seed.length, 7),
@@ -455,6 +476,20 @@ export function dashboard(data) {
     ],
     validation: validation("intelligence_seed_dashboard")
   };
+}
+
+function knownOrDisplay(value) {
+  return isKnown(value) ? String(value).trim() : "Not published by Aqaar";
+}
+
+function deriveSeedIntent(row) {
+  if (isKnown(row.purpose)) return row.purpose;
+  const type = norm(row.unit_type);
+  const source = norm(row.source_url);
+  if (type.includes("commercial") || type.includes("office") || type.includes("retail") || type.includes("clinic")) return "commercial";
+  if (source.includes("rent")) return "rent";
+  if (Number(row.budget_min) > 0 || Number(row.budget_max) > 0) return "buy";
+  return "invest";
 }
 
 export function chat(data, input = {}) {
@@ -775,16 +810,20 @@ function nextQuestionFor(memory, purpose) {
 
 function classifyQuestion(message) {
   const text = norm(message);
+  if (/\b(email|phone|call me|my name is|enquiry|enquire|contact me)\b/.test(text)) return "enquiry";
   if (/\bcompare\b/.test(text)) return "compare";
-  if (/\bamenit|facilit|gym|pool|kids|parking\b/.test(text)) return "amenities";
+  if (/\bprice|prices|priced|range|cost|budget|under|below|cheapest|lowest price|least expensive|affordable\b/.test(text)) return "price";
   if (/\bpayment plan|installment|instalment|down payment|cheque|cheques\b/.test(text)) return "payment_plans";
+  if (/\bamenit|facilit|gym|pool|kids|parking\b/.test(text)) return "amenities";
   if (/\bschools?\b/.test(text)) return "schools";
   if (/\bhospitals?|healthcare|clinic\b/.test(text) && !/\bcommercial\b/.test(text)) return "hospitals";
-  if (/\bcheapest|lowest price|least expensive|affordable\b/.test(text)) return "cheapest";
+  if (/\bnearby|landmark|landmarks|university|universities\b/.test(text)) return "nearby_landmarks";
   if (/\bluxury|premium|branded\b/.test(text)) return "luxury";
   if (/\binvest|investment|roi|yield\b/.test(text)) return "investment";
   if (/\bcommercial|office|retail|warehouse|clinic\b/.test(text)) return "commercial";
   if (/\bbeachfront|waterfront|beach|sea view|corniche\b/.test(text)) return "waterfront";
+  if (/\bfreehold|location|community|area\b/.test(text)) return "location_freehold";
+  if (/\b\d+\s*(bed|bedroom|br)|studio|apartment|villa|townhouse\b/.test(text)) return "bedroom_unit_type";
   return "project_search";
 }
 
@@ -792,26 +831,54 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
   const type = classifyQuestion(message);
   const parsed = mergeKnown(parseSlots(message), memory || {});
   const profiles = allProfiles(data);
+  const named = findNamedProjects(profiles, message);
   let items = [];
   let answer = "";
 
+  if (type === "enquiry") {
+    return {
+      type,
+      answer: "I can capture your enquiry details and keep the current Aqaar shortlist attached to the lead. Please share your name and phone number when ready.",
+      cards: [],
+      recommendations: []
+    };
+  }
+
   if (type === "compare") {
-    items = findNamedProjects(profiles, message);
+    items = named;
     if (items.length < 2) return noMatch("compare");
     return compareResponse(items.slice(0, 2));
   }
 
+  if (type === "nearby_landmarks") {
+    if (named.length) return landmarkResponse(named);
+    items = profiles.filter((profile) => /\beducation|school|university|healthcare|hospital\b/i.test(`${profile.property_type} ${profile.sub_type} ${profile.project_name}`));
+    return facilityResponse(items, "Nearby landmark records found in the verified Aqaar KB", "nearby_landmarks");
+  }
+
   if (type === "amenities") {
-    items = findNamedProjects(profiles, message);
+    items = named;
     if (!items.length) items = filterProfiles(profiles, parsed).slice(0, 3);
     return amenitiesResponse(items);
   }
 
   if (type === "payment_plans") {
-    items = filterProfiles(profiles, parsed)
+    items = (named.length ? named : filterProfiles(profiles, parsed))
       .filter((profile) => isKnown(profile.payment_plan) || profile.units.some((unit) => isKnown(unit.payment_plan)))
       .slice(0, 5);
     return paymentPlanResponse(items);
+  }
+
+  if (type === "price") {
+    items = filterProfiles(profiles, parsed)
+      .filter((profile) => Number.isFinite(minPublishedPrice(profile)))
+      .sort((a, b) => minPublishedPrice(a) - minPublishedPrice(b))
+      .slice(0, 6);
+    return priceResponse(items, parsed);
+  }
+
+  if (named.length) {
+    return projectLookupResponse(named.slice(0, 3), parsed);
   }
 
   if (type === "schools") {
@@ -822,14 +889,6 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
   if (type === "hospitals") {
     items = profiles.filter((profile) => norm(profile.property_type).includes("healthcare") || norm(profile.project_name).includes("hospital"));
     return facilityResponse(items, "Healthcare records found in Aqaar KB", "hospital");
-  }
-
-  if (type === "cheapest") {
-    items = filterProfiles(profiles, { ...parsed, property_type: parsed.property_type || "apartment" })
-      .filter((profile) => isKnown(profile.price_min))
-      .sort((a, b) => Number(a.price_min) - Number(b.price_min))
-      .slice(0, 5);
-    return listResponse("Lowest published prices matching your request", items, parsed);
   }
 
   if (type === "luxury") {
@@ -859,8 +918,26 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
     return listResponse("Waterfront and Corniche matches", items, parsed);
   }
 
+  if (type === "location_freehold") {
+    items = filterProfiles(profiles, parsed).slice(0, 6);
+    return listResponse("Location and ownership matches from Aqaar KB", items, parsed, nextQuestion);
+  }
+
+  if (type === "bedroom_unit_type") {
+    items = filterProfiles(profiles, parsed).slice(0, 6);
+    return listResponse("Unit matches from Aqaar KB", items, parsed, nextQuestion);
+  }
+
   items = filterProfiles(profiles, parsed).slice(0, 5);
   if (!items.length && !hasExplicitFilters(parsed) && recs.recommendations.length) items = recs.recommendations.map((item) => item.project).slice(0, 5);
+  if (!items.length && retrieved.results.length === 0) {
+    return {
+      type: "out_of_scope",
+      answer: "Not published in the verified Aqaar KB.",
+      cards: [],
+      recommendations: []
+    };
+  }
   return listResponse("Matching Aqaar projects", items, parsed, nextQuestion);
 }
 
@@ -910,6 +987,52 @@ function paymentPlanResponse(profiles) {
   };
 }
 
+function priceResponse(profiles, criteria = {}) {
+  if (!profiles.length) {
+    return {
+      type: "price",
+      answer: "Not published in the verified Aqaar KB.",
+      cards: [],
+      recommendations: []
+    };
+  }
+  const label = criteria.property_type ? `${criteria.property_type} price range` : "Published price range";
+  return {
+    type: "price",
+    answer: `${label}: showing only Aqaar records with published prices matching the request.`,
+    cards: profiles.map((profile) => cleanCard(profile, criteria, { focus: "price" })),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, [`published price starts from ${formatProjectPrice(profile)}`], criteria))
+  };
+}
+
+function projectLookupResponse(profiles, criteria = {}) {
+  if (!profiles.length) return noMatch("project_lookup");
+  const names = profiles.map((profile) => profile.project_name).join(", ");
+  return {
+    type: "project_lookup",
+    answer: `${names} ${profiles.length === 1 ? "is" : "are"} published in the verified Aqaar KB.`,
+    cards: profiles.map((profile) => cleanCard(profile, criteria, { focus: "lookup" })),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, ["direct project lookup"], criteria))
+  };
+}
+
+function landmarkResponse(profiles) {
+  if (!profiles.length) {
+    return {
+      type: "nearby_landmarks",
+      answer: "Not published in the verified Aqaar KB.",
+      cards: [],
+      recommendations: []
+    };
+  }
+  return {
+    type: "nearby_landmarks",
+    answer: "These landmark records are published in the verified Aqaar KB. They are treated as location or landmark context only.",
+    cards: profiles.map((profile) => cleanCard(profile, {}, { focus: "landmark" })),
+    recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, ["landmark context from Aqaar KB"], {}))
+  };
+}
+
 function amenitiesResponse(profiles) {
   if (!profiles.length) return noMatch("amenities");
   return {
@@ -934,9 +1057,9 @@ function facilityResponse(profiles, title, type) {
 
 function compareResponse(profiles) {
   const rows = profiles.map((profile) => {
-    const unitTypes = unitTypesFor(profile).join(", ") || "unknown";
-    const amenities = profile.amenities.length ? profile.amenities.join(", ") : "unknown";
-    return `${profile.project_name}: location ${cleanLocation(profile)}; price ${formatProjectPrice(profile)}; units ${unitTypes}; bedrooms ${profile.bedrooms}; amenities ${amenities}; payment plan ${isKnown(profile.payment_plan) ? profile.payment_plan : "unknown"}; status ${profile.status}.`;
+    const unitTypes = unitTypesFor(profile).join(", ") || "Not published by Aqaar";
+    const amenities = profile.amenities.length ? profile.amenities.join(", ") : "Not published by Aqaar";
+    return `${profile.project_name}: location ${cleanLocation(profile)}; price ${formatProjectPrice(profile)}; units ${unitTypes}; bedrooms ${knownOrDisplay(profile.bedrooms)}; amenities ${amenities}; payment plan ${isKnown(profile.payment_plan) ? profile.payment_plan : "Not published by Aqaar"}; status ${knownOrDisplay(profile.status)}.`;
   });
   return {
     type: "compare",
@@ -995,26 +1118,29 @@ function cleanCard(profile, criteria = {}, options = {}) {
         ? facilityWhy(profile)
         : whyForProfile(profile, criteria).join("; ");
   return {
-    project: profile.project_name,
+    project: knownOrDisplay(profile.project_name),
     location: cleanLocation(profile),
-    price: formatProjectPrice(profile, units),
-    unit_types: unitTypesFor(profile).join(", ") || "unknown",
-    bedrooms: criteria.bedrooms !== undefined ? String(criteria.bedrooms) : profile.bedrooms,
-    amenities: profile.amenities.length ? profile.amenities.join(", ") : "unknown",
-    payment_plan: isKnown(profile.payment_plan) ? profile.payment_plan : "unknown",
-    status: profile.status,
+    price: knownOrDisplay(formatProjectPrice(profile, units)),
+    unit_types: unitTypesFor(profile).join(", ") || "Not published by Aqaar",
+    bedrooms: knownOrDisplay(criteria.bedrooms !== undefined ? String(criteria.bedrooms) : profile.bedrooms),
+    amenities: profile.amenities.length ? profile.amenities.join(", ") : "Not published by Aqaar",
+    payment_plan: isKnown(profile.payment_plan) ? profile.payment_plan : "Not published by Aqaar",
+    status: knownOrDisplay(profile.status),
     why_recommended: why
   };
 }
 
 function cleanLocation(profile) {
-  return [profile.community, profile.district, profile.city].filter(isKnown).filter((value, index, arr) => arr.indexOf(value) === index).join(", ") || "unknown";
+  return [profile.community, profile.district, profile.city]
+    .filter(isKnown)
+    .filter((value, index, arr) => arr.findIndex(item => norm(item) === norm(value)) === index)
+    .join(", ") || "Not published by Aqaar";
 }
 
 function formatProjectPrice(profile, units = profile.units) {
   const prices = units.flatMap((unit) => [Number(unit.price_min), Number(unit.price_max)]).filter((value) => Number.isFinite(value) && value > 0);
   if (!prices.length && isKnown(profile.price_min)) prices.push(Number(profile.price_min));
-  if (!prices.length) return "unknown";
+  if (!prices.length) return "Not published by Aqaar";
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   return min === max ? `AED ${min.toLocaleString()}` : `AED ${min.toLocaleString()} - ${max.toLocaleString()}`;
@@ -1129,11 +1255,8 @@ function topCounts(counts, limit = 5) {
 function deriveIntentCounts(seed) {
   const counts = { buy: 0, rent: 0, invest: 0, commercial: 0 };
   for (const row of seed) {
-    const type = norm(row.unit_type);
-    if (type.includes("commercial") || type.includes("office") || type.includes("retail")) counts.commercial += 1;
-    else if (type.includes("rent") || norm(row.source_url).includes("rent")) counts.rent += 1;
-    else if (Number(row.budget_min) > 0) counts.buy += 1;
-    else counts.invest += 1;
+    const intent = deriveSeedIntent(row);
+    counts[intent] = (counts[intent] || 0) + 1;
   }
   return counts;
 }

@@ -279,7 +279,7 @@ async function sendMessage() {
 
       hideTyping();
 
-      const reply = res?.reply || res?.response || res?.message || 'Contact Aqaar for details on this query.';
+      const reply = res?.reply || res?.response || res?.message || 'No matching Aqaar project found.';
       appendAIMessage(reply, res?.response_cards || []);
 
       // Check if AI is asking for contact details
@@ -295,8 +295,8 @@ async function sendMessage() {
   } catch (err) {
     hideTyping();
     const errMsg = err.message?.includes('fetch') || err.message?.includes('Failed')
-      ? 'Could not reach the Aqaar backend. Please ensure the server is running on port 8080. Contact Aqaar for details.'
-      : `Contact Aqaar for details. (${err.message})`;
+      ? 'Could not reach the Aqaar backend. Please ensure the server is running on port 8080.'
+      : `Backend error: ${err.message}`;
     appendAIMessage(errMsg);
     console.error('Chat error:', err);
   } finally {
@@ -394,21 +394,28 @@ function renderResponseCards(cards) {
     <div class="chat-result-cards">
       ${cards.map(card => `
         <article class="chat-result-card">
-          <div class="chat-result-title">${escapeHtml(card.project || 'unknown')}</div>
+          <div class="chat-result-title">${escapeHtml(displayCardValue(card.project))}</div>
           <div class="chat-result-grid">
-            <span>Location</span><strong>${escapeHtml(card.location || 'unknown')}</strong>
-            <span>Price</span><strong>${escapeHtml(card.price || 'unknown')}</strong>
-            <span>Unit types</span><strong>${escapeHtml(card.unit_types || 'unknown')}</strong>
-            <span>Bedrooms</span><strong>${escapeHtml(card.bedrooms || 'unknown')}</strong>
-            <span>Amenities</span><strong>${escapeHtml(card.amenities || 'unknown')}</strong>
-            <span>Payment plan</span><strong>${escapeHtml(card.payment_plan || 'unknown')}</strong>
-            <span>Status</span><strong>${escapeHtml(card.status || 'unknown')}</strong>
+            <span>Location</span><strong>${escapeHtml(displayCardValue(card.location))}</strong>
+            <span>Price</span><strong>${escapeHtml(displayCardValue(card.price))}</strong>
+            <span>Unit types</span><strong>${escapeHtml(displayCardValue(card.unit_types))}</strong>
+            <span>Bedrooms</span><strong>${escapeHtml(displayCardValue(card.bedrooms))}</strong>
+            <span>Amenities</span><strong>${escapeHtml(displayCardValue(card.amenities))}</strong>
+            <span>Payment plan</span><strong>${escapeHtml(displayCardValue(card.payment_plan))}</strong>
+            <span>Status</span><strong>${escapeHtml(displayCardValue(card.status))}</strong>
           </div>
           <p class="chat-result-why">${escapeHtml(card.why_recommended || 'published in Aqaar KB')}</p>
         </article>
       `).join('')}
     </div>
   `;
+}
+
+function displayCardValue(value) {
+  if (value === undefined || value === null || value === '' || String(value).toLowerCase() === 'unknown') {
+    return 'Not published by Aqaar';
+  }
+  return value;
 }
 
 function escapeHtml(value) {

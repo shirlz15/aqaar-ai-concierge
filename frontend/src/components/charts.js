@@ -93,7 +93,7 @@ export function renderProjectDoughnutChart(canvasId, data) {
 
   const projects = data?.top_projects || data?.projects || [];
   const limited = projects.slice(0, 6);
-  const labels = limited.map(p => (p.name || p.title || 'Unknown').substring(0, 20));
+  const labels = limited.map(p => (p.name || p.title || 'Not published').substring(0, 20));
   const values = limited.map(p => Number(p.count || p.queries || p.value || 0));
 
   const colors = [
@@ -158,8 +158,8 @@ export function renderActivityLineChart(canvasId, data) {
 
   const sessions = data?.sessions_by_day || data?.activity || [];
   const labels = sessions.length > 0
-    ? sessions.map(s => s.date || s.day)
-    : ['Unknown'];
+    ? sessions.map(s => s.date || s.day || 'Seed')
+    : ['Seed'];
   const values = sessions.length > 0
     ? sessions.map(s => s.count || s.sessions)
     : [0];

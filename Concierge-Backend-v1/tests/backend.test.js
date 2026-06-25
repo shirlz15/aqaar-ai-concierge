@@ -72,6 +72,14 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.ok(result.metrics.length > 0);
     assert.ok(result.leads.length > 0);
     assert.ok(result.chart_data.top_projects.length > 0);
+    assert.equal(result.seed_metrics.data_label, "Demo intelligence data from verified Aqaar KB");
+    assert.ok(result.seed_metrics.total_leads > 0);
+    assert.ok(result.seed_metrics.qualified_leads > 0);
+    const sample = result.leads[0];
+    assert.ok(sample.name !== "unknown");
+    assert.ok(sample.intent !== "unknown");
+    assert.ok(sample.project_name !== "unknown");
+    assert.ok(sample.status.includes("Demo intelligence data"));
   });
 
   it("qualifies using KB qualification trees", async () => {
@@ -103,16 +111,39 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.ok(apartment.response_cards.every((card) => String(card.bedrooms).includes("2") || card.unit_types.toLowerCase().includes("bedroom")));
     assert.ok(corniche.response_cards.every((card) => card.location.toLowerCase().includes("corniche")));
     assert.equal(schools.response_type, "school");
-    assert.ok(schools.response_cards.every((card) => card.project.toLowerCase().includes("school") || card.unit_types.toLowerCase().includes("education")));
+    assert.ok(schools.response_cards.every((card) => /school|university|education/i.test(`${card.project} ${card.unit_types}`)));
     assert.equal(compare.response_type, "compare");
     assert.deepEqual(compare.response_cards.map((card) => card.project).sort(), ["Dusit Thani Residences Ajman", "Mawjan"].sort());
     assert.equal(amenities.response_cards[0].project, "Mawjan");
   });
 
+  it("routes reasoning examples to the correct KB-only answer type", async () => {
+    const payment = await request("/chat", { session_id: "reason-payment", message: "payment plans" });
+    const villaPrice = await request("/chat", { session_id: "reason-villa", message: "villa price range" });
+    const landmark = await request("/chat", { session_id: "reason-horizon", message: "Horizon University" });
+    const twoBed = await request("/chat", { session_id: "reason-2br", message: "2 bedroom apartments" });
+    const compare = await request("/chat", { session_id: "reason-compare", message: "Compare Mawjan and Dusit" });
+
+    assert.equal(payment.response_type, "payment_plans");
+    assert.ok(payment.response_cards.every((card) => card.payment_plan !== "Not published by Aqaar"));
+    assert.equal(villaPrice.response_type, "price");
+    assert.ok(villaPrice.response_cards.every((card) => card.unit_types.toLowerCase().includes("villa")));
+    assert.equal(landmark.response_type, "nearby_landmarks");
+    assert.equal(landmark.response_cards[0].project, "Horizon University");
+    assert.doesNotMatch(landmark.answer, /property recommendation/i);
+    assert.ok(twoBed.response_cards.every((card) => String(card.bedrooms).includes("2")));
+    assert.equal(compare.response_type, "compare");
+    assert.deepEqual(compare.response_cards.map((card) => card.project).sort(), ["Dusit Thani Residences Ajman", "Mawjan"].sort());
+    for (const result of [payment, villaPrice, landmark, twoBed, compare]) {
+      assert.doesNotMatch(result.answer, /https?:\/\//i);
+      assert.doesNotMatch(result.answer, /\bunknown\b/i);
+    }
+  });
+
   it("does not expose raw URLs in chat answers and returns no-match text", async () => {
     const impossible = await request("/chat", { session_id: "intent-none", message: "Villa under AED 1000" });
     const payment = await request("/chat", { session_id: "intent-payment", message: "Payment plans" });
-    assert.equal(impossible.answer, "No matching Aqaar project found.");
+    assert.equal(impossible.answer, "Not published in the verified Aqaar KB.");
     assert.doesNotMatch(payment.answer, /https?:\/\//i);
     assert.ok(payment.response_cards.some((card) => card.payment_plan !== "unknown"));
   });

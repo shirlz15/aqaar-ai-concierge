@@ -1901,6 +1901,44 @@ img { max-width: 100%; display: block; }
 .empty-state h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
 .empty-state p { font-size: 14px; color: var(--text-muted); }
 
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+}
+.search-suggestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.search-suggestion:hover,
+.search-suggestion:focus {
+  background: var(--bg-elevated);
+  outline: 1px solid var(--border-accent);
+}
+.search-suggestion span {
+  color: var(--text-muted);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 /* ── Divider ─────────────────────────────────────────────────── */
 .divider {
   height: 1px;

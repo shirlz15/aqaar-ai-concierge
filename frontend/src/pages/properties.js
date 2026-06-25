@@ -22,6 +22,7 @@ export async function renderProperties() {
           <div class="search-box" style="flex:1;min-width:280px;position:relative;">
             <input type="text" id="prop-search-input" class="form-input" placeholder="Search: aj, mawjan, dusit, 2 bedroom..." />
             <button id="prop-search-btn" class="btn btn-primary" style="position:absolute;right:4px;top:4px;bottom:4px;padding:0 16px;">Search</button>
+            <div id="prop-search-suggestions" class="search-suggestions" style="display:none;"></div>
           </div>
           <select class="form-input" id="prop-intent-select" style="width:160px;">
             <option value="all">All Intents</option>
@@ -65,10 +66,78 @@ export async function renderProperties() {
   searchInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') doSearch();
   });
+  searchInput?.addEventListener('input', debounce(() => updateSuggestions(searchInput.value), 180));
   intentSelect?.addEventListener('change', doSearch);
 
   // Initial load
   loadProperties('', state.intent || 'all');
+}
+
+async function updateSuggestions(query) {
+  const box = document.getElementById('prop-search-suggestions');
+  if (!box) return;
+  const q = query?.trim();
+  if (!q || q.length < 2) {
+    box.style.display = 'none';
+    box.innerHTML = '';
+    return;
+  }
+  try {
+    const data = await search({ query: q, limit: 8 });
+    const suggestions = [];
+    for (const result of data?.results || []) {
+      const p = result.project || result.summary || {};
+      addSuggestion(suggestions, result.title, 'Project');
+      addSuggestion(suggestions, p.community, 'Community');
+      addSuggestion(suggestions, p.district, 'Location');
+      addSuggestion(suggestions, p.city, 'Location');
+      addSuggestion(suggestions, p.sub_type || p.property_type, 'Unit type');
+      if (Array.isArray(p.units)) p.units.forEach(unit => addSuggestion(suggestions, unit.unit_type, 'Unit type'));
+    }
+    if (!suggestions.length) {
+      box.style.display = 'none';
+      return;
+    }
+    box.innerHTML = suggestions.slice(0, 8).map(item => `
+      <button class="search-suggestion" data-query="${escapeAttr(item.value)}">
+        <strong>${escapeHtml(item.value)}</strong><span>${item.type}</span>
+      </button>
+    `).join('');
+    box.style.display = 'grid';
+    box.querySelectorAll('.search-suggestion').forEach(button => {
+      button.addEventListener('click', () => {
+        const input = document.getElementById('prop-search-input');
+        if (input) input.value = button.dataset.query;
+        box.style.display = 'none';
+        loadProperties(button.dataset.query, document.getElementById('prop-intent-select')?.value);
+      });
+    });
+  } catch (error) {
+    box.style.display = 'none';
+  }
+}
+
+function addSuggestion(list, value, type) {
+  if (!value || value === 'unknown') return;
+  const text = String(value).trim();
+  if (!text || /^https?:\/\//i.test(text)) return;
+  if (!list.some(item => item.value.toLowerCase() === text.toLowerCase())) list.push({ value: text, type });
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
+
+function escapeHtml(value) {
+  return String(value ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function escapeAttr(value) {
+  return escapeHtml(value).replace(/'/g, '&#39;');
 }
 
 const INTENT_QUERY = {

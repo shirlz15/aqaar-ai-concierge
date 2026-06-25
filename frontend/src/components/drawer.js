@@ -5,6 +5,7 @@ import { state } from '../state.js';
 import { showToast } from '../toast.js';
 
 let activeDrawer = null;
+const NOT_PUBLISHED = 'Not published by Aqaar';
 
 /**
  * Open lead detail drawer
@@ -36,9 +37,9 @@ export function openLeadDrawer(lead) {
   drawer.innerHTML = `
     <div class="drawer-header">
       <div>
-        <h2 class="drawer-title">${lead.name || 'Unknown Lead'}</h2>
+        <h2 class="drawer-title">${displayValue(lead.name)}</h2>
         <span class="lead-score-badge ${scoreTier}">
-          Score: ${!isNaN(scoreNum) ? scoreNum : 'Contact Aqaar'}
+          Score: ${!isNaN(scoreNum) ? scoreNum : NOT_PUBLISHED}
         </span>
       </div>
       <button class="modal-close" id="drawer-close-btn" aria-label="Close drawer">✕</button>
@@ -55,16 +56,20 @@ export function openLeadDrawer(lead) {
         <div class="drawer-section-title">Qualification</div>
         ${drawerField('Intent', lead.intent, true)}
         ${drawerField('Budget', lead.budget)}
-        ${drawerField('Property Interest', lead.property_name || lead.property)}
+        ${drawerField('Property Interest', lead.interested_project || lead.property_name || lead.property)}
+        ${drawerField('Location', lead.location || lead.region)}
+        ${drawerField('Unit Type', lead.unit_type)}
+        ${drawerField('Timeline', lead.timeline)}
+        ${drawerField('Tags', lead.tags)}
         ${drawerField('Message', lead.message || lead.notes)}
       </div>
 
       <div class="drawer-section">
         <div class="drawer-section-title">Lead Metrics</div>
-        ${drawerField('Lead Score', !isNaN(scoreNum) ? `${scoreNum}/100` : 'Contact Aqaar')}
+        ${drawerField('Lead Score', !isNaN(scoreNum) ? `${scoreNum}/100` : NOT_PUBLISHED)}
         ${drawerField('Quality Tier', scoreTier.charAt(0).toUpperCase() + scoreTier.slice(1))}
-        ${drawerField('Date', lead.date || lead.created_at || lead.timestamp || 'Contact Aqaar for details')}
-        ${drawerField('Session ID', lead.session_id || 'N/A')}
+        ${drawerField('Date', lead.date || lead.created_at || lead.timestamp)}
+        ${drawerField('Session ID', lead.session_id)}
       </div>
 
       <div class="contacted-toggle">
@@ -127,14 +132,18 @@ export function openLeadDrawer(lead) {
 }
 
 function drawerField(label, value, isIntent = false) {
-  const display = (!value || value === 'unknown') ? 'Contact Aqaar for details' : value;
-  const isCapitalized = isIntent && display !== 'Contact Aqaar for details';
+  const display = displayValue(value);
+  const isCapitalized = isIntent && display !== NOT_PUBLISHED;
   return `
     <div class="drawer-field">
       <div class="drawer-field-label">${label}</div>
       <div class="drawer-field-value" style="${isCapitalized ? 'text-transform:capitalize;' : ''}">${display}</div>
     </div>
   `;
+}
+
+function displayValue(value) {
+  return (!value || String(value).toLowerCase() === 'unknown') ? NOT_PUBLISHED : value;
 }
 
 export function closeDrawer() {
