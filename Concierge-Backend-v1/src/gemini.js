@@ -65,17 +65,33 @@ async function generateWithRetry(client, activeModel, prompt) {
 
 async function generateOnce(client, activeModel, prompt) {
   try {
-    const response = await client.models.generateContent({
-      model: activeModel,
-      contents: prompt
-    });
+    const response = await withTimeout(
+      client.models.generateContent({
+        model: activeModel,
+        contents: prompt
+      }),
+      Number(process.env.GEMINI_TIMEOUT_MS || 30000)
+    );
+    const text = String(response.text || "").trim();
+    if (!text) {
+      return {
+        provider: "gemini",
+        model: activeModel,
+        used: false,
+        text: "",
+        reason: "invalid_response",
+        error: "Gemini returned an empty text response.",
+        raw_response: summarizeGeminiResponse(response)
+      };
+    }
 
     return {
       provider: "gemini",
       model: activeModel,
       used: true,
-      text: String(response.text || "").trim(),
-      reason: "ok"
+      text,
+      reason: "ok",
+      raw_response: summarizeGeminiResponse(response)
     };
   } catch (error) {
     return {
@@ -83,7 +99,7 @@ async function generateOnce(client, activeModel, prompt) {
       model: activeModel,
       used: false,
       text: "",
-      reason: "gemini_error",
+      reason: isTimeoutError(error) ? "timeout" : "gemini_error",
       error: parseGeminiError(error)
     };
   }
@@ -109,4 +125,26 @@ function isRetryableGeminiError(error) {
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error(`Gemini request timed out after ${timeoutMs}ms`)), timeoutMs))
+  ]);
+}
+
+function isTimeoutError(error) {
+  return /timed out|timeout/i.test(String(error?.message || error || ""));
+}
+
+function summarizeGeminiResponse(response) {
+  return {
+    text_preview: String(response?.text || "").slice(0, 500),
+    candidates: (response?.candidates || []).slice(0, 2).map((candidate) => ({
+      finishReason: candidate.finishReason,
+      safetyRatings: candidate.safetyRatings,
+      text_preview: (candidate.content?.parts || []).map((part) => part.text || "").join("").slice(0, 500)
+    }))
+  };
 }

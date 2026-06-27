@@ -514,12 +514,12 @@ function isPropertyRelatedMessage(data, message) {
 }
 
 function nonPropertyResponse(session, message, type = "general_chat") {
-  const answer = type === "greeting"
+  const fallbackAnswer = type === "greeting"
     ? "Hello, welcome to Aqaar. I can help with prices, payment plans, locations, amenities, comparisons, or shortlisting a property. What would you like to explore?"
     : "I am here and ready to help with Aqaar property questions. You can ask about a project, price, payment plan, amenities, location, or compare two projects.";
   session.turns.push({ message, intent: type, parsed: {}, lead: {} });
   return {
-    answer,
+    fallbackAnswer,
     response_type: type,
     intent: { intent: type, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
     fallback_reason: type,
@@ -527,24 +527,77 @@ function nonPropertyResponse(session, message, type = "general_chat") {
   };
 }
 
+function buildGreetingPrompt(message, type) {
+  return [
+    "You are the Aqaar AI Concierge.",
+    "The user sent a greeting or general chat message, not a property search.",
+    "Do not mention any property, project, price, or card.",
+    "Reply warmly in one or two short sentences and ask what Aqaar property help they need.",
+    "",
+    `Message type: ${type}`,
+    `User message: ${message}`
+  ].join("\n");
+}
+
+function chatDebug(stage, payload = {}) {
+  if (process.env.CHAT_DEBUG === "false") return;
+  console.log(`[chat:${stage}] ${JSON.stringify(payload, null, 2)}`);
+}
+
+function summarizeLlmResult(result = {}) {
+  return {
+    provider: result.provider,
+    model: result.model,
+    used: result.used,
+    reason: result.reason,
+    error: result.error,
+    text_preview: String(result.text || "").slice(0, 1000),
+    raw_response: result.raw_response
+  };
+}
+
+function summarizeFinalJson(result = {}) {
+  return {
+    session_id: result.session_id,
+    llm_used: result.llm_used,
+    property_intent: result.property_intent,
+    fallback_reason: result.fallback_reason,
+    response_type: result.response_type,
+    answer_preview: String(result.answer || "").slice(0, 1000),
+    cards: (result.cards || []).map((card) => card.project),
+    sources: result.sources,
+    follow_up: result.follow_up
+  };
+}
+
 export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
+  chatDebug("chat.start", { session_id: sessionId, message });
   const preGate = isGreeting(message)
     ? nonPropertyResponse(session, message, "greeting")
     : (isGeneralChat(message) || !isPropertyRelatedMessage(data, message))
       ? nonPropertyResponse(session, message, "general_chat")
       : null;
   if (preGate) {
+    chatDebug("intent.detected", { intent: preGate.response_type, property_intent: false, retrieval_skipped: true });
+    const greetingPrompt = buildGreetingPrompt(message, preGate.response_type);
+    chatDebug("prompt.sent_to_gemini", { prompt: greetingPrompt });
+    const greetingGemini = await generateWithGemini({ prompt: greetingPrompt });
+    chatDebug("gemini.raw_response", summarizeLlmResult(greetingGemini));
+    const parserResult = { valid_text: Boolean(greetingGemini.used && greetingGemini.text), text_length: String(greetingGemini.text || "").length };
+    chatDebug("parser.result", parserResult);
+    const answer = greetingGemini.used ? sanitizeAnswer(greetingGemini.text) : preGate.fallbackAnswer;
+    const fallbackReason = greetingGemini.used ? null : greetingGemini.reason;
     sessions.set(sessionId, session);
-    return {
+    const result = {
       session_id: sessionId,
-      llm_used: false,
+      llm_used: Boolean(greetingGemini.used),
       property_intent: false,
-      fallback_reason: preGate.fallback_reason,
-      answer: preGate.answer,
-      reply: preGate.answer,
+      fallback_reason: fallbackReason,
+      answer,
+      reply: answer,
       sources: [],
       sources_used: [],
       cards: [],
@@ -554,8 +607,18 @@ export async function chat(data, input = {}) {
       intent: preGate.intent,
       memory: session.memory,
       recommendations: [],
+      llm: {
+        provider: greetingGemini.provider,
+        model: greetingGemini.model || GEMINI_MODEL,
+        used: greetingGemini.used,
+        reason: greetingGemini.reason,
+        fallback_reason: fallbackReason
+      },
       validation: validation("non_property_no_retrieval")
     };
+    chatDebug("fallback.reason", { fallback_reason: fallbackReason });
+    chatDebug("final.json", summarizeFinalJson(result));
+    return result;
   }
   const incoming = parseSlots(message);
   const requestedIntent = normalizeIntent(input.intent);
@@ -567,6 +630,12 @@ export async function chat(data, input = {}) {
   const detected = detectIntent(data, [message, session.memory.purpose].filter(Boolean).join(" "));
   const activePurpose = session.memory.purpose || intentToPurpose(detected.intent) || "buy";
   session.memory.purpose = activePurpose;
+  chatDebug("intent.detected", {
+    intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent,
+    response_hint: classifyQuestion(message),
+    extracted_entities: incoming,
+    property_intent: true
+  });
 
   const retrieved = search(data, buildMemoryQuery(message, session.memory), 10);
   const previous = session.lastProfiles
@@ -583,6 +652,11 @@ export async function chat(data, input = {}) {
   const response = buildContextualResponse(data, message, session.memory, retrieved, recs, nextQuestion);
   if (response.recommendations?.length) session.lastProfiles = response.recommendations.map((item) => item.project.property_id);
   const rag = retrieveRagContext(data, message, session.memory, response, recs, 6);
+  chatDebug("kb.retrieval", {
+    search_results: retrieved.results.length,
+    response_cards: response.cards.map((card) => card.project),
+    retrieved_chunks: rag.chunks.map((chunk) => ({ title: chunk.title, score: chunk.score, source_label: chunk.source_label }))
+  });
   const prompt = buildGroundedPrompt({
     message,
     memory: session.memory,
@@ -593,6 +667,7 @@ export async function chat(data, input = {}) {
     rag,
     nextQuestion
   });
+  chatDebug("prompt.sent_to_gemini", { prompt });
   const hasGroundedContext = response.cards.length > 0 || rag.chunks.length > 0;
   const unsupported = response.cards.length === 0 && /^This is not published in the verified Aqaar KB\.$/.test(response.answer);
   const llmResult = hasGroundedContext && !unsupported
@@ -604,6 +679,8 @@ export async function chat(data, input = {}) {
         reason: unsupported ? "unsupported_by_kb" : "no_retrieved_context",
         text: ""
       };
+  chatDebug("gemini.raw_response", summarizeLlmResult(llmResult));
+  chatDebug("parser.result", { valid_text: Boolean(llmResult.used && llmResult.text), text_length: String(llmResult.text || "").length });
   const fallbackAnswer = buildGroundedFallback(response, nextQuestion);
   const fallbackReason = llmResult.used ? null : llmResult.reason || "gemini_unavailable";
   const gracefulFallback = fallbackReason && fallbackReason !== "unsupported_by_kb" && fallbackReason !== "no_retrieved_context"
@@ -613,7 +690,7 @@ export async function chat(data, input = {}) {
   const finalAnswer = groundedAnswer || response.answer || "This is not published in the verified Aqaar KB.";
   const sourcePool = uniqueSources(rag.sources);
   const cleanSources = cleanSourceLabels(sourcePool);
-  return {
+  const result = {
     session_id: sessionId,
     llm_used: Boolean(llmResult.used),
     property_intent: true,
@@ -652,6 +729,9 @@ export async function chat(data, input = {}) {
     },
     validation: validation("kb_checked_before_response")
   };
+  chatDebug("fallback.reason", { fallback_reason: fallbackReason });
+  chatDebug("final.json", summarizeFinalJson(result));
+  return result;
 }
 
 function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
