@@ -44,43 +44,74 @@ export function initializeGemini({ log = false } = {}) {
 export async function generateWithGemini({ prompt, model = process.env.GEMINI_MODEL } = {}) {
   const { client, model: configuredModel } = initializeGemini();
   const activeModel = model || configuredModel;
-  const fallbackModel = process.env.GEMINI_FALLBACK_MODEL;
-  const primary = await generateWithRetry(client, activeModel, prompt);
-  if (primary.used || !fallbackModel || fallbackModel === activeModel) return primary;
-  const fallback = await generateWithRetry(client, fallbackModel, prompt);
-  return fallback.used ? { ...fallback, fallback_model_used: true, primary_error: primary.error } : primary;
+  const models = [...new Set([activeModel, "gemini-2.5-flash", "gemini-1.5-flash"].filter(Boolean))];
+  const attempts = [];
+
+  for (const candidateModel of models) {
+    const result = await generateWithRetry(client, candidateModel, prompt);
+    attempts.push(...(result.attempts || [{ model: candidateModel, reason: result.reason, error: result.error }]));
+    if (result.used) {
+      return {
+        ...result,
+        model: result.model || candidateModel,
+        model_used: result.model || candidateModel,
+        attempted_models: models,
+        attempts
+      };
+    }
+  }
+
+  const last = attempts[attempts.length - 1] || {};
+  return {
+    provider: "gemini",
+    model: activeModel,
+    model_used: null,
+    used: false,
+    text: "",
+    reason: last.reason || "gemini_unavailable",
+    error: last.error || "All Gemini model attempts failed.",
+    attempted_models: models,
+    attempts
+  };
 }
 
 async function generateWithRetry(client, activeModel, prompt) {
-  let result = await generateOnce(client, activeModel, prompt);
-  if (result.used || !isRetryableGeminiError(result.error)) return result;
-  await delay(500);
-  result = await generateOnce(client, activeModel, prompt);
-  if (result.used) return { ...result, retry_used: true };
-  if (isRetryableGeminiError(result.error)) {
-    return { ...result, retry_used: true };
+  const attempts = [];
+  for (let attempt = 1; attempt <= 3; attempt += 1) {
+    const result = await generateOnce(client, activeModel, prompt, attempt);
+    attempts.push({
+      model: activeModel,
+      attempt,
+      reason: result.reason,
+      error: result.error || null
+    });
+    if (result.used) return { ...result, retry_used: attempt > 1, attempts };
+    logGeminiFailure({ model: activeModel, attempt, reason: result.reason, error: result.error });
+    if (attempt < 3) await delay(500 * attempt);
   }
-  return result;
+  return { ...attempts[attempts.length - 1], provider: "gemini", model: activeModel, used: false, text: "", attempts };
 }
 
-async function generateOnce(client, activeModel, prompt) {
+async function generateOnce(client, activeModel, prompt, attempt = 1) {
   try {
     const response = await withTimeout(
       client.models.generateContent({
         model: activeModel,
         contents: prompt
       }),
-      Number(process.env.GEMINI_TIMEOUT_MS || 30000)
+      Number(process.env.GEMINI_TIMEOUT_MS || 60000)
     );
     const text = String(response.text || "").trim();
     if (!text) {
       return {
         provider: "gemini",
         model: activeModel,
+        model_used: null,
         used: false,
         text: "",
         reason: "invalid_response",
         error: "Gemini returned an empty text response.",
+        attempt,
         raw_response: summarizeGeminiResponse(response)
       };
     }
@@ -88,19 +119,23 @@ async function generateOnce(client, activeModel, prompt) {
     return {
       provider: "gemini",
       model: activeModel,
+      model_used: activeModel,
       used: true,
       text,
       reason: "ok",
+      attempt,
       raw_response: summarizeGeminiResponse(response)
     };
   } catch (error) {
     return {
       provider: "gemini",
       model: activeModel,
+      model_used: null,
       used: false,
       text: "",
       reason: isTimeoutError(error) ? "timeout" : "gemini_error",
-      error: parseGeminiError(error)
+      error: parseGeminiError(error),
+      attempt
     };
   }
 }
@@ -119,12 +154,12 @@ function parseGeminiError(error) {
   }
 }
 
-function isRetryableGeminiError(error) {
-  return /high demand|unavailable|overloaded|rate|timeout|temporar/i.test(String(error || ""));
-}
-
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function logGeminiFailure({ model, attempt, reason, error }) {
+  console.error(`[gemini:error] model=${model} attempt=${attempt} reason=${reason} error=${error || "unknown"}`);
 }
 
 function withTimeout(promise, timeoutMs) {

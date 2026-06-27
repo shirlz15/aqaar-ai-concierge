@@ -597,7 +597,10 @@ function summarizeLlmResult(result = {}) {
     reason: result.reason,
     error: result.error,
     text_preview: String(result.text || "").slice(0, 1000),
-    raw_response: result.raw_response
+    raw_response: result.raw_response,
+    model_used: result.model_used,
+    attempted_models: result.attempted_models,
+    attempts: result.attempts
   };
 }
 
@@ -653,6 +656,7 @@ export async function chat(data, input = {}) {
       response_cards: [],
       follow_up: preGate.follow_up,
       response_type: preGate.response_type,
+      model_used: greetingGemini.model_used || (greetingGemini.used ? greetingGemini.model : null),
       intent: route.intent,
       intent_details: preGate.intent,
       entities: route.entities,
@@ -668,6 +672,8 @@ export async function chat(data, input = {}) {
       llm: {
         provider: greetingGemini.provider,
         model: greetingGemini.model || GEMINI_MODEL,
+        model_used: greetingGemini.model_used || (greetingGemini.used ? greetingGemini.model : null),
+        attempted_models: greetingGemini.attempted_models || [],
         used: greetingGemini.used,
         reason: greetingGemini.reason,
         fallback_reason: fallbackReason
@@ -742,9 +748,10 @@ export async function chat(data, input = {}) {
   chatDebug("gemini.raw_response", summarizeLlmResult(llmResult));
   chatDebug("parser.result", { valid_text: Boolean(llmResult.used && llmResult.text), text_length: String(llmResult.text || "").length });
   const fallbackAnswer = buildGroundedFallback(response, nextQuestion);
-  const fallbackReason = llmResult.used ? null : llmResult.reason || "gemini_unavailable";
-  const gracefulFallback = fallbackReason && fallbackReason !== "unsupported_by_kb" && fallbackReason !== "no_retrieved_context"
-    ? `Gemini is temporarily busy. Here are verified Aqaar matches from the KB.\n${fallbackAnswer}`
+  const nonGeminiFallback = ["unsupported_by_kb", "no_retrieved_context"].includes(llmResult.reason);
+  const fallbackReason = llmResult.used || nonGeminiFallback ? null : llmResult.reason || "gemini_unavailable";
+  const gracefulFallback = fallbackReason
+    ? `Here is the verified Aqaar KB answer.\n${fallbackAnswer}`
     : fallbackAnswer;
   const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : gracefulFallback);
   const finalAnswer = groundedAnswer || response.answer || "Not published in verified Aqaar KB.";
@@ -759,6 +766,7 @@ export async function chat(data, input = {}) {
     reply: finalAnswer,
     follow_up: nextQuestion,
     response_type: response.type,
+    model_used: llmResult.model_used || (llmResult.used ? llmResult.model : null),
     cards: response.cards,
     response_cards: response.cards,
     intent: route.intent,
@@ -785,6 +793,8 @@ export async function chat(data, input = {}) {
     llm: {
       provider: llmResult.provider,
       model: llmResult.model || GEMINI_MODEL,
+      model_used: llmResult.model_used || (llmResult.used ? llmResult.model : null),
+      attempted_models: llmResult.attempted_models || [],
       used: llmResult.used,
       reason: llmResult.reason,
       fallback_reason: fallbackReason
