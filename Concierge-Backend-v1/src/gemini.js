@@ -44,21 +44,23 @@ export function initializeGemini({ log = false } = {}) {
 export async function generateWithGemini({ prompt, model = process.env.GEMINI_MODEL } = {}) {
   const { client, model: configuredModel } = initializeGemini();
   const activeModel = model || configuredModel;
-  let lastError = null;
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const result = await generateOnce(client, activeModel, prompt);
-    if (result.used || !isRetryableGeminiError(result.error)) return result;
-    lastError = result.error;
-    await delay(400 * (attempt + 1));
+  const fallbackModel = process.env.GEMINI_FALLBACK_MODEL;
+  const primary = await generateWithRetry(client, activeModel, prompt);
+  if (primary.used || !fallbackModel || fallbackModel === activeModel) return primary;
+  const fallback = await generateWithRetry(client, fallbackModel, prompt);
+  return fallback.used ? { ...fallback, fallback_model_used: true, primary_error: primary.error } : primary;
+}
+
+async function generateWithRetry(client, activeModel, prompt) {
+  let result = await generateOnce(client, activeModel, prompt);
+  if (result.used || !isRetryableGeminiError(result.error)) return result;
+  await delay(500);
+  result = await generateOnce(client, activeModel, prompt);
+  if (result.used) return { ...result, retry_used: true };
+  if (isRetryableGeminiError(result.error)) {
+    return { ...result, retry_used: true };
   }
-  return {
-    provider: "gemini",
-    model: activeModel,
-    used: false,
-    text: "",
-    reason: "gemini_error",
-    error: lastError || "Gemini request failed."
-  };
+  return result;
 }
 
 async function generateOnce(client, activeModel, prompt) {

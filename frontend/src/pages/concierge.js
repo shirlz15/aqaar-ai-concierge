@@ -206,7 +206,7 @@ function appendRenderedMessage({ role, content, time, cards, sources, followUp }
   div.innerHTML = `
     <div class="message-avatar" aria-hidden="true">${avatar}</div>
     <div>
-      <div class="message-bubble">${formatMessage(content)}${renderResponseCards(cards)}${renderSources(sources)}${renderFollowUp(followUp)}</div>
+      <div class="message-bubble">${formatMessage(content)}${renderResponseCards(cards)}${renderSources(sources)}${renderFollowUp(followUp, content)}</div>
       <div class="message-time">${timeStr}</div>
     </div>
   `;
@@ -279,8 +279,10 @@ async function sendMessage() {
 
       hideTyping();
 
-      const reply = res?.reply || res?.response || res?.message || 'This is not published in the verified Aqaar KB.';
-      appendAIMessage(reply, res?.response_cards || [], res?.sources_used || [], res?.follow_up || '');
+      const reply = res?.answer || res?.reply || res?.response || res?.message || 'This is not published in the verified Aqaar KB.';
+      const cards = res?.cards || res?.response_cards || [];
+      const sources = res?.sources || res?.sources_used || [];
+      appendAIMessage(reply, cards, sources, res?.follow_up || '');
 
       // Check if AI is asking for contact details
       const lowerReply = reply.toLowerCase();
@@ -423,8 +425,9 @@ function renderSources(sources) {
   `;
 }
 
-function renderFollowUp(followUp) {
+function renderFollowUp(followUp, content = '') {
   if (!followUp) return '';
+  if (String(content || '').toLowerCase().includes(String(followUp).toLowerCase())) return '';
   return `<div class="chat-follow-up">${formatMessage(followUp)}</div>`;
 }
 

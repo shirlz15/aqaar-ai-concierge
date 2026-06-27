@@ -154,6 +154,11 @@ describe("AQAAR Concierge Backend v1", () => {
       message: "Dusit payment plan"
     });
 
+    assert.equal(typeof result.llm_used, "boolean");
+    assert.ok("fallback_reason" in result);
+    assert.ok(Array.isArray(result.cards));
+    assert.ok(Array.isArray(result.sources));
+    assert.equal(result.answer, result.reply);
     assert.equal(result.llm.provider, "gemini");
     assert.match(result.llm.model, /gemini/i);
     assert.ok(!("api_key" in result.llm));
@@ -162,6 +167,16 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.ok(result.sources_used.length > 0);
     assert.ok(result.sources_used.every((source) => source.source_label && !/^https?:\/\//i.test(source.source_label)));
     assert.ok(result.follow_up);
+  });
+
+  it("answers greetings without property cards", async () => {
+    const result = await request("/chat", { session_id: "greeting-contract", message: "hey" });
+    assert.equal(result.response_type, "greeting");
+    assert.equal(result.llm_used, false);
+    assert.equal(result.fallback_reason, "greeting");
+    assert.deepEqual(result.cards, []);
+    assert.deepEqual(result.response_cards, []);
+    assert.match(result.answer, /Hello|welcome/i);
   });
 
   it("captures lead details only into session memory", async () => {

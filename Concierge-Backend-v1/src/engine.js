@@ -495,10 +495,36 @@ function deriveSeedIntent(row) {
   return "invest";
 }
 
+function isGreeting(message) {
+  return /^(hi|hey|hello|good morning|good afternoon|good evening|salam|السلام عليكم|yo)[!.?\s]*$/i.test(String(message || "").trim());
+}
+
 export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
+  if (isGreeting(message)) {
+    const answer = "Hello, welcome to Aqaar. I can help with prices, payment plans, locations, amenities, comparisons, or shortlisting a property. What would you like to explore?";
+    session.turns.push({ message, intent: "greeting", parsed: {}, lead: {} });
+    sessions.set(sessionId, session);
+    return {
+      session_id: sessionId,
+      llm_used: false,
+      fallback_reason: "greeting",
+      answer,
+      reply: answer,
+      sources: [],
+      sources_used: [],
+      cards: [],
+      response_cards: [],
+      follow_up: "Are you looking to buy, rent, invest, or lease a commercial space?",
+      response_type: "greeting",
+      intent: { intent: "greeting", trigger_hits: [], all_matches: [], source: "Concierge greeting guard" },
+      memory: session.memory,
+      recommendations: [],
+      validation: validation("greeting_no_property_cards")
+    };
+  }
   const incoming = parseSlots(message);
   const requestedIntent = normalizeIntent(input.intent);
   if (requestedIntent && !session.memory.purpose) incoming.purpose = requestedIntent;
@@ -547,19 +573,23 @@ export async function chat(data, input = {}) {
         text: ""
       };
   const fallbackAnswer = buildGroundedFallback(response, nextQuestion);
-  const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : fallbackAnswer);
+  const fallbackReason = llmResult.used ? null : llmResult.reason || "gemini_unavailable";
+  const gracefulFallback = fallbackReason && fallbackReason !== "unsupported_by_kb" && fallbackReason !== "no_retrieved_context"
+    ? `Gemini is temporarily busy. Here are verified Aqaar matches from the KB.\n${fallbackAnswer}`
+    : fallbackAnswer;
+  const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : gracefulFallback);
   const finalAnswer = groundedAnswer || response.answer || "This is not published in the verified Aqaar KB.";
-  const sourcePool = uniqueSources([
-    ...retrieved.sources,
-    ...recs.sources,
-    ...rag.sources
-  ]);
+  const sourcePool = uniqueSources(rag.sources);
+  const cleanSources = cleanSourceLabels(sourcePool);
   return {
     session_id: sessionId,
+    llm_used: Boolean(llmResult.used),
+    fallback_reason: fallbackReason,
     answer: finalAnswer,
     reply: finalAnswer,
     follow_up: nextQuestion,
     response_type: response.type,
+    cards: response.cards,
     response_cards: response.cards,
     intent: { ...detected, intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent },
     memory: session.memory,
@@ -572,8 +602,9 @@ export async function chat(data, input = {}) {
       captured_fields: session.memory.lead_capture,
       source: "Concierge-Backend-v1 session memory plus KB-backed recommendations"
     },
-    sources: sourcePool,
-    sources_used: cleanSourceLabels(sourcePool),
+    sources: cleanSources,
+    sources_used: cleanSources,
+    source_audit: sourcePool,
     rag: {
       model_context: rag.chunks,
       chunks_used: rag.chunks.length,
@@ -583,7 +614,8 @@ export async function chat(data, input = {}) {
       provider: llmResult.provider,
       model: llmResult.model || GEMINI_MODEL,
       used: llmResult.used,
-      reason: llmResult.reason
+      reason: llmResult.reason,
+      fallback_reason: fallbackReason
     },
     validation: validation("kb_checked_before_response")
   };
@@ -1138,7 +1170,7 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
       recommendations: []
     };
   }
-  return listResponse("Matching Aqaar projects", items, parsed, nextQuestion);
+  return listResponse("Published Aqaar KB matches", items, parsed, nextQuestion);
 }
 
 function noMatch(type = "search") {
