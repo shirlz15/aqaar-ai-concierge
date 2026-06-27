@@ -618,6 +618,18 @@ function summarizeFinalJson(result = {}) {
   };
 }
 
+function logChatOrchestration({ intent, entities, shouldUseRag, chunksCount = 0, model = null, geminiError = null, fallback_reason = null }) {
+  console.log(`[chat:orchestration] ${JSON.stringify({
+    intent,
+    entities,
+    shouldUseRag,
+    chunksCount,
+    model,
+    geminiError,
+    fallback_reason
+  })}`);
+}
+
 export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
@@ -634,18 +646,12 @@ export async function chat(data, input = {}) {
         email: route.entities.email
       });
     }
-    const greetingPrompt = buildGreetingPrompt(message, preGate.response_type);
-    chatDebug("prompt.sent_to_gemini", { prompt: greetingPrompt });
-    const greetingGemini = await generateWithGemini({ prompt: greetingPrompt });
-    chatDebug("gemini.raw_response", summarizeLlmResult(greetingGemini));
-    const parserResult = { valid_text: Boolean(greetingGemini.used && greetingGemini.text), text_length: String(greetingGemini.text || "").length };
-    chatDebug("parser.result", parserResult);
-    const answer = greetingGemini.used ? sanitizeAnswer(greetingGemini.text) : preGate.fallbackAnswer;
-    const fallbackReason = greetingGemini.used ? null : greetingGemini.reason;
+    const answer = preGate.fallbackAnswer;
+    const fallbackReason = null;
     sessions.set(sessionId, session);
     const result = {
       session_id: sessionId,
-      llm_used: Boolean(greetingGemini.used),
+      llm_used: false,
       property_intent: false,
       fallback_reason: fallbackReason,
       answer,
@@ -656,7 +662,7 @@ export async function chat(data, input = {}) {
       response_cards: [],
       follow_up: preGate.follow_up,
       response_type: preGate.response_type,
-      model_used: greetingGemini.model_used || (greetingGemini.used ? greetingGemini.model : null),
+      model_used: null,
       intent: route.intent,
       intent_details: preGate.intent,
       entities: route.entities,
@@ -670,16 +676,25 @@ export async function chat(data, input = {}) {
         source: "Concierge-Backend-v1 session memory"
       },
       llm: {
-        provider: greetingGemini.provider,
-        model: greetingGemini.model || GEMINI_MODEL,
-        model_used: greetingGemini.model_used || (greetingGemini.used ? greetingGemini.model : null),
-        attempted_models: greetingGemini.attempted_models || [],
-        used: greetingGemini.used,
-        reason: greetingGemini.reason,
+        provider: "none",
+        model: null,
+        model_used: null,
+        attempted_models: [],
+        used: false,
+        reason: "non_property_no_llm",
         fallback_reason: fallbackReason
       },
       validation: validation("non_property_no_retrieval")
     };
+    logChatOrchestration({
+      intent: route.intent,
+      entities: route.entities,
+      shouldUseRag: false,
+      chunksCount: 0,
+      model: null,
+      geminiError: null,
+      fallback_reason: fallbackReason
+    });
     chatDebug("fallback.reason", { fallback_reason: fallbackReason });
     chatDebug("final.json", summarizeFinalJson(result));
     return result;
@@ -722,6 +737,13 @@ export async function chat(data, input = {}) {
     response_cards: response.cards.map((card) => card.project),
     retrieved_chunks: rag.chunks.map((chunk) => ({ title: chunk.title, score: chunk.score, source_label: chunk.source_label }))
   });
+  const promptRag = {
+    ...rag,
+    chunks: rag.chunks.slice(0, 4).map((chunk) => ({
+      ...chunk,
+      text: String(chunk.text || "").slice(0, 650)
+    }))
+  };
   const prompt = buildGroundedPrompt({
     message,
     memory: session.memory,
@@ -730,7 +752,7 @@ export async function chat(data, input = {}) {
     detected,
     response,
     cards: response.cards,
-    rag,
+    rag: promptRag,
     nextQuestion
   });
   chatDebug("prompt.sent_to_gemini", { prompt });
@@ -801,6 +823,15 @@ export async function chat(data, input = {}) {
     },
     validation: validation("kb_checked_before_response")
   };
+  logChatOrchestration({
+    intent: route.intent,
+    entities: route.entities,
+    shouldUseRag: true,
+    chunksCount: rag.chunks.length,
+    model: llmResult.model_used || llmResult.model || GEMINI_MODEL,
+    geminiError: llmResult.used ? null : llmResult.error || llmResult.reason,
+    fallback_reason: fallbackReason
+  });
   chatDebug("fallback.reason", { fallback_reason: fallbackReason });
   chatDebug("final.json", summarizeFinalJson(result));
   return result;
