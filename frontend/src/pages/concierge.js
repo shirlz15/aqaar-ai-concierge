@@ -43,6 +43,26 @@ const INTENT_WELCOME = {
 let isAwaitingLead = false;
 let isSending = false;
 
+const PROPERTY_CARD_TYPES = new Set([
+  'buy',
+  'rent',
+  'invest',
+  'commercial',
+  'project_search',
+  'project_lookup',
+  'price',
+  'payment_plans',
+  'amenities',
+  'location_freehold',
+  'compare',
+  'investment',
+  'waterfront',
+  'luxury',
+  'school',
+  'hospital',
+  'nearby_landmarks'
+]);
+
 export function renderConcierge() {
   const content = document.getElementById('page-content');
   if (!content) return;
@@ -280,7 +300,9 @@ async function sendMessage() {
       hideTyping();
 
       const reply = res?.answer || res?.reply || res?.response || res?.message || 'This is not published in the verified Aqaar KB.';
-      const cards = res?.cards || res?.response_cards || [];
+      const rawCards = res?.cards || res?.response_cards || [];
+      const canShowCards = Boolean(res?.property_intent) && PROPERTY_CARD_TYPES.has(res?.response_type);
+      const cards = canShowCards && Array.isArray(rawCards) ? rawCards : [];
       const sources = res?.sources || res?.sources_used || [];
       appendAIMessage(reply, cards, sources, res?.follow_up || '');
 

@@ -499,30 +499,62 @@ function isGreeting(message) {
   return /^(hi|hey|hello|good morning|good afternoon|good evening|salam|السلام عليكم|yo)[!.?\s]*$/i.test(String(message || "").trim());
 }
 
+function isGeneralChat(message) {
+  const text = norm(message).replace(/[!?.,\s]+$/g, "");
+  return /^(how are you|how are you doing|how r u|what'?s up|whats up|thank you|thanks|ok|okay|cool|great|nice|who are you)$/.test(text);
+}
+
+function isPropertyRelatedMessage(data, message) {
+  const text = norm(message);
+  if (!text.trim()) return false;
+  if (findNamedProjects(allProfiles(data), message).length) return true;
+  if (/\b(buy|rent|lease|invest|investment|commercial|office|retail|clinic|warehouse|shop|property|properties|project|projects|apartment|apartments|flat|studio|villa|townhouse|bed|bedroom|br|price|prices|cost|budget|payment|plan|installment|instalment|amenit|facilit|gym|pool|beach|waterfront|corniche|location|area|community|freehold|compare|school|schools|hospital|hospitals|university|landmark|nearby|mawjan|dusit|ajman|phone|email|contact|enquiry|enquire)\b/.test(text)) return true;
+  if (/\bmy name is\b/.test(text) || /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(message)) return true;
+  return parseBedrooms(text) !== null || Boolean(parseBudget(text));
+}
+
+function nonPropertyResponse(session, message, type = "general_chat") {
+  const answer = type === "greeting"
+    ? "Hello, welcome to Aqaar. I can help with prices, payment plans, locations, amenities, comparisons, or shortlisting a property. What would you like to explore?"
+    : "I am here and ready to help with Aqaar property questions. You can ask about a project, price, payment plan, amenities, location, or compare two projects.";
+  session.turns.push({ message, intent: type, parsed: {}, lead: {} });
+  return {
+    answer,
+    response_type: type,
+    intent: { intent: type, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
+    fallback_reason: type,
+    follow_up: "Are you looking to buy, rent, invest, or lease a commercial space?"
+  };
+}
+
 export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
-  if (isGreeting(message)) {
-    const answer = "Hello, welcome to Aqaar. I can help with prices, payment plans, locations, amenities, comparisons, or shortlisting a property. What would you like to explore?";
-    session.turns.push({ message, intent: "greeting", parsed: {}, lead: {} });
+  const preGate = isGreeting(message)
+    ? nonPropertyResponse(session, message, "greeting")
+    : (isGeneralChat(message) || !isPropertyRelatedMessage(data, message))
+      ? nonPropertyResponse(session, message, "general_chat")
+      : null;
+  if (preGate) {
     sessions.set(sessionId, session);
     return {
       session_id: sessionId,
       llm_used: false,
-      fallback_reason: "greeting",
-      answer,
-      reply: answer,
+      property_intent: false,
+      fallback_reason: preGate.fallback_reason,
+      answer: preGate.answer,
+      reply: preGate.answer,
       sources: [],
       sources_used: [],
       cards: [],
       response_cards: [],
-      follow_up: "Are you looking to buy, rent, invest, or lease a commercial space?",
-      response_type: "greeting",
-      intent: { intent: "greeting", trigger_hits: [], all_matches: [], source: "Concierge greeting guard" },
+      follow_up: preGate.follow_up,
+      response_type: preGate.response_type,
+      intent: preGate.intent,
       memory: session.memory,
       recommendations: [],
-      validation: validation("greeting_no_property_cards")
+      validation: validation("non_property_no_retrieval")
     };
   }
   const incoming = parseSlots(message);
@@ -584,6 +616,7 @@ export async function chat(data, input = {}) {
   return {
     session_id: sessionId,
     llm_used: Boolean(llmResult.used),
+    property_intent: true,
     fallback_reason: fallbackReason,
     answer: finalAnswer,
     reply: finalAnswer,
