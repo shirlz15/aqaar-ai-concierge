@@ -299,7 +299,7 @@ async function sendMessage() {
 
       hideTyping();
 
-      const reply = res?.answer || res?.reply || res?.response || res?.message || 'This is not published in the verified Aqaar KB.';
+      const reply = res?.answer || res?.reply || res?.response || res?.message || 'Not published in verified Aqaar KB.';
       const rawCards = res?.cards || res?.response_cards || [];
       const canShowCards = Boolean(res?.property_intent) && PROPERTY_CARD_TYPES.has(res?.response_type);
       const cards = canShowCards && Array.isArray(rawCards) ? rawCards : [];

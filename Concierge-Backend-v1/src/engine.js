@@ -501,28 +501,73 @@ function isGreeting(message) {
 
 function isGeneralChat(message) {
   const text = norm(message).replace(/[!?.,\s]+$/g, "");
-  return /^(how are you|how are you doing|how r u|what'?s up|whats up|thank you|thanks|ok|okay|cool|great|nice|who are you)$/.test(text);
+  return /^(how are you|how are you doing|how r u|what'?s up|whats up|thank you|thanks|ok|okay|cool|great|nice|who are you|i'?m good|im good)$/.test(text);
+}
+
+function isNameOrContact(message) {
+  return Boolean(captureLead(message).name !== "unknown" || captureLead(message).phone !== "unknown" || captureLead(message).email !== "unknown");
+}
+
+function routeIntent(data, message) {
+  const text = norm(message);
+  const entities = extractEntities(data, message);
+  const namedProjects = findNamedProjects(allProfiles(data), message);
+  if (isGreeting(message)) return { intent: "greeting", property_intent: false, entities };
+  if (isGeneralChat(message)) return { intent: "unclear", property_intent: false, entities };
+  if (isNameOrContact(message)) return { intent: "name_contact_capture", property_intent: false, entities };
+  if (!text.trim()) return { intent: "unclear", property_intent: false, entities };
+  if (/\bcompare\b/.test(text) && namedProjects.length >= 2) return { intent: "comparison", property_intent: true, entities };
+  if (/\bpayment plan|payment plans|installment|instalment|down payment|cheque|cheques\b/.test(text)) return { intent: "payment_plan", property_intent: true, entities };
+  if (/\bprice|prices|priced|range|cost|budget|under|below|cheapest|lowest price|least expensive|affordable\b/.test(text)) return { intent: "price", property_intent: true, entities };
+  if (/\bamenit|facilit|gym|pool|kids|parking|beach|waterfront|sea view|corniche\b/.test(text)) return { intent: "amenities", property_intent: true, entities };
+  if (/\bfreehold|location|community|area|nearby|landmark|landmarks|school|schools|hospital|hospitals|university\b/.test(text)) return { intent: "location_freehold", property_intent: true, entities };
+  if (/\binvest|investment|roi|yield\b/.test(text)) return { intent: "investment", property_intent: true, entities };
+  if (/\bcommercial|office|retail|clinic|warehouse|shop\b/.test(text)) return { intent: "commercial", property_intent: true, entities };
+  if (/\b(buy|rent|lease|property|properties|project|projects|apartment|apartments|flat|studio|villa|townhouse|bed|bedroom|br)\b/.test(text)) return { intent: "property_search", property_intent: true, entities };
+  if (namedProjects.length) return { intent: "property_search", property_intent: true, entities };
+  if (parseBedrooms(text) !== null || Boolean(parseBudget(text))) return { intent: "property_search", property_intent: true, entities };
+  return { intent: "unclear", property_intent: false, entities };
 }
 
 function isPropertyRelatedMessage(data, message) {
-  const text = norm(message);
-  if (!text.trim()) return false;
-  if (findNamedProjects(allProfiles(data), message).length) return true;
-  if (/\b(buy|rent|lease|invest|investment|commercial|office|retail|clinic|warehouse|shop|property|properties|project|projects|apartment|apartments|flat|studio|villa|townhouse|bed|bedroom|br|price|prices|cost|budget|payment|plan|installment|instalment|amenit|facilit|gym|pool|beach|waterfront|corniche|location|area|community|freehold|compare|school|schools|hospital|hospitals|university|landmark|nearby|mawjan|dusit|ajman|phone|email|contact|enquiry|enquire)\b/.test(text)) return true;
-  if (/\bmy name is\b/.test(text) || /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(message)) return true;
-  return parseBedrooms(text) !== null || Boolean(parseBudget(text));
+  return routeIntent(data, message).property_intent;
 }
 
-function nonPropertyResponse(session, message, type = "general_chat") {
-  const fallbackAnswer = type === "greeting"
+function extractEntities(data, message) {
+  const text = norm(message);
+  const slots = parseSlots(message);
+  const lead = captureLead(message);
+  const named = findNamedProjects(allProfiles(data), message).map((profile) => profile.project_name);
+  const hasBudgetLanguage = /\b(budget|under|below|around|up to|aed|million|m|k|thousand|price|cost)\b/i.test(String(message || ""));
+  const budget = lead.phone !== "unknown" && !hasBudgetLanguage ? "unknown" : (slots.budget || "unknown");
+  return {
+    project_name: named[0] || "unknown",
+    project_names: named,
+    location: slots.location || "unknown",
+    property_type: slots.property_type || slots.commercial_type || "unknown",
+    bedrooms: slots.bedrooms ?? "unknown",
+    budget,
+    purpose: slots.purpose || "unknown",
+    amenities: slots.amenities || [],
+    timeline: slots.timeline || "unknown",
+    name: lead.name,
+    phone: lead.phone,
+    email: lead.email
+  };
+}
+
+function nonPropertyResponse(session, message, route) {
+  const fallbackAnswer = route.intent === "greeting"
     ? "Hello, welcome to Aqaar. I can help with prices, payment plans, locations, amenities, comparisons, or shortlisting a property. What would you like to explore?"
-    : "I am here and ready to help with Aqaar property questions. You can ask about a project, price, payment plan, amenities, location, or compare two projects.";
-  session.turns.push({ message, intent: type, parsed: {}, lead: {} });
+    : route.intent === "name_contact_capture"
+      ? "Thanks, I have noted your details. What Aqaar property requirement would you like help with?"
+      : "I can help with Aqaar property questions. Please ask about a project, price, payment plan, amenities, location, investment, or comparison.";
+  session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
   return {
     fallbackAnswer,
-    response_type: type,
-    intent: { intent: type, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
-    fallback_reason: type,
+    response_type: route.intent,
+    intent: { intent: route.intent, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
+    fallback_reason: route.intent,
     follow_up: "Are you looking to buy, rent, invest, or lease a commercial space?"
   };
 }
@@ -575,13 +620,17 @@ export async function chat(data, input = {}) {
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
   chatDebug("chat.start", { session_id: sessionId, message });
-  const preGate = isGreeting(message)
-    ? nonPropertyResponse(session, message, "greeting")
-    : (isGeneralChat(message) || !isPropertyRelatedMessage(data, message))
-      ? nonPropertyResponse(session, message, "general_chat")
-      : null;
+  const route = routeIntent(data, message);
+  const preGate = !route.property_intent ? nonPropertyResponse(session, message, route) : null;
   if (preGate) {
-    chatDebug("intent.detected", { intent: preGate.response_type, property_intent: false, retrieval_skipped: true });
+    chatDebug("intent.detected", { intent: route.intent, entities: route.entities, property_intent: false, retrieval_skipped: true });
+    if (route.intent === "name_contact_capture") {
+      session.memory.lead_capture = mergeKnown(session.memory.lead_capture || {}, {
+        name: route.entities.name,
+        phone: route.entities.phone,
+        email: route.entities.email
+      });
+    }
     const greetingPrompt = buildGreetingPrompt(message, preGate.response_type);
     chatDebug("prompt.sent_to_gemini", { prompt: greetingPrompt });
     const greetingGemini = await generateWithGemini({ prompt: greetingPrompt });
@@ -604,9 +653,18 @@ export async function chat(data, input = {}) {
       response_cards: [],
       follow_up: preGate.follow_up,
       response_type: preGate.response_type,
-      intent: preGate.intent,
+      intent: route.intent,
+      intent_details: preGate.intent,
+      entities: route.entities,
       memory: session.memory,
+      lead_capture: session.memory.lead_capture || {},
       recommendations: [],
+      sales_handoff: {
+        status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
+        summary: buildSalesSummary(session.memory, []),
+        captured_fields: session.memory.lead_capture || {},
+        source: "Concierge-Backend-v1 session memory"
+      },
       llm: {
         provider: greetingGemini.provider,
         model: greetingGemini.model || GEMINI_MODEL,
@@ -631,9 +689,10 @@ export async function chat(data, input = {}) {
   const activePurpose = session.memory.purpose || intentToPurpose(detected.intent) || "buy";
   session.memory.purpose = activePurpose;
   chatDebug("intent.detected", {
-    intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent,
+    intent: route.intent,
+    legacy_intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent,
     response_hint: classifyQuestion(message),
-    extracted_entities: incoming,
+    extracted_entities: route.entities,
     property_intent: true
   });
 
@@ -651,7 +710,7 @@ export async function chat(data, input = {}) {
   const nextQuestion = nextQuestionFor(session.memory, activePurpose);
   const response = buildContextualResponse(data, message, session.memory, retrieved, recs, nextQuestion);
   if (response.recommendations?.length) session.lastProfiles = response.recommendations.map((item) => item.project.property_id);
-  const rag = retrieveRagContext(data, message, session.memory, response, recs, 6);
+  const rag = retrieveAqaarContext(data, message, route, response, recs, 8);
   chatDebug("kb.retrieval", {
     search_results: retrieved.results.length,
     response_cards: response.cards.map((card) => card.project),
@@ -660,7 +719,8 @@ export async function chat(data, input = {}) {
   const prompt = buildGroundedPrompt({
     message,
     memory: session.memory,
-    extractedEntities: incoming,
+    extractedEntities: route.entities,
+    route,
     detected,
     response,
     cards: response.cards,
@@ -669,7 +729,7 @@ export async function chat(data, input = {}) {
   });
   chatDebug("prompt.sent_to_gemini", { prompt });
   const hasGroundedContext = response.cards.length > 0 || rag.chunks.length > 0;
-  const unsupported = response.cards.length === 0 && /^This is not published in the verified Aqaar KB\.$/.test(response.answer);
+  const unsupported = response.cards.length === 0 && /^(This is not published in the verified Aqaar KB\.|Not published in verified Aqaar KB\.)$/.test(response.answer);
   const llmResult = hasGroundedContext && !unsupported
     ? await generateWithGemini({ prompt })
     : {
@@ -687,7 +747,7 @@ export async function chat(data, input = {}) {
     ? `Gemini is temporarily busy. Here are verified Aqaar matches from the KB.\n${fallbackAnswer}`
     : fallbackAnswer;
   const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : gracefulFallback);
-  const finalAnswer = groundedAnswer || response.answer || "This is not published in the verified Aqaar KB.";
+  const finalAnswer = groundedAnswer || response.answer || "Not published in verified Aqaar KB.";
   const sourcePool = uniqueSources(rag.sources);
   const cleanSources = cleanSourceLabels(sourcePool);
   const result = {
@@ -701,7 +761,9 @@ export async function chat(data, input = {}) {
     response_type: response.type,
     cards: response.cards,
     response_cards: response.cards,
-    intent: { ...detected, intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent },
+    intent: route.intent,
+    intent_details: { ...detected, intent: route.intent },
+    entities: route.entities,
     memory: session.memory,
     recommendations: response.recommendations || recs.recommendations,
     qualification,
@@ -734,41 +796,45 @@ export async function chat(data, input = {}) {
   return result;
 }
 
-function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
-  const query = buildMemoryQuery(message, memory);
-  const parsed = mergeKnown(parseSlots(query), memory || {});
+function retrieveAqaarContext(data, message, route, response, recs, limit = 8) {
+  const query = [message, Object.values(route.entities || {}).flat().filter((value) => typeof value === "string").join(" ")].join(" ");
+  const parsed = parseSlots(query);
   const queryTokens = expandQueryTokens(tokens(query), parsed);
   const cardNames = (response.cards || []).map((card) => norm(card.project)).filter(Boolean);
   const recommendationNames = (recs.recommendations || []).map((item) => norm(item.project.project_name)).filter(Boolean);
-  const preferredNames = new Set(cardNames.length ? cardNames : recommendationNames);
+  const entityProjectNames = (route.entities?.project_names || []).map(norm).filter(Boolean);
+  const preferredNames = new Set(cardNames.length ? cardNames : (entityProjectNames.length ? entityProjectNames : recommendationNames));
 
   const hasPreferredCards = preferredNames.size > 0;
-  const scoredChunks = data.ragChunks.map((chunk, index) => {
-    const text = chunk.text || chunk.content || JSON.stringify(chunk);
-    const title = chunk.title || chunk.project || chunk.document || "";
-    const matchesPreferred = [...preferredNames].some((name) => name !== "unknown" && norm(`${title} ${text}`).includes(name));
-    const nameBoost = matchesPreferred ? 8 : 0;
+  const documents = buildKbDocuments(data);
+  const scoredDocuments = documents.map((doc, index) => {
+    const haystack = `${doc.title} ${doc.text}`;
+    const exactProjectMatch = [...preferredNames].some((name) => name !== "unknown" && norm(doc.title) === name);
+    const matchesPreferred = [...preferredNames].some((name) => name !== "unknown" && norm(haystack).includes(name));
+    const intentMatch = intentMatchesDocument(route.intent, doc);
+    const entityMatch = entityMatchesDocument(route.entities, haystack);
+    const keywordScore = matchScore(queryTokens, haystack);
     return {
-      score: matchScore(queryTokens, `${title} ${text}`) + nameBoost,
+      score: (exactProjectMatch ? 100 : 0) + (intentMatch ? 35 : 0) + entityMatch + keywordScore,
       matchesPreferred,
       index,
-      chunk
+      doc
     };
   });
 
-  const chunks = scoredChunks
+  const chunks = scoredDocuments
     .filter((entry) => entry.score > 0)
     .filter((entry) => !hasPreferredCards || entry.matchesPreferred)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
-    .map(({ chunk, index, score }) => ({
-      chunk_id: knownOrUnknown(chunk.chunk_id || chunk.id || `chunk_${index}`),
-      title: knownOrUnknown(chunk.title || chunk.project || chunk.document || `KB chunk ${index + 1}`),
-      project: knownOrUnknown(chunk.project || chunk.project_name || chunk.title),
-      section: knownOrUnknown(chunk.section || chunk.chunk_type),
-      text: knownOrUnknown(chunk.text || chunk.content || JSON.stringify(chunk)).slice(0, 700),
-      source: sourceFromChunk(chunk, index),
-      source_label: sourceLabel(chunk.source_url || chunk.source || chunk.document),
+    .map(({ doc, index, score }) => ({
+      chunk_id: knownOrUnknown(doc.id || `kb_doc_${index}`),
+      title: knownOrUnknown(doc.title || `KB context ${index + 1}`),
+      project: knownOrUnknown(doc.project || doc.title),
+      section: knownOrUnknown(doc.type),
+      text: knownOrUnknown(doc.text).slice(0, 900),
+      source: doc.source,
+      source_label: sourceLabel(doc.source?.source_url || doc.source_label || doc.type),
       score
     }));
 
@@ -781,6 +847,101 @@ function retrieveRagContext(data, message, memory, response, recs, limit = 8) {
     chunks,
     sources: uniqueSources([...chunks.map((chunk) => chunk.source), ...cardSources])
   };
+}
+
+function buildKbDocuments(data) {
+  if (data.kbDocumentCache) return data.kbDocumentCache;
+  const docs = [];
+  data.ragChunks.forEach((chunk, index) => {
+    docs.push({
+      id: chunk.chunk_id || chunk.id || `rag_${index}`,
+      type: "rag_chunk",
+      title: knownOrUnknown(chunk.title || chunk.project || chunk.document),
+      project: knownOrUnknown(chunk.project || chunk.project_name || chunk.title),
+      text: knownOrUnknown(chunk.text || chunk.content || JSON.stringify(chunk)),
+      source: sourceFromChunk(chunk, index)
+    });
+  });
+  data.projects.forEach((row) => docs.push({
+    id: row.property_id,
+    type: "project_csv",
+    title: row.property_name,
+    project: row.property_name,
+    text: csvRowText("project", row),
+    source: sourceFromProject(row)
+  }));
+  data.units.forEach((row) => docs.push({
+    id: row.unit_id,
+    type: "inventory_csv",
+    title: row.property_name,
+    project: row.property_name,
+    text: csvRowText("inventory", row),
+    source: sourceFromUnit(row)
+  }));
+  data.amenities.forEach((row, index) => docs.push({
+    id: row.amenity_id || `amenity_${index}`,
+    type: "amenities_csv",
+    title: row.property_name || row.project_name || row.amenity_name,
+    project: row.property_name || row.project_name,
+    text: csvRowText("amenity", row),
+    source: sourceFromGeneric("amenity", row, index)
+  }));
+  data.locations.forEach((row, index) => docs.push({
+    id: row.location_id || row.property_id || `location_${index}`,
+    type: "locations_csv",
+    title: row.property_name || row.project_name || row.community,
+    project: row.property_name || row.project_name,
+    text: csvRowText("location", row),
+    source: sourceFromGeneric("location", row, index)
+  }));
+  data.assets.forEach((row, index) => docs.push({
+    id: row.asset_id || `asset_${index}`,
+    type: "assets_csv",
+    title: row.property_name || row.project_name || row.asset_label,
+    project: row.property_name || row.project_name,
+    text: csvRowText("asset", row),
+    source: sourceFromGeneric("asset", row, index)
+  }));
+  data.kbDocumentCache = docs;
+  return docs;
+}
+
+function csvRowText(type, row) {
+  return `${type}: ${Object.entries(row || {}).filter(([, value]) => isKnown(value)).map(([key, value]) => `${key}: ${value}`).join("; ")}`;
+}
+
+function sourceFromGeneric(type, row, index) {
+  return {
+    entity_type: type,
+    entity_id: knownOrUnknown(row?.asset_id || row?.amenity_id || row?.location_id || row?.property_id || `${type}_${index}`),
+    entity_name: knownOrUnknown(row?.property_name || row?.project_name || row?.asset_label || row?.amenity_name || row?.community),
+    source_url: knownOrUnknown(row?.source_url || row?.asset_url || row?.evidence_url || row?.source),
+    last_verified: knownOrUnknown(row?.last_verified || row?.extraction_date),
+    confidence_score: knownOrUnknown(row?.confidence_score)
+  };
+}
+
+function intentMatchesDocument(intent, doc) {
+  const text = norm(`${doc.type} ${doc.text}`);
+  if (intent === "price") return /\bprice|price_min|price_max|starting price|aed\b/.test(text);
+  if (intent === "payment_plan") return /payment|installment|instalment|down payment/.test(text);
+  if (intent === "amenities") return /amenity|gym|pool|beach|waterfront|parking|retail/.test(text);
+  if (intent === "location_freehold") return /location|community|freehold|nearby|school|hospital|university|landmark/.test(text);
+  if (intent === "comparison") return true;
+  if (intent === "investment") return /investment|roi|yield|freehold|off-plan|price/.test(text);
+  if (intent === "commercial") return /commercial|office|retail|clinic|warehouse|shop/.test(text);
+  return /project|property|inventory|bedroom|apartment|villa|studio/.test(text);
+}
+
+function entityMatchesDocument(entities = {}, text = "") {
+  const haystack = norm(text);
+  let score = 0;
+  for (const project of entities.project_names || []) if (isKnown(project) && haystack.includes(norm(project))) score += 60;
+  if (isKnown(entities.location) && haystack.includes(norm(entities.location))) score += 18;
+  if (isKnown(entities.property_type) && haystack.includes(norm(entities.property_type))) score += 18;
+  if (entities.bedrooms !== "unknown" && haystack.includes(String(entities.bedrooms))) score += 12;
+  for (const amenity of entities.amenities || []) if (haystack.includes(norm(amenity))) score += 12;
+  return score;
 }
 
 function buildGroundedPrompt({ message, memory, extractedEntities, detected, response, cards, rag, nextQuestion }) {
@@ -806,7 +967,7 @@ function buildGroundedPrompt({ message, memory, extractedEntities, detected, res
     "Answer only from the verified Aqaar KB context below.",
     "Do not invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
     "Do not print raw URLs. Refer to sources by clean label only.",
-    "If the answer is absent from the context, say exactly: This is not published in the verified Aqaar KB.",
+    "If the answer is absent from the context, say exactly: Not published in verified Aqaar KB.",
     "If allowed_project_cards is empty, do not recommend or name any property.",
     "For property/project recommendations, mention only project names from allowed_project_cards.",
     "Use retrieved_chunks only as evidence for allowed_project_cards, or for a direct non-property fact requested by the user.",
@@ -830,7 +991,7 @@ function sanitizeAnswer(text) {
 }
 
 function buildGroundedFallback(response, nextQuestion) {
-  if (!response.cards?.length) return response.answer || "This is not published in the verified Aqaar KB.";
+  if (!response.cards?.length) return response.answer || "Not published in verified Aqaar KB.";
   const lines = [];
   if (response.type === "payment_plans") {
     lines.push("Published payment plans in the verified Aqaar KB:");
@@ -1278,7 +1439,7 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
   if (!items.length && retrieved.results.length === 0) {
     return {
       type: "out_of_scope",
-      answer: "This is not published in the verified Aqaar KB.",
+      answer: "Not published in verified Aqaar KB.",
       cards: [],
       recommendations: []
     };
@@ -1289,7 +1450,7 @@ function buildContextualResponse(data, message, memory, retrieved, recs, nextQue
 function noMatch(type = "search") {
   return {
     type,
-    answer: "This is not published in the verified Aqaar KB.",
+    answer: "Not published in verified Aqaar KB.",
     cards: [],
     recommendations: []
   };
@@ -1336,7 +1497,7 @@ function priceResponse(profiles, criteria = {}) {
   if (!profiles.length) {
     return {
       type: "price",
-      answer: "This is not published in the verified Aqaar KB.",
+      answer: "Not published in verified Aqaar KB.",
       cards: [],
       recommendations: []
     };
@@ -1365,7 +1526,7 @@ function landmarkResponse(profiles) {
   if (!profiles.length) {
     return {
       type: "nearby_landmarks",
-      answer: "This is not published in the verified Aqaar KB.",
+      answer: "Not published in verified Aqaar KB.",
       cards: [],
       recommendations: []
     };
@@ -1427,7 +1588,11 @@ function filterProfiles(profiles, criteria = {}) {
 function matchesStrict(profile, criteria = {}) {
   if (criteria.property_type) {
     const wanted = norm(criteria.property_type);
-    if (wanted === "apartment" && !/\bapartment|residence|residential|studio|bedroom\b/i.test(profile.corpus)) return false;
+    const classification = `${profile.property_type} ${profile.sub_type} ${unitTypesFor(profile).join(" ")}`;
+    if (wanted === "apartment") {
+      if (/\bcommercial|office|retail|shop|clinic|warehouse|education|school|hospital|healthcare|villa|townhouse\b/i.test(classification)) return false;
+      if (!/\bapartment|residence|residential|studio\b/i.test(profile.corpus)) return false;
+    }
     else if (wanted === "villa" && !/\bvilla\b/i.test(profile.corpus)) return false;
     else if (wanted === "commercial" && !/\bcommercial|office|retail|shop|clinic|warehouse\b/i.test(profile.corpus)) return false;
     else if (!["apartment", "villa", "commercial"].includes(wanted) && !hasTerm(profile.corpus, wanted)) return false;
@@ -1552,7 +1717,8 @@ function captureLead(message) {
   const email = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
   const phone = text.match(/(?:\+?\d[\d\s().-]{6,}\d)/)?.[0];
   const rawName = text.match(/\bmy name is\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim()
-    || text.match(/\bi am\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim();
+    || text.match(/\bi am\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim()
+    || text.match(/\bi['’`]?m\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim();
   const name = rawName?.replace(/\b(my|phone|email|number)\b.*$/i, "").trim();
   return {
     name: knownOrUnknown(name),

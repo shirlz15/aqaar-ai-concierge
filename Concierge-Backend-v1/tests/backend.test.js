@@ -145,7 +145,7 @@ describe("AQAAR Concierge Backend v1", () => {
   it("does not expose raw URLs in chat answers and returns no-match text", async () => {
     const impossible = await request("/chat", { session_id: "intent-none", message: "Villa under AED 1000" });
     const payment = await request("/chat", { session_id: "intent-payment", message: "Payment plans" });
-    assert.equal(impossible.answer, "This is not published in the verified Aqaar KB.");
+    assert.equal(impossible.answer, "Not published in verified Aqaar KB.");
     assert.doesNotMatch(payment.answer, /https?:\/\//i);
     assert.ok(payment.response_cards.some((card) => card.payment_plan !== "unknown"));
   });
@@ -179,7 +179,7 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.deepEqual(result.cards, []);
     assert.deepEqual(result.response_cards, []);
     assert.match(result.answer, /Aqaar|property|help|welcome|hello/i);
-    assert.equal(general.response_type, "general_chat");
+    assert.equal(general.response_type, "unclear");
     assert.equal(general.property_intent, false);
     assert.deepEqual(general.cards, []);
     assert.deepEqual(general.response_cards, []);
