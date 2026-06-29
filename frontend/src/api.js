@@ -1,9 +1,11 @@
 /**
  * Aqaar AI Concierge - API Client
- * All calls proxy through Vite's /api route to the local Aqaar backend.
+ * All calls use the deployed Aqaar backend unless VITE_API_BASE_URL overrides it.
  */
 
-const BASE = import.meta.env.VITE_API_BASE || '/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://aqaar-ai-concierge.onrender.com";
 
 async function request(method, path, body) {
   const opts = {
@@ -14,8 +16,8 @@ async function request(method, path, body) {
     opts.body = JSON.stringify(body);
   }
   const url = body && method === 'GET'
-    ? `${BASE}${path}?${new URLSearchParams(body)}`
-    : `${BASE}${path}`;
+    ? `${API_BASE_URL}${path}?${new URLSearchParams(body)}`
+    : `${API_BASE_URL}${path}`;
 
   const res = await fetch(url, opts);
   if (!res.ok) {
