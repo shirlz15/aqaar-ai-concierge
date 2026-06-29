@@ -630,12 +630,234 @@ function logChatOrchestration({ intent, entities, shouldUseRag, chunksCount = 0,
   })}`);
 }
 
+async function planChatWithGemini(data, message, session, images = []) {
+  const prompt = buildPlannerPrompt(data, message, session, images);
+  const result = await generateWithGemini({ prompt, images, maxAttempts: 1, fallbackModels: false, timeoutMs: 8000 });
+  if (!result.used) {
+    return {
+      used: false,
+      model_used: result.model_used || null,
+      error: result.error || result.reason,
+      plan: fallbackAiPlan(data, message, session)
+    };
+  }
+  const parsed = parseJsonObject(result.text);
+  if (!parsed) {
+    return {
+      used: false,
+      model_used: result.model_used || result.model,
+      error: "planner_invalid_json",
+      raw_text: result.text,
+      plan: fallbackAiPlan(data, message, session)
+    };
+  }
+  return {
+    used: true,
+    model_used: result.model_used || result.model,
+    raw_text: result.text,
+    plan: normalizeAiPlan(data, message, parsed)
+  };
+}
+
+function buildPlannerPrompt(data, message, session, images = []) {
+  const knownProjects = allProfiles(data).map((profile) => profile.project_name).filter(isKnown).slice(0, 160);
+  const memory = {
+    ...session.memory,
+    recent_turns: (session.turns || []).slice(-5).map((turn) => ({
+      user_message: turn.message,
+      intent: turn.intent,
+      parsed: turn.parsed
+    })),
+    last_project_ids: session.lastProfiles || []
+  };
+  return [
+    "You are the Aqaar AI Concierge orchestration planner.",
+    "Classify the user's latest message before any KB retrieval.",
+    "Return ONLY valid JSON. Do not include markdown.",
+    "Use conversation memory to understand short follow-ups such as Ajman, 2 bedrooms, under 90k, similar, show another one.",
+    "If an image is attached, inspect it and describe visible architectural/property features for semantic property search.",
+    "Do not answer with property facts. This is planning only.",
+    "Allowed high-level intents are natural labels such as small_talk, contact_capture, property_search, project_lookup, price, payment_plan, amenities, location, comparison, investment, commercial, out_of_scope.",
+    "Set requires_rag true only when Aqaar KB retrieval is needed.",
+    "",
+    "JSON schema:",
+    JSON.stringify({
+      intent: "string",
+      entities: {
+        location: "string or unknown",
+        bedrooms: "number or unknown",
+        budget: "number or unknown",
+        amenities: ["string"],
+        property_type: "string or unknown",
+        project_names: ["string"],
+        purpose: "buy|rent|invest|commercial|unknown",
+        timeline: "string or unknown"
+      },
+      requires_rag: true,
+      small_talk: false,
+      follow_up: false,
+      references_image: false,
+      image_features: ["string"],
+      search_query: "string",
+      response_hint: "short natural response for small talk/contact only"
+    }, null, 2),
+    "",
+    `Known Aqaar projects: ${knownProjects.join(", ")}`,
+    `Conversation memory JSON: ${JSON.stringify(memory)}`,
+    `Image attached: ${images.length > 0}`,
+    `Latest user message: ${message}`
+  ].join("\n");
+}
+
+function parseJsonObject(text) {
+  const raw = String(text || "").trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) return null;
+    try {
+      return JSON.parse(match[0]);
+    } catch {
+      return null;
+    }
+  }
+}
+
+function normalizeAiPlan(data, message, parsed = {}) {
+  const fallback = fallbackAiPlan(data, message);
+  const entities = parsed.entities && typeof parsed.entities === "object" ? parsed.entities : {};
+  const projectNames = Array.isArray(entities.project_names)
+    ? entities.project_names
+    : (entities.project_name ? [entities.project_name] : fallback.entities.project_names);
+  const normalized = {
+    intent: knownOrUnknown(parsed.intent || fallback.intent),
+    entities: {
+      project_name: projectNames.find(isKnown) || "unknown",
+      project_names: projectNames.filter(isKnown),
+      location: knownOrUnknown(entities.location || fallback.entities.location),
+      property_type: knownOrUnknown(entities.property_type || fallback.entities.property_type),
+      bedrooms: entities.bedrooms ?? fallback.entities.bedrooms,
+      budget: entities.budget ?? fallback.entities.budget,
+      purpose: knownOrUnknown(entities.purpose || fallback.entities.purpose),
+      amenities: Array.isArray(entities.amenities) ? entities.amenities.filter(isKnown) : fallback.entities.amenities,
+      timeline: knownOrUnknown(entities.timeline || fallback.entities.timeline),
+      image_features: Array.isArray(parsed.image_features) ? parsed.image_features.filter(isKnown) : [],
+      name: fallback.entities.name,
+      phone: fallback.entities.phone,
+      email: fallback.entities.email
+    },
+    requires_rag: Boolean(parsed.requires_rag),
+    small_talk: Boolean(parsed.small_talk),
+    follow_up: Boolean(parsed.follow_up),
+    references_image: Boolean(parsed.references_image),
+    image_features: Array.isArray(parsed.image_features) ? parsed.image_features.filter(isKnown) : [],
+    search_query: knownOrUnknown(parsed.search_query || ""),
+    response_hint: knownOrUnknown(parsed.response_hint || "")
+  };
+  if (normalized.references_image || normalized.image_features.length) normalized.requires_rag = true;
+  if (normalized.small_talk) normalized.requires_rag = false;
+  return normalized;
+}
+
+function fallbackAiPlan(data, message, session = null) {
+  const route = routeIntent(data, message);
+  const slots = parseSlots(message);
+  const hasMemoryContext = Boolean(session?.memory?.purpose || session?.memory?.property_type || session?.memory?.location || session?.memory?.budget || session?.memory?.bedrooms || session?.lastProfiles?.length);
+  const hasFollowUpFilter = Boolean(slots.location || slots.bedrooms !== undefined || slots.budget || slots.property_type || slots.amenities?.length);
+  const asksContinuation = /\b(another|similar|more|next|show more|same)\b/i.test(String(message || ""));
+  const shouldContinueRag = hasMemoryContext && (hasFollowUpFilter || asksContinuation);
+  const entities = shouldContinueRag
+    ? mergeKnown(route.entities, {
+        location: slots.location || session?.memory?.location,
+        property_type: slots.property_type || session?.memory?.property_type,
+        bedrooms: slots.bedrooms ?? session?.memory?.bedrooms,
+        budget: slots.budget || session?.memory?.budget,
+        purpose: slots.purpose || session?.memory?.purpose,
+        amenities: slots.amenities?.length ? slots.amenities : session?.memory?.amenities
+      })
+    : route.entities;
+  return {
+    intent: shouldContinueRag ? "property_search" : route.intent,
+    entities,
+    requires_rag: shouldContinueRag || route.property_intent,
+    small_talk: !shouldContinueRag && !route.property_intent && route.intent !== "name_contact_capture",
+    follow_up: false,
+    references_image: false,
+    image_features: [],
+    search_query: message,
+    response_hint: ""
+  };
+}
+
+function routeFromAiPlan(data, message, aiPlan) {
+  if (!aiPlan?.requires_rag) {
+    const fallback = routeIntent(data, message);
+    const normalizedIntent = norm(aiPlan?.intent);
+    const surfaceIntent = normalizedIntent.includes("contact")
+      ? "name_contact_capture"
+      : normalizedIntent.includes("small_talk")
+        ? fallback.intent
+        : (aiPlan?.intent || fallback.intent);
+    return {
+      intent: surfaceIntent,
+      property_intent: false,
+      entities: aiPlan?.entities || fallback.entities
+    };
+  }
+  const intent = norm(aiPlan.intent).replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "") || "property_search";
+  return {
+    intent,
+    property_intent: true,
+    entities: aiPlan.entities || extractEntities(data, message)
+  };
+}
+
+function slotsFromAiEntities(entities = {}) {
+  const slots = {};
+  if (isKnown(entities.purpose)) slots.purpose = normalizeIntent(entities.purpose) || entities.purpose;
+  if (isKnown(entities.location)) slots.location = entities.location;
+  if (isKnown(entities.property_type)) slots.property_type = entities.property_type;
+  if (entities.bedrooms !== "unknown" && entities.bedrooms !== undefined) slots.bedrooms = Number(entities.bedrooms);
+  if (entities.budget !== "unknown" && entities.budget !== undefined) slots.budget = Number(entities.budget);
+  if (Array.isArray(entities.amenities) && entities.amenities.length) slots.amenities = entities.amenities;
+  if (isKnown(entities.timeline)) slots.timeline = entities.timeline;
+  return slots;
+}
+
+function buildAiRetrievalMessage(message, aiPlan, memory) {
+  const entityBits = [];
+  const entities = aiPlan?.entities || {};
+  if (Array.isArray(entities.project_names)) entityBits.push(...entities.project_names);
+  for (const key of ["purpose", "property_type", "location", "bedrooms", "budget", "timeline"]) {
+    if (isKnown(entities[key])) entityBits.push(String(entities[key]));
+  }
+  if (Array.isArray(entities.amenities)) entityBits.push(...entities.amenities);
+  if (Array.isArray(aiPlan?.image_features)) entityBits.push(...aiPlan.image_features);
+  return [
+    isKnown(aiPlan?.search_query) ? aiPlan.search_query : message,
+    buildMemoryQuery("", memory || {}),
+    ...entityBits
+  ].filter(isKnown).join(" ");
+}
+
+function inputImages(input = {}) {
+  const list = [];
+  if (input.image) list.push(input.image);
+  if (input.uploaded_image) list.push(input.uploaded_image);
+  if (Array.isArray(input.images)) list.push(...input.images);
+  return list.filter(Boolean);
+}
+
 export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
   chatDebug("chat.start", { session_id: sessionId, message });
-  const route = routeIntent(data, message);
+  const images = inputImages(input);
+  const aiPlanner = await planChatWithGemini(data, message, session, images);
+  const aiPlan = aiPlanner.plan;
+  const route = routeFromAiPlan(data, message, aiPlan);
   const preGate = !route.property_intent ? nonPropertyResponse(session, message, route) : null;
   if (preGate) {
     chatDebug("intent.detected", { intent: route.intent, entities: route.entities, property_intent: false, retrieval_skipped: true });
@@ -646,7 +868,7 @@ export async function chat(data, input = {}) {
         email: route.entities.email
       });
     }
-    const answer = preGate.fallbackAnswer;
+    const answer = isKnown(aiPlan.response_hint) ? aiPlan.response_hint : preGate.fallbackAnswer;
     const fallbackReason = null;
     sessions.set(sessionId, session);
     const result = {
@@ -663,6 +885,12 @@ export async function chat(data, input = {}) {
       follow_up: preGate.follow_up,
       response_type: preGate.response_type,
       model_used: null,
+      ai_plan: {
+        used: aiPlanner.used,
+        model_used: aiPlanner.model_used || null,
+        error: aiPlanner.error || null,
+        plan: aiPlan
+      },
       intent: route.intent,
       intent_details: preGate.intent,
       entities: route.entities,
@@ -677,12 +905,12 @@ export async function chat(data, input = {}) {
       },
       llm: {
         provider: "none",
-        model: null,
-        model_used: null,
+      model: null,
+      model_used: null,
         attempted_models: [],
         used: false,
         reason: "non_property_no_llm",
-        fallback_reason: fallbackReason
+      fallback_reason: fallbackReason
       },
       validation: validation("non_property_no_retrieval")
     };
@@ -692,46 +920,47 @@ export async function chat(data, input = {}) {
       shouldUseRag: false,
       chunksCount: 0,
       model: null,
-      geminiError: null,
+      geminiError: aiPlanner.error || null,
       fallback_reason: fallbackReason
     });
     chatDebug("fallback.reason", { fallback_reason: fallbackReason });
     chatDebug("final.json", summarizeFinalJson(result));
     return result;
   }
-  const incoming = parseSlots(message);
+  const retrievalMessage = buildAiRetrievalMessage(message, aiPlan, session.memory);
+  const incoming = mergeKnown(parseSlots(retrievalMessage), slotsFromAiEntities(aiPlan.entities));
   const requestedIntent = normalizeIntent(input.intent);
   if (requestedIntent && !session.memory.purpose) incoming.purpose = requestedIntent;
   const lead = captureLead(message);
   session.memory = mergeKnown(session.memory, incoming);
   session.memory.lead_capture = mergeKnown(session.memory.lead_capture || {}, lead);
 
-  const detected = detectIntent(data, [message, session.memory.purpose].filter(Boolean).join(" "));
+  const detected = detectIntent(data, [retrievalMessage, session.memory.purpose].filter(Boolean).join(" "));
   const activePurpose = session.memory.purpose || intentToPurpose(detected.intent) || "buy";
   session.memory.purpose = activePurpose;
   chatDebug("intent.detected", {
     intent: route.intent,
     legacy_intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent,
-    response_hint: classifyQuestion(message),
+    response_hint: classifyQuestion(retrievalMessage),
     extracted_entities: route.entities,
     property_intent: true
   });
 
-  const retrieved = search(data, buildMemoryQuery(message, session.memory), 10);
+  const retrieved = search(data, buildMemoryQuery(retrievalMessage, session.memory), 10);
   const previous = session.lastProfiles
     .map((id) => allProfiles(data).find((profile) => profile.property_id === id))
     .filter(Boolean);
-  const recs = recommend(data, { ...session.memory, message, intent: activePurpose, limit: 4, session: { lastProfiles: previous } });
+  const recs = recommend(data, { ...session.memory, message: retrievalMessage, intent: activePurpose, limit: 4, session: { lastProfiles: previous } });
   if (recs.recommendations.length) session.lastProfiles = recs.recommendations.map((item) => item.project.property_id);
-  const qualification = qualify(data, { intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent, message });
+  const qualification = qualify(data, { intent: PURPOSE_TO_INTENT[activePurpose] || detected.intent, message: retrievalMessage });
 
-  session.turns.push({ message, intent: activePurpose, parsed: incoming, lead });
+  session.turns.push({ message, intent: aiPlan.intent || activePurpose, parsed: incoming, lead, ai_plan: aiPlan });
   sessions.set(sessionId, session);
 
   const nextQuestion = nextQuestionFor(session.memory, activePurpose);
-  const response = buildContextualResponse(data, message, session.memory, retrieved, recs, nextQuestion);
+  const response = buildContextualResponse(data, retrievalMessage, session.memory, retrieved, recs, nextQuestion);
   if (response.recommendations?.length) session.lastProfiles = response.recommendations.map((item) => item.project.property_id);
-  const rag = retrieveAqaarContext(data, message, route, response, recs, 8);
+  const rag = retrieveAqaarContext(data, retrievalMessage, route, response, recs, 8);
   chatDebug("kb.retrieval", {
     search_results: retrieved.results.length,
     response_cards: response.cards.map((card) => card.project),
@@ -789,6 +1018,12 @@ export async function chat(data, input = {}) {
     follow_up: nextQuestion,
     response_type: response.type,
     model_used: llmResult.model_used || (llmResult.used ? llmResult.model : null),
+    ai_plan: {
+      used: aiPlanner.used,
+      model_used: aiPlanner.model_used || null,
+      error: aiPlanner.error || null,
+      plan: aiPlan
+    },
     cards: response.cards,
     response_cards: response.cards,
     intent: route.intent,
@@ -810,7 +1045,8 @@ export async function chat(data, input = {}) {
     rag: {
       model_context: rag.chunks,
       chunks_used: rag.chunks.length,
-      query: rag.query
+      query: rag.query,
+      planner_query: retrievalMessage
     },
     llm: {
       provider: llmResult.provider,

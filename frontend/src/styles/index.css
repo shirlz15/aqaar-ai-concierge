@@ -1096,6 +1096,22 @@ img { max-width: 100%; display: block; }
   gap: 12px;
   align-items: flex-end;
 }
+.chat-attach-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--accent);
+  font-size: 24px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+.chat-attach-btn:hover {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
 .chat-input {
   flex: 1;
   background: var(--bg-card);
@@ -1117,6 +1133,26 @@ img { max-width: 100%; display: block; }
   background: var(--bg-elevated);
 }
 .chat-input::placeholder { color: var(--text-muted); }
+
+.chat-attachment-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  font-size: 12px;
+}
+.chat-attachment-pill button {
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 800;
+}
 
 .chat-send-btn {
   width: 52px;

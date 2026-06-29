@@ -42,6 +42,7 @@ const INTENT_WELCOME = {
 
 let isAwaitingLead = false;
 let isSending = false;
+let pendingImage = null;
 
 const PROPERTY_CARD_TYPES = new Set([
   'buy',
@@ -69,6 +70,7 @@ export function renderConcierge() {
 
   isAwaitingLead = false;
   isSending = false;
+  pendingImage = null;
 
   content.innerHTML = `
     <div class="chat-page" id="chat-page">
@@ -108,6 +110,8 @@ export function renderConcierge() {
         <div class="chat-input-inner">
           <div class="chat-quick-chips" id="quick-chips" role="group" aria-label="Quick suggestions"></div>
           <div class="chat-input-row">
+            <button class="chat-attach-btn" id="attach-image-btn" type="button" aria-label="Attach property image" title="Attach property image">+</button>
+            <input id="chat-image-input" type="file" accept="image/*" hidden>
             <textarea
               class="chat-input"
               id="chat-input"
@@ -119,6 +123,7 @@ export function renderConcierge() {
               ➤
             </button>
           </div>
+          <div class="chat-attachment-pill" id="chat-attachment-pill" hidden></div>
         </div>
       </div>
     </div>
@@ -158,6 +163,10 @@ export function renderConcierge() {
 
   // Send button
   document.getElementById('send-btn')?.addEventListener('click', sendMessage);
+  document.getElementById('attach-image-btn')?.addEventListener('click', () => {
+    document.getElementById('chat-image-input')?.click();
+  });
+  document.getElementById('chat-image-input')?.addEventListener('change', handleImageAttachment);
 
   // Enter key (Shift+Enter = newline)
   document.getElementById('chat-input')?.addEventListener('keydown', (e) => {
@@ -275,14 +284,17 @@ async function sendMessage() {
   const input = document.getElementById('chat-input');
   const sendBtn = document.getElementById('send-btn');
   const text = input?.value.trim();
-  if (!text) return;
+  if (!text && !pendingImage) return;
 
   isSending = true;
   input.value = '';
   input.style.height = 'auto';
   if (sendBtn) sendBtn.disabled = true;
 
-  appendUserMessage(text);
+  const outgoingImage = pendingImage;
+  clearPendingImage();
+  const outgoingText = text || 'Find something like this image.';
+  appendUserMessage(outgoingImage ? `${outgoingText}\n[Image attached: ${outgoingImage.name}]` : outgoingText);
   showTyping();
 
   try {
@@ -292,9 +304,10 @@ async function sendMessage() {
     } else {
       // Normal chat
       const res = await chat({
-        message: text,
+        message: outgoingText,
         sessionId: state.sessionId,
         intent: state.intent,
+        images: outgoingImage ? [outgoingImage.payload] : [],
       });
 
       hideTyping();
@@ -328,6 +341,56 @@ async function sendMessage() {
     if (sendBtn) sendBtn.disabled = false;
     input?.focus();
   }
+}
+
+async function handleImageAttachment(event) {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    showToast({ type: 'error', title: 'Unsupported file', message: 'Please attach an image file.', duration: 3000 });
+    return;
+  }
+  const dataUrl = await fileToDataUrl(file);
+  pendingImage = {
+    name: file.name,
+    payload: {
+      mime_type: file.type || 'image/jpeg',
+      data: dataUrl
+    }
+  };
+  renderPendingImage();
+}
+
+function renderPendingImage() {
+  const pill = document.getElementById('chat-attachment-pill');
+  if (!pill) return;
+  if (!pendingImage) {
+    pill.hidden = true;
+    pill.innerHTML = '';
+    return;
+  }
+  pill.hidden = false;
+  pill.innerHTML = `
+    <span>${escapeHtml(pendingImage.name)}</span>
+    <button type="button" id="remove-chat-image" aria-label="Remove image">x</button>
+  `;
+  document.getElementById('remove-chat-image')?.addEventListener('click', clearPendingImage);
+}
+
+function clearPendingImage() {
+  pendingImage = null;
+  const input = document.getElementById('chat-image-input');
+  if (input) input.value = '';
+  renderPendingImage();
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(reader.error || new Error('Could not read image.'));
+    reader.readAsDataURL(file);
+  });
 }
 
 function showLeadCaptureCard() {

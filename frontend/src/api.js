@@ -27,8 +27,8 @@ async function request(method, path, body) {
   return res.json();
 }
 
-export async function chat({ message, sessionId, intent = 'buy' }) {
-  return request('POST', '/chat', { message, session_id: sessionId, intent });
+export async function chat({ message, sessionId, intent = 'buy', images = [] }) {
+  return request('POST', '/chat', { message, session_id: sessionId, intent, images });
 }
 
 export async function recommend({ intent = 'buy', filters = {}, limit = 6 } = {}) {
