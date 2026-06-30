@@ -30,6 +30,7 @@ function shortlistedProperties(explicit = []) {
 }
 
 export function downloadLeadSummary(input = {}) {
+  console.log('Generating summary');
   const lead = { ...state.lead, ...input };
   const properties = shortlistedProperties(input.shortlisted_properties || (input.propertyName ? [input.propertyName] : []));
   const timestamp = new Date().toISOString();
@@ -40,61 +41,117 @@ export function downloadLeadSummary(input = {}) {
     ['Intent', safe(lead.intent || state.intent)],
     ['Budget', safe(lead.budget)],
     ['Location', safe(lead.location)],
-    ['Preferred property type', safe(lead.property_type || lead.propertyType)],
-    ['Shortlisted/saved properties', properties.length ? properties.join(', ') : 'Not provided'],
+    ['Property type', safe(lead.property_type || lead.propertyType)],
+    ['Shortlisted properties', properties.length ? properties.join(', ') : 'Not provided'],
     ['Timestamp', timestamp],
   ];
   const conversationSummary = safe(input.conversation_summary || lead.message || textFromMessages(state.messages), 'No conversation summary available');
-  const html = `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Aqaar Lead Summary</title>
-  <style>
-    body{font-family:Arial,sans-serif;color:#171717;margin:32px;line-height:1.5}
-    h1{font-size:22px;margin:0 0 4px}
-    .muted{color:#666;margin:0 0 24px}
-    table{border-collapse:collapse;width:100%;margin:16px 0 24px}
-    td{border:1px solid #ddd;padding:9px 10px;vertical-align:top}
-    td:first-child{font-weight:700;background:#f7f7f7;width:32%}
-    pre{white-space:pre-wrap;background:#f7f7f7;border:1px solid #ddd;padding:12px}
-  </style>
-</head>
-<body>
-  <h1>Aqaar Lead Summary</h1>
-  <p class="muted">Generated from Aqaar AI Concierge</p>
-  <table>${rows.map(([label, value]) => `<tr><td>${escapeHtml(label)}</td><td>${escapeHtml(value)}</td></tr>`).join('')}</table>
-  <h2>Conversation Summary</h2>
-  <pre>${escapeHtml(conversationSummary)}</pre>
-</body>
-</html>`;
+  const fileName = `aqaar-lead-summary-${slug(lead.name || state.sessionId)}.pdf`;
 
   try {
-    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const pdfText = [
+      'Aqaar Lead Summary',
+      'Generated from Aqaar AI Concierge',
+      '',
+      ...rows.map(([label, value]) => `${label}: ${value}`),
+      '',
+      'Conversation Summary:',
+      conversationSummary
+    ];
+    const pdfBytes = createPdf(pdfText);
+    console.log('PDF generated');
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement('a');
     anchor.href = url;
-    anchor.download = `aqaar-lead-summary-${slug(lead.name || state.sessionId)}.pdf`;
+    anchor.download = fileName;
+    anchor.rel = 'noopener';
     anchor.style.display = 'none';
     document.body.appendChild(anchor);
     anchor.click();
-    anchor.remove();
+    console.log('Download started');
+    if (typeof anchor.remove === 'function') anchor.remove();
+    else if (anchor.parentNode) anchor.parentNode.removeChild(anchor);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    showToast({ type: 'success', title: 'Summary downloaded', message: 'Lead summary file has been generated.', duration: 3000 });
+    showToast({ type: 'success', title: 'Summary downloaded', message: `${fileName} has been generated.`, duration: 3000 });
     return true;
   } catch (error) {
     console.error('Lead summary download failed:', error);
-    showToast({ type: 'error', title: 'Download blocked', message: 'Your browser blocked the summary download. Please allow downloads and try again.', duration: 5000 });
+    showToast({
+      type: 'error',
+      title: 'Download failed',
+      message: error?.message || 'Your browser blocked the summary download.',
+      duration: 6000
+    });
     return false;
   }
 }
 
-function escapeHtml(value) {
-  return String(value ?? '').replace(/[&<>"']/g, (char) => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#39;'
-  }[char]));
+function createPdf(lines) {
+  const pageWidth = 595;
+  const pageHeight = 842;
+  const margin = 48;
+  const lineHeight = 15;
+  const maxChars = 86;
+  const wrapped = lines.flatMap((line) => wrapLine(String(line || ''), maxChars));
+  const visible = wrapped.slice(0, Math.floor((pageHeight - margin * 2) / lineHeight));
+  const contentLines = visible.map((line, index) => {
+    const y = pageHeight - margin - (index * lineHeight);
+    const fontSize = index === 0 ? 18 : 10;
+    return `BT /F1 ${fontSize} Tf ${margin} ${y} Td (${pdfEscape(line)}) Tj ET`;
+  }).join('\n');
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+    `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>`,
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    `<< /Length ${byteLength(contentLines)} >>\nstream\n${contentLines}\nendstream`
+  ];
+  return encodePdf(objects);
+}
+
+function encodePdf(objects) {
+  let body = '%PDF-1.4\n';
+  const offsets = [0];
+  objects.forEach((object, index) => {
+    offsets.push(byteLength(body));
+    body += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+  const xrefOffset = byteLength(body);
+  body += `xref\n0 ${objects.length + 1}\n`;
+  body += '0000000000 65535 f \n';
+  offsets.slice(1).forEach((offset) => {
+    body += `${String(offset).padStart(10, '0')} 00000 n \n`;
+  });
+  body += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+  return new TextEncoder().encode(body);
+}
+
+function wrapLine(line, maxChars) {
+  if (!line) return [''];
+  const words = line.split(/\s+/);
+  const out = [];
+  let current = '';
+  for (const word of words) {
+    if ((current + ' ' + word).trim().length > maxChars) {
+      if (current) out.push(current);
+      current = word;
+    } else {
+      current = `${current} ${word}`.trim();
+    }
+  }
+  if (current) out.push(current);
+  return out;
+}
+
+function pdfEscape(value) {
+  return String(value)
+    .replace(/[^\x09\x0A\x0D\x20-\x7E]/g, '')
+    .replace(/\\/g, '\\\\')
+    .replace(/\(/g, '\\(')
+    .replace(/\)/g, '\\)');
+}
+
+function byteLength(value) {
+  return new TextEncoder().encode(String(value)).length;
 }

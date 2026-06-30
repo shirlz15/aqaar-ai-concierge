@@ -498,6 +498,7 @@ function appendSummaryDownloadPrompt() {
   `;
   inner.appendChild(card);
   document.getElementById('chat-download-summary-btn')?.addEventListener('click', () => {
+    console.log('Download button clicked');
     const ok = downloadLeadSummary();
     if (!ok) showToast({ type: 'error', title: 'Download failed', message: 'Please allow browser downloads and try again.', duration: 4000 });
   });

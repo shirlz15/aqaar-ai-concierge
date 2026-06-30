@@ -217,11 +217,12 @@ function showLeadSummary({ name, phone, email, intent, budget, propertyName, sco
   document.body.appendChild(summary);
 
   // Download
-  document.getElementById('dl-summary-btn')?.addEventListener('click', () => {
+  summary.querySelector('#dl-summary-btn')?.addEventListener('click', () => {
+    console.log('Download button clicked');
     downloadLeadSummary({ name, phone, email, intent, budget, propertyName, score });
   });
 
-  document.getElementById('close-summary-btn')?.addEventListener('click', () => summary.remove());
+  summary.querySelector('#close-summary-btn')?.addEventListener('click', () => summary.remove());
   setTimeout(() => summary.remove(), 15000);
 }
 
