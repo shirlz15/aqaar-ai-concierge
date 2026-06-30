@@ -93,7 +93,7 @@ export function renderProjectDoughnutChart(canvasId, data) {
 
   const projects = data?.top_projects || data?.projects || [];
   const limited = projects.slice(0, 6);
-  const labels = limited.map(p => (p.name || p.title || 'Not published').substring(0, 20));
+  const labels = limited.map(p => (p.name || p.title || 'Available on enquiry').substring(0, 20));
   const values = limited.map(p => Number(p.count || p.queries || p.value || 0));
 
   const colors = [

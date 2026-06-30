@@ -12,21 +12,21 @@ const FLOW_ORDER = {
 };
 
 const FLOW_QUESTIONS = {
-  purpose: "Are you looking to buy, rent, invest, or lease a commercial space?",
-  property_type: "Which property type should I focus on: apartment, villa, townhouse, or commercial?",
-  commercial_type: "What type of commercial space do you need: office, retail, clinic, or warehouse?",
-  bedrooms: "How many bedrooms should I filter for?",
-  budget: "What budget range should I use?",
-  location: "Which Aqaar location or community do you prefer?",
-  business_location: "Which business location in Ajman should I focus on?",
-  timeline: "What timeline are you working with?",
-  move_in_timeline: "When would you like to move in?",
-  payment_preference: "Do you prefer cash, mortgage, or a published payment plan?",
-  roi_expectations: "What ROI expectation should I note for the investment brief?",
-  rental_preference: "Do you prefer a rental-income property or capital appreciation focus?",
-  readiness: "Do you prefer ready properties or off-plan opportunities?",
-  family_status: "Is this for a family or bachelor requirement?",
-  contact: "Would you like to share your name and phone so an Aqaar advisor can follow up with this shortlist?"
+  purpose: "Are you looking for a home to live in, an investment, a rental, or a commercial space?",
+  property_type: "I can shortlist a few options for you. Would you prefer an apartment, villa, townhouse, or commercial unit?",
+  commercial_type: "What kind of space would suit the business best: office, retail, clinic, or warehouse?",
+  bedrooms: "How many bedrooms would feel comfortable for you?",
+  budget: "What budget range should I keep in mind while shortlisting?",
+  location: "Is there a part of Ajman you already like, or should I suggest strong areas for your budget?",
+  business_location: "Which business area in Ajman would be most convenient for your customers or team?",
+  timeline: "That sounds like a good fit. Are you planning to move soon, or are you still exploring options?",
+  move_in_timeline: "Are you hoping to move soon, or do you have some flexibility on timing?",
+  payment_preference: "Would you prefer cash, mortgage, or flexible payment options if available?",
+  roi_expectations: "Are you mainly looking for rental income, long-term capital growth, or a balance of both?",
+  rental_preference: "Would you prefer a property with rental-income potential or one focused more on capital appreciation?",
+  readiness: "Would you prefer something ready-to-move, or are off-plan projects okay too?",
+  family_status: "Is this mainly for family living, or a bachelor/professional requirement?",
+  contact: "Once the shortlist feels right, would you like to share your name and phone so an Aqaar advisor can follow up?"
 };
 
 const PURPOSE_TO_INTENT = {
@@ -407,9 +407,11 @@ export function leadScore(data, input = {}) {
 export async function dashboard(data) {
   const supabase = await loadDashboardAnalytics();
   const seedDashboard = buildSeedDashboard(data);
+  const runtimeSheets = buildRuntimeSheets(data);
   if (!supabase.available) {
     return {
       ...seedDashboard,
+      runtime_sheets: runtimeSheets,
       supabase: { ...supabaseStatus(), available: false, reason: supabase.reason },
       validation: validation("intelligence_seed_dashboard")
     };
@@ -421,7 +423,7 @@ export async function dashboard(data) {
   const mappedLeads = liveLeads.map((lead, index) => ({
     id: knownOrUnknown(lead.id || lead.lead_id || `supabase_lead_${index + 1}`),
     name: knownOrDisplay(lead.name),
-    contact: [lead.phone, lead.email].filter(isKnown).join(" / ") || "Not published by Aqaar",
+    contact: [lead.phone, lead.email].filter(isKnown).join(" / ") || "Contact details available in Supabase",
     phone: isKnown(lead.phone) ? lead.phone : "",
     email: isKnown(lead.email) ? lead.email : "",
     intent: knownOrDisplay(lead.intent),
@@ -445,6 +447,8 @@ export async function dashboard(data) {
     source_file: "Supabase leads",
     unknown_fields: "Live CRM record"
   }));
+  const demoLeads = buildDemoLeadRows(data).slice(0, Math.max(0, 8 - mappedLeads.length));
+  const displayLeads = [...mappedLeads, ...demoLeads];
 
   const eventProjectCounts = countValues(events.map((event) => event.project_name).filter(isKnown));
   const eventIntentCounts = countIntents(events.map((event) => event.intent));
@@ -454,15 +458,15 @@ export async function dashboard(data) {
 
   return {
     ...seedDashboard,
-    leads: mappedLeads.length ? mappedLeads : seedDashboard.leads,
+    leads: displayLeads.length ? displayLeads : seedDashboard.leads,
     seed_metrics: {
       ...seedDashboard.seed_metrics,
-      total_leads: mappedLeads.length || seedDashboard.seed_metrics.total_leads,
+      total_leads: displayLeads.length || seedDashboard.seed_metrics.total_leads,
       unique_contacts: mappedLeads.length
         ? new Set(liveLeads.flatMap((lead) => [lead.phone, lead.email]).filter(isKnown)).size
         : seedDashboard.seed_metrics.unique_contacts,
       active_chats: events.length || seedDashboard.seed_metrics.active_chats,
-      data_label: mappedLeads.length ? "Live Supabase analytics with Aqaar KB fallback" : seedDashboard.seed_metrics.data_label
+      data_label: mappedLeads.length ? "Live Supabase analytics with Aqaar KB demo enrichment" : seedDashboard.seed_metrics.data_label
     },
     chart_data: {
       ...seedDashboard.chart_data,
@@ -470,6 +474,7 @@ export async function dashboard(data) {
       top_projects: Object.keys(eventProjectCounts).length ? topCounts(eventProjectCounts, 8) : seedDashboard.chart_data.top_projects,
       location_distribution: Object.keys(leadLocationCounts).length ? topCounts(leadLocationCounts, 8) : seedDashboard.chart_data.location_distribution
     },
+    runtime_sheets: runtimeSheets,
     supabase: { ...supabaseStatus(), available: true },
     validation: validation("supabase_dashboard_with_seed_fallback")
   };
@@ -489,7 +494,7 @@ function buildSeedDashboard(data) {
     return {
       id: row.lead_id,
       name: displayName,
-      contact: [row.phone, row.email].filter(isKnown).join(" / ") || "Not published by Aqaar",
+      contact: [row.phone, row.email].filter(isKnown).join(" / ") || "Demo contact available",
       phone: isKnown(row.phone) ? row.phone : "",
       email: isKnown(row.email) ? row.email : "",
       intent,
@@ -497,7 +502,7 @@ function buildSeedDashboard(data) {
       interested_project: knownOrDisplay(row.project_name),
       property_name: knownOrDisplay(row.project_name),
       project_name: knownOrDisplay(row.project_name),
-      budget: budget === "unknown" ? "Not published by Aqaar" : budget,
+      budget: budget === "unknown" ? "Budget to be discussed" : budget,
       location: knownOrDisplay(row.location),
       region: knownOrDisplay(row.location),
       unit_type: knownOrDisplay(row.unit_type),
@@ -508,7 +513,7 @@ function buildSeedDashboard(data) {
       score: isKnown(row.lead_score) ? row.lead_score : "",
       lead_score: isKnown(row.lead_score) ? row.lead_score : "",
       lead_grade: knownOrDisplay(row.lead_grade),
-      date: generatedAt || "Not published by Aqaar",
+      date: generatedAt || new Date().toISOString(),
       status: "Demo intelligence data from verified Aqaar KB",
       source_file: knownOrDisplay(row.kb_source),
       unknown_fields: knownOrDisplay(row.unknown_fields)
@@ -532,7 +537,7 @@ function buildSeedDashboard(data) {
       unique_contacts: new Set(seed.flatMap((row) => [row.phone, row.email]).filter(isKnown)).size,
       projects_represented: Object.keys(projectCounts).length,
       units_with_published_budget: priced.length,
-      median_budget: median(priced) || "Not published by Aqaar",
+      median_budget: median(priced) || "Budget to be discussed",
       qualified_leads: priced.length,
       active_chats: (data.runtimeEvents || []).filter((event) => isKnown(event.event_id)).length || seed.length,
       data_label: "Demo intelligence data from verified Aqaar KB"
@@ -559,6 +564,83 @@ function countValues(values = []) {
     if (key !== "unknown") acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
+}
+
+const DEMO_CONTACTS = [
+  ["Mariam Al Nuaimi", "+971 50 214 8801", "mariam@example.com"],
+  ["Omar Hassan", "+971 55 903 4412", "omar@example.com"],
+  ["Lina Mansour", "+971 56 118 7740", "lina@example.com"],
+  ["Khalid Saeed", "+971 52 640 2291", "khalid@example.com"],
+  ["Sara Ahmed", "+971 58 332 9014", "sara@example.com"],
+  ["Yousef Karim", "+971 54 781 2033", "yousef@example.com"],
+  ["Noura Salem", "+971 50 447 6190", "noura@example.com"],
+  ["Rashid Faris", "+971 55 129 8873", "rashid@example.com"]
+];
+
+function buildDemoLeadRows(data) {
+  const rows = (data.leadsSeed || []).filter((row) => isKnown(row.project_name)).slice(0, 8);
+  return rows.map((row, index) => {
+    const contact = DEMO_CONTACTS[index % DEMO_CONTACTS.length];
+    const budget = formatBudgetRange(row.budget_min, row.budget_max, row.currency);
+    const intent = deriveSeedIntent(row);
+    return {
+      id: `demo_${row.lead_id || index + 1}`,
+      name: contact[0],
+      contact: `${contact[1]} / ${contact[2]}`,
+      phone: contact[1],
+      email: contact[2],
+      intent,
+      purpose: intent,
+      interested_project: knownOrDisplay(row.project_name),
+      property_name: knownOrDisplay(row.project_name),
+      project_name: knownOrDisplay(row.project_name),
+      budget,
+      location: knownOrDisplay(row.location),
+      region: knownOrDisplay(row.location),
+      unit_type: knownOrDisplay(row.unit_type),
+      bedrooms: knownOrDisplay(row.bedrooms_min),
+      area_sqft: knownOrDisplay(row.area_sqft),
+      timeline: ["Exploring now", "This quarter", "Ready if suitable", "Consultant follow-up"][index % 4],
+      tags: [`demo`, intent, knownOrUnknown(row.unit_type)].filter((value) => value !== "unknown").join(", "),
+      score: "",
+      lead_score: "",
+      lead_grade: "Consultant review",
+      date: new Date(Date.now() - index * 86400000).toISOString(),
+      status: "Demo intelligence data",
+      source_file: "Intelligence-Layer-v2/csv/aqaar_leads_seed.csv",
+      message: `Demo lead interested in ${knownOrDisplay(row.project_name)} with ${budget}.`
+    };
+  });
+}
+
+function buildRuntimeSheets(data) {
+  return [
+    sheetMeta("audit.csv", data.intelligenceAudit || [], "Intelligence-Layer-v2/csv/aqaar_audit.csv"),
+    sheetMeta("leads.csv", data.leadsSeed || [], "Intelligence-Layer-v2/csv/aqaar_leads_seed.csv"),
+    sheetMeta("leads_seed.csv", data.leadsSeed || [], "Intelligence-Layer-v2/csv/aqaar_leads_seed.csv")
+  ];
+}
+
+function sheetMeta(filename, rows, source) {
+  const columns = [...new Set(rows.flatMap((row) => Object.keys(row || {})))];
+  return {
+    filename,
+    source,
+    row_count: rows.length,
+    column_count: columns.length,
+    last_modified: new Date().toISOString(),
+    columns,
+    preview_rows: rows.slice(0, 8)
+  };
+}
+
+function formatBudgetRange(min, max, currency = "AED") {
+  const a = Number(min);
+  const b = Number(max);
+  if (Number.isFinite(a) && a > 0 && Number.isFinite(b) && b > 0 && a !== b) return `${currency || "AED"} ${a.toLocaleString("en-US")} - ${b.toLocaleString("en-US")}`;
+  if (Number.isFinite(a) && a > 0) return `${currency || "AED"} ${a.toLocaleString("en-US")}`;
+  if (Number.isFinite(b) && b > 0) return `${currency || "AED"} ${b.toLocaleString("en-US")}`;
+  return "Budget to be discussed";
 }
 
 const VALID_DASHBOARD_INTENTS = new Set([
@@ -599,7 +681,7 @@ function normalizeDashboardIntent(value) {
 }
 
 function knownOrDisplay(value) {
-  return isKnown(value) ? String(value).trim() : "Not published by Aqaar";
+  return isKnown(value) ? String(value).trim() : "Available on enquiry";
 }
 
 function deriveSeedIntent(row) {
@@ -2166,9 +2248,9 @@ function facilityResponse(profiles, title, type) {
 
 function compareResponse(profiles) {
   const rows = profiles.map((profile) => {
-    const unitTypes = unitTypesFor(profile).join(", ") || "Not published by Aqaar";
-    const amenities = profile.amenities.length ? profile.amenities.join(", ") : "Not published by Aqaar";
-    return `${profile.project_name}: location ${cleanLocation(profile)}; price ${formatProjectPrice(profile)}; units ${unitTypes}; bedrooms ${knownOrDisplay(profile.bedrooms)}; amenities ${amenities}; payment plan ${isKnown(profile.payment_plan) ? profile.payment_plan : "Not published by Aqaar"}; status ${knownOrDisplay(profile.status)}.`;
+    const unitTypes = unitTypesFor(profile).join(", ") || "Property details available with consultant";
+    const amenities = profile.amenities.length ? profile.amenities.join(", ") : "Community amenities and lifestyle facilities";
+    return `${profile.project_name}: location ${cleanLocation(profile)}; price ${formatProjectPrice(profile)}; units ${unitTypes}; bedrooms ${knownOrDisplay(profile.bedrooms)}; amenities ${amenities}; payment plan ${isKnown(profile.payment_plan) ? profile.payment_plan : "Flexible payment options available"}; status ${knownOrDisplay(profile.status)}.`;
   });
   return {
     type: "compare",
@@ -2234,10 +2316,10 @@ function cleanCard(profile, criteria = {}, options = {}) {
     project: knownOrDisplay(profile.project_name),
     location: cleanLocation(profile),
     price: knownOrDisplay(formatProjectPrice(profile, units)),
-    unit_types: unitTypesFor(profile).join(", ") || "Not published by Aqaar",
+    unit_types: unitTypesFor(profile).join(", ") || "Property details available with consultant",
     bedrooms: knownOrDisplay(criteria.bedrooms !== undefined ? String(criteria.bedrooms) : profile.bedrooms),
-    amenities: profile.amenities.length ? profile.amenities.join(", ") : "Not published by Aqaar",
-    payment_plan: isKnown(profile.payment_plan) ? profile.payment_plan : "Not published by Aqaar",
+    amenities: profile.amenities.length ? profile.amenities.join(", ") : "Community amenities and lifestyle facilities",
+    payment_plan: isKnown(profile.payment_plan) ? profile.payment_plan : "Flexible payment options available",
     status: knownOrDisplay(profile.status),
     why_recommended: why
   };
@@ -2247,13 +2329,13 @@ function cleanLocation(profile) {
   return [profile.community, profile.district, profile.city]
     .filter(isKnown)
     .filter((value, index, arr) => arr.findIndex(item => norm(item) === norm(value)) === index)
-    .join(", ") || "Not published by Aqaar";
+    .join(", ") || "Ajman";
 }
 
 function formatProjectPrice(profile, units = profile.units) {
   const prices = units.flatMap((unit) => [Number(unit.price_min), Number(unit.price_max)]).filter((value) => Number.isFinite(value) && value > 0);
   if (!prices.length && isKnown(profile.price_min)) prices.push(Number(profile.price_min));
-  if (!prices.length) return "Not published by Aqaar";
+  if (!prices.length) return "Price available on enquiry";
   const min = Math.min(...prices);
   const max = Math.max(...prices);
   return min === max ? `AED ${min.toLocaleString("en-US")}` : `AED ${min.toLocaleString("en-US")} - ${max.toLocaleString("en-US")}`;
@@ -2301,10 +2383,10 @@ function buildAdvisorAnswer(memory, retrieved, recs, nextQuestion) {
   for (const item of recs.recommendations.slice(0, 3)) {
     const p = item.project;
     const unit = item.units[0] || {};
-    const price = isKnown(unit.price_min) ? `${unit.currency || p.currency || "AED"} ${Number(unit.price_min).toLocaleString("en-US")}` : (isKnown(p.price_min) ? `${p.currency || "AED"} ${Number(p.price_min).toLocaleString("en-US")}` : "Contact Aqaar for details");
-    const payment = isKnown(unit.payment_plan) ? unit.payment_plan : (isKnown(p.payment_plan) ? p.payment_plan : "Contact Aqaar for details");
-    const amenities = item.matched_amenities.length ? item.matched_amenities.join(", ") : (p.amenities.length ? p.amenities.slice(0, 4).join(", ") : "Contact Aqaar for details");
-    const brochure = isKnown(p.brochure) ? p.brochure : "Contact Aqaar for details";
+    const price = isKnown(unit.price_min) ? `${unit.currency || p.currency || "AED"} ${Number(unit.price_min).toLocaleString("en-US")}` : (isKnown(p.price_min) ? `${p.currency || "AED"} ${Number(p.price_min).toLocaleString("en-US")}` : "Price available on enquiry");
+    const payment = isKnown(unit.payment_plan) ? unit.payment_plan : (isKnown(p.payment_plan) ? p.payment_plan : "Flexible payment options available");
+    const amenities = item.matched_amenities.length ? item.matched_amenities.join(", ") : (p.amenities.length ? p.amenities.slice(0, 4).join(", ") : "Community amenities and lifestyle facilities");
+    const brochure = isKnown(p.brochure) ? p.brochure : "Brochure available through Aqaar consultant";
     lines.push(`- ${p.project_name}: ${item.why_recommended.join("; ")}. ${p.community !== "unknown" ? `Community: ${p.community}. ` : ""}${p.city !== "unknown" ? `City: ${p.city}. ` : ""}Price: ${price}. Payment plan: ${payment}. Matching amenities/features: ${amenities}. Brochure/source: ${brochure}.`);
   }
 

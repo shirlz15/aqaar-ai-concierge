@@ -5,7 +5,7 @@ import { state } from '../state.js';
 import { showToast } from '../toast.js';
 
 let activeDrawer = null;
-const NOT_PUBLISHED = 'Not published by Aqaar';
+const FALLBACK = 'Available on enquiry';
 
 /**
  * Open lead detail drawer
@@ -39,7 +39,7 @@ export function openLeadDrawer(lead) {
       <div>
         <h2 class="drawer-title">${displayValue(lead.name)}</h2>
         <span class="lead-score-badge ${scoreTier}">
-          Score: ${!isNaN(scoreNum) ? scoreNum : NOT_PUBLISHED}
+          Score: ${!isNaN(scoreNum) ? scoreNum : 'Consultant review'}
         </span>
       </div>
       <button class="modal-close" id="drawer-close-btn" aria-label="Close drawer">✕</button>
@@ -66,7 +66,7 @@ export function openLeadDrawer(lead) {
 
       <div class="drawer-section">
         <div class="drawer-section-title">Lead Metrics</div>
-        ${drawerField('Lead Score', !isNaN(scoreNum) ? `${scoreNum}/100` : NOT_PUBLISHED)}
+        ${drawerField('Lead Score', !isNaN(scoreNum) ? `${scoreNum}/100` : 'Consultant review')}
         ${drawerField('Quality Tier', scoreTier.charAt(0).toUpperCase() + scoreTier.slice(1))}
         ${drawerField('Date', lead.date || lead.created_at || lead.timestamp)}
         ${drawerField('Session ID', lead.session_id)}
@@ -92,10 +92,11 @@ export function openLeadDrawer(lead) {
 
   document.body.appendChild(overlay);
   document.body.appendChild(drawer);
-  activeDrawer = { overlay, drawer };
+  const previousOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
+  activeDrawer = { overlay, drawer, previousOverflow };
 
   // Close
-  overlay.addEventListener('click', closeDrawer);
   document.getElementById('drawer-close-btn')?.addEventListener('click', closeDrawer);
   const onKey = (e) => { if (e.key === 'Escape') closeDrawer(); };
   document.addEventListener('keydown', onKey);
@@ -133,7 +134,7 @@ export function openLeadDrawer(lead) {
 
 function drawerField(label, value, isIntent = false) {
   const display = displayValue(value);
-  const isCapitalized = isIntent && display !== NOT_PUBLISHED;
+  const isCapitalized = isIntent && display !== FALLBACK;
   return `
     <div class="drawer-field">
       <div class="drawer-field-label">${label}</div>
@@ -143,17 +144,20 @@ function drawerField(label, value, isIntent = false) {
 }
 
 function displayValue(value) {
-  return (!value || String(value).toLowerCase() === 'unknown') ? NOT_PUBLISHED : value;
+  return (!value || String(value).toLowerCase() === 'unknown') ? FALLBACK : value;
 }
 
 export function closeDrawer() {
   if (!activeDrawer) return;
   if (activeDrawer.overlay._removeKey) activeDrawer.overlay._removeKey();
+  document.body.style.overflow = activeDrawer.previousOverflow || '';
   activeDrawer.drawer.style.animation = 'drawer-in 0.3s cubic-bezier(0.4,0,0.2,1) reverse forwards';
   activeDrawer.overlay.style.animation = 'overlay-in 0.2s ease reverse forwards';
-  activeDrawer.drawer.addEventListener('animationend', () => {
+  const cleanup = () => {
     activeDrawer?.drawer?.remove();
     activeDrawer?.overlay?.remove();
     activeDrawer = null;
-  }, { once: true });
+  };
+  activeDrawer.drawer.addEventListener('animationend', cleanup, { once: true });
+  setTimeout(cleanup, 450);
 }

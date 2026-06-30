@@ -3,7 +3,7 @@ import { openLeadDrawer } from '../components/drawer.js';
 import { renderIntentBarChart, renderProjectDoughnutChart, renderActivityLineChart, destroyAllCharts } from '../components/charts.js';
 import { state } from '../state.js';
 
-const NOT_PUBLISHED = 'Not published by Aqaar';
+const FALLBACK = 'Available on enquiry';
 let dashboardData = null;
 
 export async function renderDashboard() {
@@ -103,6 +103,11 @@ function renderDashboardView() {
         <p class="chart-subtitle">Seed rows by location/community</p>
         <div class="chart-container"><canvas id="locations-chart"></canvas></div>
       </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Unit Type Distribution</h3>
+        <p class="chart-subtitle">Apartments, commercial units, villas and other interests</p>
+        <div class="chart-container"><canvas id="unit-types-chart"></canvas></div>
+      </div>
     </div>
 
     <div class="leads-card" id="leads-table-section">
@@ -134,6 +139,8 @@ function renderDashboardView() {
         </table>
       </div>
     </div>
+
+    ${renderRuntimeSheetsSection(dashboardData.runtime_sheets || [])}
   `;
 
   document.getElementById('db-refresh-btn')?.addEventListener('click', async () => {
@@ -151,9 +158,11 @@ function renderDashboardView() {
     renderIntentBarChart('intent-chart', { intents: m.intents });
     renderProjectDoughnutChart('projects-chart', { top_projects: m.top_projects });
     renderProjectDoughnutChart('locations-chart', { top_projects: m.location_distribution });
+    renderProjectDoughnutChart('unit-types-chart', { top_projects: m.unit_type_distribution });
   }, 50);
 
   renderLeadsTable();
+  bindRuntimeSheets();
 }
 
 function normalizeMetrics(payload) {
@@ -168,6 +177,7 @@ function normalizeMetrics(payload) {
     activity: charts.activity || [],
     top_projects: charts.top_projects || [],
     location_distribution: charts.location_distribution || [],
+    unit_type_distribution: charts.unit_type_distribution || [],
   };
 }
 
@@ -247,15 +257,97 @@ function exportLeadsCsv() {
 }
 
 function display(value) {
-  if (value === undefined || value === null || value === '' || String(value).toLowerCase() === 'unknown') return NOT_PUBLISHED;
+  if (value === undefined || value === null || value === '' || String(value).toLowerCase() === 'unknown') return FALLBACK;
   return String(value);
 }
 
 function displayDate(value) {
   const safe = display(value);
-  if (safe === NOT_PUBLISHED) return safe;
+  if (safe === FALLBACK) return safe;
   const date = new Date(safe);
   return Number.isNaN(date.getTime()) ? safe : date.toLocaleDateString();
+}
+
+function renderRuntimeSheetsSection(sheets) {
+  if (!sheets.length) return '';
+  return `
+    <div class="leads-card" id="runtime-sheets-section" style="margin-top:18px;">
+      <div class="leads-card-header">
+        <h3 class="leads-card-title">Runtime Sheets</h3>
+        <span class="chart-subtitle">Data source previews for audit and lead intelligence</span>
+      </div>
+      <div style="display:grid;gap:12px;">
+        ${sheets.map((sheet, index) => `
+          <div class="runtime-sheet-card" data-sheet-index="${index}" style="border:1px solid var(--border);border-radius:8px;padding:14px;background:var(--bg-card);">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+              <div>
+                <strong>${escapeHtml(sheet.filename)}</strong>
+                <div style="font-size:12px;color:var(--text-muted);">${Number(sheet.row_count || 0).toLocaleString()} rows - ${Number(sheet.column_count || 0).toLocaleString()} columns - ${escapeHtml(displayDate(sheet.last_modified))}</div>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-outline btn-sm sheet-preview-btn" data-sheet-index="${index}">Preview</button>
+                <button class="btn btn-ghost btn-sm sheet-original-btn" data-sheet-index="${index}">Original</button>
+                <button class="btn btn-primary btn-sm sheet-export-btn" data-sheet-index="${index}">XL/export</button>
+              </div>
+            </div>
+            <div class="sheet-preview" id="sheet-preview-${index}" hidden style="margin-top:12px;overflow:auto;"></div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function bindRuntimeSheets() {
+  const sheets = dashboardData?.runtime_sheets || [];
+  document.querySelectorAll('.sheet-preview-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const index = Number(button.dataset.sheetIndex);
+      const target = document.getElementById(`sheet-preview-${index}`);
+      if (!target) return;
+      const isOpen = !target.hidden;
+      target.hidden = isOpen;
+      button.textContent = isOpen ? 'Preview' : 'Close';
+      if (!isOpen) target.innerHTML = renderSheetPreviewTable(sheets[index]);
+    });
+  });
+  document.querySelectorAll('.sheet-original-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const sheet = sheets[Number(button.dataset.sheetIndex)];
+      exportSheetCsv(sheet, 'original');
+    });
+  });
+  document.querySelectorAll('.sheet-export-btn').forEach(button => {
+    button.addEventListener('click', () => exportSheetCsv(sheets[Number(button.dataset.sheetIndex)], 'export'));
+  });
+}
+
+function renderSheetPreviewTable(sheet = {}) {
+  const columns = (sheet.columns || []).slice(0, 9);
+  const rows = sheet.preview_rows || [];
+  if (!columns.length || !rows.length) return `<div class="empty-state"><p>No preview rows available.</p></div>`;
+  return `
+    <table class="leads-table">
+      <thead><tr>${columns.map(column => `<th>${escapeHtml(column)}</th>`).join('')}</tr></thead>
+      <tbody>
+        ${rows.map(row => `<tr>${columns.map(column => `<td>${escapeHtml(display(row[column]))}</td>`).join('')}</tr>`).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function exportSheetCsv(sheet = {}, mode = 'export') {
+  const columns = sheet.columns || [];
+  const rows = sheet.preview_rows || [];
+  if (!columns.length) return;
+  const csv = [columns.join(','), ...rows.map(row => columns.map(column => `"${String(display(row[column])).replace(/"/g, '""')}"`).join(','))].join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${mode}-${sheet.filename || 'runtime-sheet.csv'}`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 function getTopIntent(intents) {

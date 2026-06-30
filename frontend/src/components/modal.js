@@ -62,7 +62,7 @@ export function openEnquiryModal(property = null, propertyName = '') {
             </div>
             <div class="form-group" style="grid-column:1/-1">
               <label class="form-label" for="eq-budget">Budget (AED)</label>
-              <input class="form-input" id="eq-budget" type="text" placeholder="e.g. 1,200,000 or Contact Aqaar for details" />
+              <input class="form-input" id="eq-budget" type="text" placeholder="e.g. 1,200,000 or discuss with consultant" />
             </div>
             <div class="form-group" style="grid-column:1/-1">
               <label class="form-label" for="eq-message">Message</label>
@@ -82,16 +82,16 @@ export function openEnquiryModal(property = null, propertyName = '') {
   `;
 
   document.body.appendChild(overlay);
+  const previousOverflow = document.body.style.overflow;
+  document.body.style.overflow = 'hidden';
   activeModal = overlay;
+  activeModal._previousOverflow = previousOverflow;
 
   // Trap focus
   const firstInput = overlay.querySelector('input');
   firstInput?.focus();
 
   // Close handlers
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) closeModal();
-  });
   document.getElementById('modal-close-btn')?.addEventListener('click', closeModal);
   document.getElementById('modal-cancel-btn')?.addEventListener('click', closeModal);
 
@@ -229,6 +229,13 @@ function showLeadSummary({ name, phone, email, intent, budget, propertyName, sco
 export function closeModal() {
   if (!activeModal) return;
   if (activeModal._removeKey) activeModal._removeKey();
+  document.body.style.overflow = activeModal._previousOverflow || '';
   activeModal.style.animation = 'overlay-in 0.2s ease reverse forwards';
-  activeModal.addEventListener('animationend', () => { activeModal?.remove(); activeModal = null; }, { once: true });
+  const modal = activeModal;
+  const cleanup = () => {
+    modal?.remove();
+    if (activeModal === modal) activeModal = null;
+  };
+  activeModal.addEventListener('animationend', cleanup, { once: true });
+  setTimeout(cleanup, 350);
 }
