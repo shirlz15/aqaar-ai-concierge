@@ -417,6 +417,7 @@ export async function dashboard(data) {
 
   const events = supabase.events || [];
   const liveLeads = supabase.leads || [];
+  const messages = supabase.messages || [];
   const mappedLeads = liveLeads.map((lead, index) => ({
     id: knownOrUnknown(lead.id || lead.lead_id || `supabase_lead_${index + 1}`),
     name: knownOrDisplay(lead.name),
@@ -446,7 +447,9 @@ export async function dashboard(data) {
   }));
 
   const eventProjectCounts = countValues(events.map((event) => event.project_name).filter(isKnown));
-  const eventIntentCounts = countValues(events.map((event) => event.intent).filter(isKnown));
+  const eventIntentCounts = countIntents(events.map((event) => event.intent));
+  const messageIntentCounts = countIntents(messages.map((message) => message?.metadata?.intent));
+  const supabaseIntentCounts = Object.keys(eventIntentCounts).length ? eventIntentCounts : messageIntentCounts;
   const leadLocationCounts = countValues(liveLeads.map((lead) => lead.location).filter(isKnown));
 
   return {
@@ -463,7 +466,7 @@ export async function dashboard(data) {
     },
     chart_data: {
       ...seedDashboard.chart_data,
-      intents: Object.keys(eventIntentCounts).length ? topCounts(eventIntentCounts, 8) : seedDashboard.chart_data.intents,
+      intents: Object.keys(supabaseIntentCounts).length ? supabaseIntentCounts : {},
       top_projects: Object.keys(eventProjectCounts).length ? topCounts(eventProjectCounts, 8) : seedDashboard.chart_data.top_projects,
       location_distribution: Object.keys(leadLocationCounts).length ? topCounts(leadLocationCounts, 8) : seedDashboard.chart_data.location_distribution
     },
@@ -556,6 +559,43 @@ function countValues(values = []) {
     if (key !== "unknown") acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {});
+}
+
+const VALID_DASHBOARD_INTENTS = new Set([
+  "buy",
+  "rent",
+  "invest",
+  "commercial",
+  "price",
+  "payment_plan",
+  "comparison",
+  "property_search",
+  "location_freehold",
+  "amenities",
+  "image_analysis",
+  "small_talk",
+  "name_contact_capture",
+  "unclear"
+]);
+
+function countIntents(values = []) {
+  return values.reduce((acc, value) => {
+    const intent = normalizeDashboardIntent(value);
+    if (intent) acc[intent] = (acc[intent] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function normalizeDashboardIntent(value) {
+  const text = norm(value).replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
+  if (!text || text === "unknown") return "";
+  if (text === "payment_plans") return "payment_plan";
+  if (text === "compare") return "comparison";
+  if (text === "location" || text === "freehold") return "location_freehold";
+  if (text === "greeting") return "small_talk";
+  if (text === "contact_capture") return "name_contact_capture";
+  if (text === "image_analysis_unavailable") return "image_analysis";
+  return VALID_DASHBOARD_INTENTS.has(text) ? text : "";
 }
 
 function knownOrDisplay(value) {
@@ -784,6 +824,35 @@ function normalizeVisionFeatures(parsed = {}) {
     ...(Array.isArray(parsed.search_features) ? parsed.search_features : [])
   ];
   return [...new Set(values.map((value) => knownOrUnknown(value)).filter((value) => value !== "unknown"))];
+}
+
+function buildVisionAiPlan(message, visionAnalysis = {}) {
+  const propertyType = knownOrUnknown(visionAnalysis.raw?.property_type);
+  return {
+    intent: "image_analysis",
+    entities: {
+      project_name: "unknown",
+      project_names: [],
+      location: "unknown",
+      property_type: propertyType,
+      bedrooms: "unknown",
+      budget: "unknown",
+      purpose: propertyType === "commercial" ? "commercial" : "buy",
+      amenities: (visionAnalysis.features || []).filter((feature) => /pool|garden|waterfront|beach|luxury|modern|commercial|residential/i.test(feature)),
+      timeline: "unknown",
+      image_features: visionAnalysis.features || [],
+      name: "unknown",
+      phone: "unknown",
+      email: "unknown"
+    },
+    requires_rag: true,
+    small_talk: false,
+    follow_up: false,
+    references_image: true,
+    image_features: visionAnalysis.features || [],
+    search_query: [message, visionAnalysis.description, ...(visionAnalysis.features || [])].filter(isKnown).join(" "),
+    response_hint: ""
+  };
 }
 
 async function planChatWithGemini(data, message, session, images = [], visionAnalysis = null) {
@@ -1081,17 +1150,15 @@ export async function chat(data, input = {}) {
     chatDebug("final.json", summarizeFinalJson(result));
     return result;
   }
-  const aiPlanner = await planChatWithGemini(data, message, session, images, visionAnalysis);
+  const aiPlanner = visionAnalysis.used
+    ? {
+        used: true,
+        model_used: visionAnalysis.model_used,
+        error: null,
+        plan: buildVisionAiPlan(message, visionAnalysis)
+      }
+    : await planChatWithGemini(data, message, session, images, visionAnalysis);
   const aiPlan = aiPlanner.plan;
-  if (visionAnalysis.used) {
-    aiPlan.references_image = true;
-    aiPlan.requires_rag = true;
-    aiPlan.image_features = [...new Set([...(aiPlan.image_features || []), ...visionAnalysis.features])];
-    aiPlan.entities.image_features = [...new Set([...(aiPlan.entities.image_features || []), ...visionAnalysis.features])];
-    if (isKnown(visionAnalysis.raw?.property_type) && !isKnown(aiPlan.entities.property_type)) {
-      aiPlan.entities.property_type = visionAnalysis.raw.property_type;
-    }
-  }
   const route = routeFromAiPlan(data, message, aiPlan);
   const preGate = !route.property_intent ? nonPropertyResponse(session, message, route) : null;
   if (preGate) {

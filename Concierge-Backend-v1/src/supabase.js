@@ -192,17 +192,19 @@ export async function loadDashboardAnalytics() {
   const status = supabaseStatus();
   if (!status.configured) return { available: false, reason: "supabase_not_configured" };
 
-  const [events, leads] = await Promise.all([
+  const [events, leads, messages] = await Promise.all([
     supabaseFetch("dashboard_events?select=*&order=created_at.desc&limit=500"),
-    supabaseFetch("leads?select=*&order=created_at.desc&limit=200")
+    supabaseFetch("leads?select=*&order=created_at.desc&limit=200"),
+    supabaseFetch("chat_messages?select=metadata,created_at&role=eq.assistant&order=created_at.desc&limit=500")
   ]);
-  if (!events.ok && !leads.ok) {
-    return { available: false, reason: events.reason || leads.reason || "supabase_unavailable" };
+  if (!events.ok && !leads.ok && !messages.ok) {
+    return { available: false, reason: events.reason || leads.reason || messages.reason || "supabase_unavailable" };
   }
   return {
     available: true,
     events: events.ok ? events.data : [],
-    leads: leads.ok ? leads.data : []
+    leads: leads.ok ? leads.data : [],
+    messages: messages.ok ? messages.data : []
   };
 }
 

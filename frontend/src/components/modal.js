@@ -4,6 +4,7 @@
 import { qualify, leadScore } from '../api.js';
 import { showToast } from '../toast.js';
 import { state } from '../state.js';
+import { downloadLeadSummary } from '../summaryDownload.js';
 
 let activeModal = null;
 
@@ -217,15 +218,7 @@ function showLeadSummary({ name, phone, email, intent, budget, propertyName, sco
 
   // Download
   document.getElementById('dl-summary-btn')?.addEventListener('click', () => {
-    const data = JSON.stringify({ name, phone, email, intent, budget, propertyName, score, timestamp: new Date().toISOString() }, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `aqaar-lead-${name.replace(/\s+/g, '-').toLowerCase()}-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast({ type: 'success', title: 'Downloaded!', message: 'Lead summary saved.', duration: 3000 });
+    downloadLeadSummary({ name, phone, email, intent, budget, propertyName, score });
   });
 
   document.getElementById('close-summary-btn')?.addEventListener('click', () => summary.remove());

@@ -5,6 +5,7 @@ import { chat, qualify, leadScore } from '../api.js';
 import { openEnquiryModal } from '../components/modal.js';
 import { showToast } from '../toast.js';
 import { state, setIntent, resetSession } from '../state.js';
+import { downloadLeadSummary } from '../summaryDownload.js';
 
 const INTENT_CHIPS = {
   buy: [
@@ -61,7 +62,8 @@ const PROPERTY_CARD_TYPES = new Set([
   'luxury',
   'school',
   'hospital',
-  'nearby_landmarks'
+  'nearby_landmarks',
+  'image_analysis'
 ]);
 
 export function renderConcierge() {
@@ -453,6 +455,7 @@ function showLeadCaptureCard() {
     } catch (_) {}
 
     appendAIMessage(`Thank you, ${name}! Your details have been saved. A sales representative will contact you at ${phone} shortly. How else can I help you find your perfect property?`);
+    appendSummaryDownloadPrompt();
     showToast({ type: 'success', title: 'Details saved!', message: `${name}, your Aqaar consultant will call you soon.`, duration: 5000 });
   });
 
@@ -480,6 +483,25 @@ function formatMessage(text) {
     .replace(/\n/g, '<br/>')
     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.*?)\*/g, '<em>$1</em>');
+}
+
+function appendSummaryDownloadPrompt() {
+  const inner = document.getElementById('messages-inner');
+  if (!inner || document.getElementById('chat-summary-download-card')) return;
+  const card = document.createElement('div');
+  card.id = 'chat-summary-download-card';
+  card.className = 'lead-capture-card';
+  card.innerHTML = `
+    <h3>Lead Summary Ready</h3>
+    <p>Download a clean enquiry summary for your records.</p>
+    <button class="btn btn-primary btn-sm" id="chat-download-summary-btn">Download Summary</button>
+  `;
+  inner.appendChild(card);
+  document.getElementById('chat-download-summary-btn')?.addEventListener('click', () => {
+    const ok = downloadLeadSummary();
+    if (!ok) showToast({ type: 'error', title: 'Download failed', message: 'Please allow browser downloads and try again.', duration: 4000 });
+  });
+  scrollToBottom();
 }
 
 function renderResponseCards(cards) {
