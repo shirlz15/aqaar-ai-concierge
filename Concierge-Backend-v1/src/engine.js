@@ -1,5 +1,6 @@
 import { isKnown, knownOrUnknown } from "./csv.js";
 import { GEMINI_MODEL, generateWithGemini } from "./gemini.js";
+import { loadDashboardAnalytics, persistChatExchange, supabaseStatus } from "./supabase.js";
 
 const sessions = new Map();
 
@@ -403,7 +404,75 @@ export function leadScore(data, input = {}) {
   };
 }
 
-export function dashboard(data) {
+export async function dashboard(data) {
+  const supabase = await loadDashboardAnalytics();
+  const seedDashboard = buildSeedDashboard(data);
+  if (!supabase.available) {
+    return {
+      ...seedDashboard,
+      supabase: { ...supabaseStatus(), available: false, reason: supabase.reason },
+      validation: validation("intelligence_seed_dashboard")
+    };
+  }
+
+  const events = supabase.events || [];
+  const liveLeads = supabase.leads || [];
+  const mappedLeads = liveLeads.map((lead, index) => ({
+    id: knownOrUnknown(lead.id || lead.lead_id || `supabase_lead_${index + 1}`),
+    name: knownOrDisplay(lead.name),
+    contact: [lead.phone, lead.email].filter(isKnown).join(" / ") || "Not published by Aqaar",
+    phone: isKnown(lead.phone) ? lead.phone : "",
+    email: isKnown(lead.email) ? lead.email : "",
+    intent: knownOrDisplay(lead.intent),
+    purpose: knownOrDisplay(lead.intent),
+    interested_project: knownOrDisplay(lead.project),
+    property_name: knownOrDisplay(lead.project),
+    project_name: knownOrDisplay(lead.project),
+    budget: knownOrDisplay(lead.budget),
+    location: knownOrDisplay(lead.location),
+    region: knownOrDisplay(lead.location),
+    unit_type: "Available on enquiry",
+    bedrooms: "Available on enquiry",
+    area_sqft: "Available on enquiry",
+    timeline: knownOrDisplay(lead.timeline),
+    tags: "Supabase live concierge lead",
+    score: "",
+    lead_score: "",
+    lead_grade: "Available on enquiry",
+    date: knownOrDisplay(lead.created_at),
+    status: knownOrDisplay(lead.status || "new"),
+    source_file: "Supabase leads",
+    unknown_fields: "Live CRM record"
+  }));
+
+  const eventProjectCounts = countValues(events.map((event) => event.project_name).filter(isKnown));
+  const eventIntentCounts = countValues(events.map((event) => event.intent).filter(isKnown));
+  const leadLocationCounts = countValues(liveLeads.map((lead) => lead.location).filter(isKnown));
+
+  return {
+    ...seedDashboard,
+    leads: mappedLeads.length ? mappedLeads : seedDashboard.leads,
+    seed_metrics: {
+      ...seedDashboard.seed_metrics,
+      total_leads: mappedLeads.length || seedDashboard.seed_metrics.total_leads,
+      unique_contacts: mappedLeads.length
+        ? new Set(liveLeads.flatMap((lead) => [lead.phone, lead.email]).filter(isKnown)).size
+        : seedDashboard.seed_metrics.unique_contacts,
+      active_chats: events.length || seedDashboard.seed_metrics.active_chats,
+      data_label: mappedLeads.length ? "Live Supabase analytics with Aqaar KB fallback" : seedDashboard.seed_metrics.data_label
+    },
+    chart_data: {
+      ...seedDashboard.chart_data,
+      intents: Object.keys(eventIntentCounts).length ? topCounts(eventIntentCounts, 8) : seedDashboard.chart_data.intents,
+      top_projects: Object.keys(eventProjectCounts).length ? topCounts(eventProjectCounts, 8) : seedDashboard.chart_data.top_projects,
+      location_distribution: Object.keys(leadLocationCounts).length ? topCounts(leadLocationCounts, 8) : seedDashboard.chart_data.location_distribution
+    },
+    supabase: { ...supabaseStatus(), available: true },
+    validation: validation("supabase_dashboard_with_seed_fallback")
+  };
+}
+
+function buildSeedDashboard(data) {
   const seed = data.leadsSeed || [];
   const projectCounts = countBy(seed, "project_name");
   const locationCounts = countBy(seed, "location");
@@ -479,6 +548,14 @@ export function dashboard(data) {
     ],
     validation: validation("intelligence_seed_dashboard")
   };
+}
+
+function countValues(values = []) {
+  return values.reduce((acc, value) => {
+    const key = knownOrUnknown(value);
+    if (key !== "unknown") acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
 }
 
 function knownOrDisplay(value) {
@@ -557,18 +634,19 @@ function extractEntities(data, message) {
 }
 
 function nonPropertyResponse(session, message, route) {
+  const leadName = route.entities?.name !== "unknown" ? route.entities.name : null;
   const fallbackAnswer = route.intent === "greeting"
-    ? "Hello, welcome to Aqaar. I can help with prices, payment plans, locations, amenities, comparisons, or shortlisting a property. What would you like to explore?"
+    ? "Hello! I’m here to help with Aqaar properties in Ajman. Are you looking to buy, rent, invest, or explore a commercial space?"
     : route.intent === "name_contact_capture"
-      ? "Thanks, I have noted your details. What Aqaar property requirement would you like help with?"
-      : "I can help with Aqaar property questions. Please ask about a project, price, payment plan, amenities, location, investment, or comparison.";
+      ? `Nice to meet you${leadName ? `, ${leadName}` : ""}! Are you looking to buy, rent, invest, or explore commercial properties today?`
+      : "I’m doing well, thank you. Tell me what kind of Aqaar property you have in mind, and I’ll guide you from there.";
   session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
   return {
     fallbackAnswer,
     response_type: route.intent,
     intent: { intent: route.intent, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
     fallback_reason: route.intent,
-    follow_up: "Are you looking to buy, rent, invest, or lease a commercial space?"
+    follow_up: route.intent === "name_contact_capture" ? "Would you like to buy, rent, invest, or explore commercial properties?" : ""
   };
 }
 
@@ -672,6 +750,7 @@ function buildPlannerPrompt(data, message, session, images = []) {
   };
   return [
     "You are the Aqaar AI Concierge orchestration planner.",
+    "You must plan every user message before retrieval or answering.",
     "Classify the user's latest message before any KB retrieval.",
     "Return ONLY valid JSON. Do not include markdown.",
     "Use conversation memory to understand short follow-ups such as Ajman, 2 bedrooms, under 90k, similar, show another one.",
@@ -679,6 +758,9 @@ function buildPlannerPrompt(data, message, session, images = []) {
     "Do not answer with property facts. This is planning only.",
     "Allowed high-level intents are natural labels such as small_talk, contact_capture, property_search, project_lookup, price, payment_plan, amenities, location, comparison, investment, commercial, out_of_scope.",
     "Set requires_rag true only when Aqaar KB retrieval is needed.",
+    "Set follow_up true when the latest message relies on previous context.",
+    "When the user gives a short value such as 2, Ajman, under 90k, similar, or show another one, resolve it against memory.",
+    "For small talk, provide a warm response_hint and set requires_rag false.",
     "",
     "JSON schema:",
     JSON.stringify({
@@ -923,6 +1005,7 @@ export async function chat(data, input = {}) {
       geminiError: aiPlanner.error || null,
       fallback_reason: fallbackReason
     });
+    result.persistence = await persistChatExchange({ input, result });
     chatDebug("fallback.reason", { fallback_reason: fallbackReason });
     chatDebug("final.json", summarizeFinalJson(result));
     return result;
@@ -1068,6 +1151,7 @@ export async function chat(data, input = {}) {
     geminiError: llmResult.used ? null : llmResult.error || llmResult.reason,
     fallback_reason: fallbackReason
   });
+  result.persistence = await persistChatExchange({ input, result });
   chatDebug("fallback.reason", { fallback_reason: fallbackReason });
   chatDebug("final.json", summarizeFinalJson(result));
   return result;
@@ -1242,6 +1326,8 @@ function buildGroundedPrompt({ message, memory, extractedEntities, detected, res
   return [
     "You are the Aqaar AI Concierge, a senior real estate sales advisor.",
     "Answer only from the verified Aqaar KB context below.",
+    "Sound natural, professional, and concise. Avoid robotic templates and avoid repeating the same opening phrase.",
+    "Maintain the conversation context and treat the latest user message as part of the ongoing property brief.",
     "Do not invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
     "Do not print raw URLs. Refer to sources by clean label only.",
     "If the answer is absent from the context, say exactly: Not published in verified Aqaar KB.",
@@ -1251,7 +1337,7 @@ function buildGroundedPrompt({ message, memory, extractedEntities, detected, res
     "Prioritize allowed_project_cards for project names, prices, payment plans, amenities, locations, and statuses.",
     "Give a natural, concise answer that directly answers the user's latest question.",
     "If relevant projects are present, briefly explain why each matches using only card/chunk fields.",
-    "Ask exactly one useful follow-up question at the end.",
+    "Ask one useful follow-up question only when it helps move the user forward.",
     "",
     "VERIFIED_CONTEXT_JSON:",
     JSON.stringify(context, null, 2)

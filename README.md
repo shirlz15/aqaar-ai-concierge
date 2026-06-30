@@ -10,8 +10,10 @@ Missing or unpublished data is represented as `unknown` in data objects and as g
 - Strict intelligence layer derived from `AQAAR-KB-ACQ-FINAL-v3`.
 - Backend APIs for chat, search, recommendations, qualification, lead scoring, and dashboard metrics.
 - Existing Vite frontend with Home, AI Concierge, Properties, Dashboard, property cards, enquiry modal, charts, lead table, downloads, and responsive layout.
-- RAG-style lexical retrieval over KB project records and RAG chunks.
-- Gemini API grounded generation for `/chat`, using only the retrieved Aqaar KB context.
+- AI-first Gemini orchestration for `/chat`, including planning, intent/entity extraction, follow-up detection, and image understanding.
+- RAG retrieval over KB projects, inventory, amenities, locations, assets, and RAG chunks.
+- Gemini grounded generation using only retrieved Aqaar KB context.
+- Optional Supabase persistence for chat history, memory, lead details, saved properties, and dashboard analytics.
 - Source attribution returned where KB records provide source fields.
 - Context memory for multi-turn chat sessions.
 - Buy, Rent, Invest, and Commercial intent support from the intelligence layer.
@@ -67,8 +69,10 @@ flowchart TD
     KB --> API["Concierge-Backend-v1<br/>Node API service"]
     INT --> API
     API --> UI["frontend<br/>Vite web app"]
-    API --> RAG["RAG retrieval<br/>KB chunks + source labels"]
-    RAG --> LLM["Gemini Flash<br/>grounded answer generation"]
+    API --> PLAN["Gemini planner<br/>intent, entities, RAG need, image need"]
+    PLAN --> RAG["RAG retrieval<br/>projects, inventory, amenities, locations, chunks"]
+    RAG --> LLM["Gemini grounded response<br/>KB-only facts"]
+    API --> DB["Supabase optional<br/>sessions, messages, leads, events"]
     LLM --> CHAT["/chat<br/>multi-turn concierge"]
     API --> SEARCH["/search<br/>KB/RAG retrieval"]
     API --> REC["/recommend<br/>KB-validated recommendations"]
@@ -85,17 +89,18 @@ flowchart TD
 
 The backend service is located in `Concierge-Backend-v1`.
 
-- `POST /chat` - Multi-turn concierge endpoint with intent detection, memory, RAG retrieval, Gemini grounded generation, recommendations, qualification, source labels, and lead capture.
+- `POST /chat` - AI-first multi-turn concierge endpoint with Gemini planning, memory, optional image analysis, RAG retrieval, grounded Gemini response generation, recommendations, qualification, source labels, lead capture, and optional Supabase persistence.
 - `POST /recommend` - Returns recommendations from the intelligence package and validates referenced projects against the KB.
 - `POST /qualify` - Returns qualification questions and next steps from the intelligence layer.
 - `POST /lead-score` - Returns `unknown` score and grade because scoring weights are not published in the current intelligence package.
-- `GET|POST /dashboard` - Returns dashboard metrics from `Intelligence-Layer-v2/csv/dashboard_metrics.csv`.
+- `GET|POST /dashboard` - Returns Supabase analytics when configured, with fallback metrics from `Intelligence-Layer-v2/csv/dashboard_metrics.csv`.
 - `GET|POST /search` - Searches KB project records and RAG chunks with source attribution.
 
 ## Tech Stack
 
 - Node.js
 - Gemini API, server-side only through `GEMINI_API_KEY`
+- Supabase REST API, optional through `SUPABASE_URL` and `SUPABASE_ANON_KEY`
 - Native Node HTTP server
 - Native Node test runner
 - Vite frontend
@@ -103,7 +108,7 @@ The backend service is located in `Concierge-Backend-v1`.
 - Chart.js loaded by the frontend page
 - CSV, JSON, JSONL, Markdown
 - PowerShell-compatible run commands
-- No external runtime data sources
+- No external property data sources
 
 ## Folder Descriptions
 
@@ -197,40 +202,103 @@ Optional backend environment variables:
 ```powershell
 $env:PORT="8080"
 $env:GEMINI_API_KEY="your-gemini-api-key"
-$env:GEMINI_MODEL="gemini-1.5-flash"
+$env:GEMINI_MODEL="gemini-2.5-flash"
+$env:SUPABASE_URL="https://YOUR_PROJECT_ID.supabase.co"
+$env:SUPABASE_ANON_KEY="your-supabase-anon-key"
 $env:AQAAR_KB_ROOT="C:\path\to\aqaar\KB-Acq"
 $env:AQAAR_INTELLIGENCE_ROOT="C:\path\to\aqaar\Intelligence-Layer-v2"
+```
+
+Supabase setup:
+
+```powershell
+# Run database/supabase_schema.sql in the Supabase SQL editor.
+# If Supabase variables are not configured or Supabase is unavailable,
+# the backend continues with in-memory chat sessions and intelligence seed dashboard data.
 ```
 
 ## LLM And RAG
 
 The AI Concierge uses Gemini Flash from the backend only. The frontend never receives or stores the API key.
 
-Default model:
+Configured model:
 
 ```text
-gemini-1.5-flash
+GEMINI_MODEL, for example gemini-2.5-flash
 ```
 
-RAG pipeline:
+AI flow:
 
 ```mermaid
 flowchart LR
-    MSG["User message"] --> INTENT["Detect intent and entities"]
-    INTENT --> RET["Search Aqaar KB projects, inventory, and RAG chunks"]
-    RET --> TOP["Select top relevant chunks and project cards"]
-    TOP --> PROMPT["Build grounded prompt"]
-    PROMPT --> GEM["Call Gemini API"]
-    GEM --> RESP["Return answer, cards, follow-up, and clean source labels"]
+    MSG["User message or image"] --> PLAN["Gemini planning<br/>intent, entities, small talk, follow-up, image features"]
+    PLAN --> DECIDE{"RAG needed?"}
+    DECIDE -->|"No"| TALK["Natural concierge reply<br/>memory update only"]
+    DECIDE -->|"Yes"| RET["Rank KB context<br/>projects, inventory, amenities, locations, chunks"]
+    RET --> PROMPT["Grounded prompt<br/>selected Aqaar context only"]
+    PROMPT --> GEM["Gemini response"]
+    GEM --> RESP["Answer, cards, sources, follow-up"]
+    RESP --> STORE["Optional Supabase persistence"]
 ```
 
 Grounding rules:
 
-- Gemini receives only selected Aqaar KB/RAG context, conversation memory, and validated project cards.
+- Gemini first plans the request, including whether it is small talk, a follow-up, a property request, or an image-led search.
+- RAG runs only for property-related requests or image searches that need verified Aqaar context.
+- Gemini receives only selected Aqaar KB/RAG context, conversation memory, image-derived search features when present, and validated project cards.
 - Gemini is instructed not to invent projects, prices, ROI, payment plans, amenities, locations, dates, or URLs.
 - If the requested fact is missing from the retrieved KB context, the answer must say: `This is not published in the verified Aqaar KB.`
 - Raw source URLs are not displayed in chat; the response returns clean labels such as `Mawjan brochure`, `Dusit Thani brochure`, or `Aqaar official KB`.
 - When `GEMINI_API_KEY` is not set, `/chat` keeps working through the deterministic KB-only fallback and returns `llm.used: false`.
+
+Conversation memory stores the user's name, phone, email, purpose, property type, bedrooms, budget, location, project, timeline, and investment goal in the active session. Short follow-up replies such as `2`, `Ajman`, `under 90k`, `show another one`, or `similar` are interpreted against that session memory.
+
+Image search accepts base64 image payloads in `/chat`. Gemini Vision extracts property-style features such as apartment, villa, commercial use, architecture, luxury level, colour palette, garden, pool, and waterfront cues. Those features are converted into a semantic Aqaar KB search, and recommendations explain why the verified Aqaar properties are visually similar.
+
+## Supabase
+
+Supabase is optional and production-oriented. The backend reads these environment variables:
+
+```text
+SUPABASE_URL
+SUPABASE_ANON_KEY
+```
+
+Schema file:
+
+- `database/supabase_schema.sql`
+
+Tables:
+
+- `chat_sessions`
+- `chat_messages`
+- `leads`
+- `saved_properties`
+- `dashboard_events`
+
+Stored data:
+
+- Chat history and assistant responses.
+- Conversation memory.
+- Lead details captured in chat.
+- Saved/recommended property cards.
+- Dashboard events for analytics.
+
+If Supabase is not configured, times out, or returns an error, the backend continues with in-memory chat sessions and falls back to the existing `Intelligence-Layer-v2` dashboard seed data.
+
+## Deployment
+
+Render backend:
+
+- Deploy `Concierge-Backend-v1`.
+- Set `GEMINI_API_KEY`, `GEMINI_MODEL`, and optional Supabase variables in Render environment settings.
+- Keep KB and Intelligence package folders available beside the backend according to the repository layout.
+
+Netlify frontend:
+
+- Deploy `frontend`.
+- Set `VITE_API_BASE_URL` to the Render backend URL when needed.
+- The SPA redirect file is `frontend/public/_redirects`.
 
 ## Run Commands
 
@@ -280,8 +348,8 @@ Latest validated backend checks:
 Latest backend test status:
 
 - Suites: 1
-- Tests: 6
-- Passed: 6
+- Tests: 13
+- Passed: 13
 - Failed: 0
 
 Latest frontend verification status:
@@ -305,10 +373,8 @@ Latest frontend verification status:
 
 ## Roadmap
 
-- Add authenticated lead persistence once an approved storage target is selected.
-- Add production deployment configuration.
+- Add authenticated staff access for protected lead management.
 - Add observability for API request logs, validation failures, and retrieval coverage.
 - Add approved CRM or sales handoff integration.
-- Add production hosting configuration for the existing frontend.
 - Add final screenshot captures under `docs/screenshots/`.
 - Expand the KB and intelligence layer only from approved Aqaar sources.

@@ -57,7 +57,7 @@ export async function createServer(options = {}) {
       if (req.method === "POST" && url.pathname === "/recommend") return sendJson(res, 200, recommend(data, input));
       if (req.method === "POST" && url.pathname === "/qualify") return sendJson(res, 200, qualify(data, input));
       if (req.method === "POST" && url.pathname === "/lead-score") return sendJson(res, 200, leadScore(data, input));
-      if ((req.method === "GET" || req.method === "POST") && url.pathname === "/dashboard") return sendJson(res, 200, dashboard(data));
+      if ((req.method === "GET" || req.method === "POST") && url.pathname === "/dashboard") return sendJson(res, 200, await dashboard(data));
       if ((req.method === "GET" || req.method === "POST") && url.pathname === "/search") {
         return sendJson(res, 200, search(data, input.query || input.q || input.message, input.limit || 5));
       }

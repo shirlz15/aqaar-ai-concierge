@@ -5,29 +5,26 @@ import { config as loadDotenv } from "dotenv";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const backendRoot = path.resolve(here, "..");
+const DEFAULT_GEMINI_MODEL = "gemini-2.5-flash";
 
 loadDotenv({ path: path.join(backendRoot, ".env"), quiet: true });
 
-export const GEMINI_MODEL = process.env.GEMINI_MODEL;
+export const GEMINI_MODEL = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
 
 let geminiClient = null;
 let geminiModel = null;
 
 export function getGeminiModel() {
-  return process.env.GEMINI_MODEL;
+  return process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
 }
 
 export function initializeGemini({ log = false } = {}) {
   const apiKey = process.env.GEMINI_API_KEY;
-  const model = process.env.GEMINI_MODEL;
+  const model = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL;
 
   if (!apiKey) {
     throw new Error("GEMINI_API_KEY is missing. Add it to Concierge-Backend-v1/.env before starting the backend.");
   }
-  if (!model) {
-    throw new Error("GEMINI_MODEL is missing. Add it to Concierge-Backend-v1/.env before starting the backend.");
-  }
-
   if (!geminiClient) {
     geminiClient = new GoogleGenAI({ apiKey });
     geminiModel = model;
@@ -41,11 +38,11 @@ export function initializeGemini({ log = false } = {}) {
   return { client: geminiClient, model: geminiModel };
 }
 
-export async function generateWithGemini({ prompt, model = process.env.GEMINI_MODEL, images = [], maxAttempts = 3, fallbackModels = true, timeoutMs = Number(process.env.GEMINI_TIMEOUT_MS || 60000) } = {}) {
+export async function generateWithGemini({ prompt, model = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL, images = [], maxAttempts = 3, fallbackModels = true, timeoutMs = Number(process.env.GEMINI_TIMEOUT_MS || 60000) } = {}) {
   const { client, model: configuredModel } = initializeGemini();
   const activeModel = model || configuredModel;
   const models = fallbackModels
-    ? [...new Set([activeModel, "gemini-2.5-flash", "gemini-1.5-flash"].filter(Boolean))]
+    ? [...new Set([activeModel, "gemini-2.5-flash", ...configuredFallbackModels()].filter(Boolean))]
     : [activeModel].filter(Boolean);
   const contents = buildGeminiContents(prompt, images);
   const attempts = [];
@@ -76,6 +73,13 @@ export async function generateWithGemini({ prompt, model = process.env.GEMINI_MO
     attempted_models: models,
     attempts
   };
+}
+
+function configuredFallbackModels() {
+  return String(process.env.GEMINI_FALLBACK_MODELS || "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 async function generateWithRetry(client, activeModel, contents, maxAttempts = 3, timeoutMs = Number(process.env.GEMINI_TIMEOUT_MS || 60000)) {
