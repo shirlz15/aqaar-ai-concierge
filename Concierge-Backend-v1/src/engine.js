@@ -696,7 +696,7 @@ function summarizeFinalJson(result = {}) {
   };
 }
 
-function logChatOrchestration({ intent, entities, shouldUseRag, chunksCount = 0, model = null, geminiError = null, fallback_reason = null }) {
+function logChatOrchestration({ intent, entities, shouldUseRag, chunksCount = 0, model = null, geminiError = null, fallback_reason = null, vision = null }) {
   console.log(`[chat:orchestration] ${JSON.stringify({
     intent,
     entities,
@@ -704,13 +704,92 @@ function logChatOrchestration({ intent, entities, shouldUseRag, chunksCount = 0,
     chunksCount,
     model,
     geminiError,
-    fallback_reason
+    fallback_reason,
+    vision
   })}`);
 }
 
-async function planChatWithGemini(data, message, session, images = []) {
-  const prompt = buildPlannerPrompt(data, message, session, images);
-  const result = await generateWithGemini({ prompt, images, maxAttempts: 1, fallbackModels: false, timeoutMs: 8000 });
+async function analyzeUploadedImages(message, images = []) {
+  if (!images.length) return { used: false, description: "", features: [], error: null };
+  const prompt = [
+    "You are Gemini Vision for the Aqaar AI Concierge.",
+    "Analyze only the uploaded image. Do not infer facts that are not visible.",
+    "Return ONLY valid JSON. Do not include markdown.",
+    "Describe visible property features and classify visual cues for semantic property search.",
+    "Use unknown when a field is not visible.",
+    "",
+    "JSON schema:",
+    JSON.stringify({
+      visual_description: "natural concise description of the uploaded image",
+      property_type: "apartment|villa|townhouse|commercial|unknown",
+      architecture: "string or unknown",
+      luxury_level: "standard|premium|luxury|unknown",
+      floors: "number or unknown",
+      exterior_style: "string or unknown",
+      colour_palette: "string or unknown",
+      waterfront: true,
+      pool: true,
+      garden: true,
+      residential_or_commercial: "residential|commercial|mixed|unknown",
+      search_features: ["semantic search terms visible in the image"]
+    }, null, 2),
+    "",
+    `User message: ${message || "Find similar Aqaar properties from this image."}`
+  ].join("\n");
+  console.log(`[vision:request] ${JSON.stringify({ images: images.length, model: GEMINI_MODEL })}`);
+  const result = await generateWithGemini({ prompt, images, maxAttempts: 2, fallbackModels: false, timeoutMs: 45000 });
+  if (!result.used) {
+    console.log(`[vision:error] ${JSON.stringify({ model: result.model || GEMINI_MODEL, reason: result.reason, error: result.error })}`);
+    return { used: false, description: "", features: [], error: result.error || result.reason, model_used: result.model_used || null };
+  }
+  const parsed = parseJsonObject(result.text);
+  if (!parsed) {
+    console.log(`[vision:error] ${JSON.stringify({ model: result.model_used || result.model, reason: "vision_invalid_json", raw_preview: String(result.text || "").slice(0, 500) })}`);
+    return { used: false, description: "", features: [], error: "vision_invalid_json", raw_text: result.text, model_used: result.model_used || result.model };
+  }
+  const features = normalizeVisionFeatures(parsed);
+  const analysis = {
+    used: true,
+    model_used: result.model_used || result.model,
+    description: knownOrUnknown(parsed.visual_description),
+    features,
+    raw: {
+      property_type: knownOrUnknown(parsed.property_type),
+      architecture: knownOrUnknown(parsed.architecture),
+      luxury_level: knownOrUnknown(parsed.luxury_level),
+      floors: parsed.floors ?? "unknown",
+      exterior_style: knownOrUnknown(parsed.exterior_style),
+      colour_palette: knownOrUnknown(parsed.colour_palette),
+      waterfront: Boolean(parsed.waterfront),
+      pool: Boolean(parsed.pool),
+      garden: Boolean(parsed.garden),
+      residential_or_commercial: knownOrUnknown(parsed.residential_or_commercial)
+    }
+  };
+  console.log(`[vision:success] ${JSON.stringify({ model: analysis.model_used, description: analysis.description, features: analysis.features })}`);
+  return analysis;
+}
+
+function normalizeVisionFeatures(parsed = {}) {
+  const values = [
+    parsed.property_type,
+    parsed.architecture,
+    parsed.luxury_level,
+    parsed.exterior_style,
+    parsed.colour_palette,
+    parsed.residential_or_commercial,
+    parsed.waterfront ? "waterfront" : "",
+    parsed.pool ? "pool" : "",
+    parsed.garden ? "garden" : "",
+    ...(Array.isArray(parsed.search_features) ? parsed.search_features : [])
+  ];
+  return [...new Set(values.map((value) => knownOrUnknown(value)).filter((value) => value !== "unknown"))];
+}
+
+async function planChatWithGemini(data, message, session, images = [], visionAnalysis = null) {
+  const prompt = buildPlannerPrompt(data, message, session, images, visionAnalysis);
+  const plannerImages = visionAnalysis?.used ? [] : images;
+  const result = await generateWithGemini({ prompt, images: plannerImages, maxAttempts: 1, fallbackModels: false, timeoutMs: 8000 });
   if (!result.used) {
     return {
       used: false,
@@ -737,7 +816,7 @@ async function planChatWithGemini(data, message, session, images = []) {
   };
 }
 
-function buildPlannerPrompt(data, message, session, images = []) {
+function buildPlannerPrompt(data, message, session, images = [], visionAnalysis = null) {
   const knownProjects = allProfiles(data).map((profile) => profile.project_name).filter(isKnown).slice(0, 160);
   const memory = {
     ...session.memory,
@@ -787,6 +866,7 @@ function buildPlannerPrompt(data, message, session, images = []) {
     `Known Aqaar projects: ${knownProjects.join(", ")}`,
     `Conversation memory JSON: ${JSON.stringify(memory)}`,
     `Image attached: ${images.length > 0}`,
+    `Vision analysis JSON: ${JSON.stringify(visionAnalysis || { used: false })}`,
     `Latest user message: ${message}`
   ].join("\n");
 }
@@ -931,14 +1011,87 @@ function inputImages(input = {}) {
   return list.filter(Boolean);
 }
 
+function estimatedImageBytes(image = {}) {
+  const data = image?.data || image?.base64 || image?.inline_data || image?.inlineData?.data || "";
+  const clean = String(data).replace(/^data:[^;]+;base64,/, "");
+  return clean ? Math.round(clean.length * 0.75) : 0;
+}
+
 export async function chat(data, input = {}) {
   const sessionId = input.session_id || "default";
   const message = input.message || "";
   const session = sessions.get(sessionId) || { session_id: sessionId, turns: [], memory: {}, lastProfiles: [] };
   chatDebug("chat.start", { session_id: sessionId, message });
   const images = inputImages(input);
-  const aiPlanner = await planChatWithGemini(data, message, session, images);
+  console.log(`[chat:image_received] ${JSON.stringify({ session_id: sessionId, images: images.length, bytes: images.map(estimatedImageBytes) })}`);
+  const visionAnalysis = await analyzeUploadedImages(message, images);
+  if (images.length && !visionAnalysis.used) {
+    const answer = "I received the uploaded image, but Gemini Vision could not analyze it right now. Please try again in a moment, or describe the property style you want and I will search the verified Aqaar KB.";
+    session.turns.push({ message, intent: "image_analysis_unavailable", parsed: {}, lead: {}, vision: visionAnalysis });
+    sessions.set(sessionId, session);
+    const result = {
+      session_id: sessionId,
+      llm_used: false,
+      property_intent: false,
+      fallback_reason: visionAnalysis.error || "vision_unavailable",
+      answer,
+      reply: answer,
+      sources: [],
+      sources_used: [],
+      cards: [],
+      response_cards: [],
+      follow_up: "Would you like to describe the property type, location, or style you want?",
+      response_type: "image_analysis_unavailable",
+      model_used: null,
+      ai_plan: { used: false, model_used: null, error: "vision_unavailable", plan: null },
+      visual_analysis: visionAnalysis,
+      intent: "image_analysis_unavailable",
+      entities: {},
+      memory: session.memory,
+      lead_capture: session.memory.lead_capture || {},
+      recommendations: [],
+      sales_handoff: {
+        status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
+        summary: buildSalesSummary(session.memory, []),
+        captured_fields: session.memory.lead_capture || {},
+        source: "Concierge-Backend-v1 session memory"
+      },
+      llm: {
+        provider: "gemini",
+        model: GEMINI_MODEL,
+        model_used: null,
+        attempted_models: [GEMINI_MODEL],
+        used: false,
+        reason: visionAnalysis.error || "vision_unavailable",
+        fallback_reason: visionAnalysis.error || "vision_unavailable"
+      },
+      validation: validation("vision_attempted_no_unverified_recommendations")
+    };
+    logChatOrchestration({
+      intent: result.intent,
+      entities: result.entities,
+      shouldUseRag: false,
+      chunksCount: 0,
+      model: GEMINI_MODEL,
+      geminiError: visionAnalysis.error || "vision_unavailable",
+      fallback_reason: result.fallback_reason,
+      vision: { used: false, features: [], error: visionAnalysis.error || "vision_unavailable" }
+    });
+    result.persistence = await persistChatExchange({ input, result });
+    chatDebug("final.json", summarizeFinalJson(result));
+    return result;
+  }
+  const aiPlanner = await planChatWithGemini(data, message, session, images, visionAnalysis);
   const aiPlan = aiPlanner.plan;
+  if (visionAnalysis.used) {
+    aiPlan.references_image = true;
+    aiPlan.requires_rag = true;
+    aiPlan.image_features = [...new Set([...(aiPlan.image_features || []), ...visionAnalysis.features])];
+    aiPlan.entities.image_features = [...new Set([...(aiPlan.entities.image_features || []), ...visionAnalysis.features])];
+    if (isKnown(visionAnalysis.raw?.property_type) && !isKnown(aiPlan.entities.property_type)) {
+      aiPlan.entities.property_type = visionAnalysis.raw.property_type;
+    }
+  }
   const route = routeFromAiPlan(data, message, aiPlan);
   const preGate = !route.property_intent ? nonPropertyResponse(session, message, route) : null;
   if (preGate) {
@@ -973,6 +1126,7 @@ export async function chat(data, input = {}) {
         error: aiPlanner.error || null,
         plan: aiPlan
       },
+      visual_analysis: visionAnalysis,
       intent: route.intent,
       intent_details: preGate.intent,
       entities: route.entities,
@@ -1003,7 +1157,8 @@ export async function chat(data, input = {}) {
       chunksCount: 0,
       model: null,
       geminiError: aiPlanner.error || null,
-      fallback_reason: fallbackReason
+      fallback_reason: fallbackReason,
+      vision: { used: visionAnalysis.used, features: visionAnalysis.features || [], error: visionAnalysis.error || null }
     });
     result.persistence = await persistChatExchange({ input, result });
     chatDebug("fallback.reason", { fallback_reason: fallbackReason });
@@ -1065,7 +1220,8 @@ export async function chat(data, input = {}) {
     response,
     cards: response.cards,
     rag: promptRag,
-    nextQuestion
+    nextQuestion,
+    visionAnalysis
   });
   chatDebug("prompt.sent_to_gemini", { prompt });
   const hasGroundedContext = response.cards.length > 0 || rag.chunks.length > 0;
@@ -1081,7 +1237,7 @@ export async function chat(data, input = {}) {
       };
   chatDebug("gemini.raw_response", summarizeLlmResult(llmResult));
   chatDebug("parser.result", { valid_text: Boolean(llmResult.used && llmResult.text), text_length: String(llmResult.text || "").length });
-  const fallbackAnswer = buildGroundedFallback(response, nextQuestion);
+  const fallbackAnswer = buildGroundedFallback(response, nextQuestion, visionAnalysis);
   const nonGeminiFallback = ["unsupported_by_kb", "no_retrieved_context"].includes(llmResult.reason);
   const fallbackReason = llmResult.used || nonGeminiFallback ? null : llmResult.reason || "gemini_unavailable";
   const gracefulFallback = fallbackReason
@@ -1107,6 +1263,7 @@ export async function chat(data, input = {}) {
       error: aiPlanner.error || null,
       plan: aiPlan
     },
+    visual_analysis: visionAnalysis,
     cards: response.cards,
     response_cards: response.cards,
     intent: route.intent,
@@ -1149,7 +1306,8 @@ export async function chat(data, input = {}) {
     chunksCount: rag.chunks.length,
     model: llmResult.model_used || llmResult.model || GEMINI_MODEL,
     geminiError: llmResult.used ? null : llmResult.error || llmResult.reason,
-    fallback_reason: fallbackReason
+    fallback_reason: fallbackReason,
+    vision: { used: visionAnalysis.used, features: visionAnalysis.features || [], error: visionAnalysis.error || null }
   });
   result.persistence = await persistChatExchange({ input, result });
   chatDebug("fallback.reason", { fallback_reason: fallbackReason });
@@ -1302,15 +1460,21 @@ function entityMatchesDocument(entities = {}, text = "") {
   if (isKnown(entities.property_type) && haystack.includes(norm(entities.property_type))) score += 18;
   if (entities.bedrooms !== "unknown" && haystack.includes(String(entities.bedrooms))) score += 12;
   for (const amenity of entities.amenities || []) if (haystack.includes(norm(amenity))) score += 12;
+  for (const feature of entities.image_features || []) if (haystack.includes(norm(feature))) score += 10;
   return score;
 }
 
-function buildGroundedPrompt({ message, memory, extractedEntities, detected, response, cards, rag, nextQuestion }) {
+function buildGroundedPrompt({ message, memory, extractedEntities, detected, response, cards, rag, nextQuestion, visionAnalysis = null }) {
   const context = {
     user_message: message,
     detected_intent: detected?.intent || "unknown",
     extracted_entities: extractedEntities || {},
     conversation_memory: memory,
+    uploaded_image_analysis: visionAnalysis?.used ? {
+      visual_description: visionAnalysis.description,
+      features: visionAnalysis.features,
+      details: visionAnalysis.raw
+    } : null,
     response_type: response.type,
     allowed_project_cards: cards || [],
     retrieved_chunks: rag.chunks.map((chunk) => ({
@@ -1337,6 +1501,7 @@ function buildGroundedPrompt({ message, memory, extractedEntities, detected, res
     "Prioritize allowed_project_cards for project names, prices, payment plans, amenities, locations, and statuses.",
     "Give a natural, concise answer that directly answers the user's latest question.",
     "If relevant projects are present, briefly explain why each matches using only card/chunk fields.",
+    "If uploaded_image_analysis is present, first summarize what Gemini Vision observed, then explain why each recommendation is visually or semantically similar.",
     "Ask one useful follow-up question only when it helps move the user forward.",
     "",
     "VERIFIED_CONTEXT_JSON:",
@@ -1353,9 +1518,14 @@ function sanitizeAnswer(text) {
   return cleaned;
 }
 
-function buildGroundedFallback(response, nextQuestion) {
+function buildGroundedFallback(response, nextQuestion, visionAnalysis = null) {
   if (!response.cards?.length) return response.answer || "Not published in verified Aqaar KB.";
   const lines = [];
+  if (visionAnalysis?.used) {
+    lines.push(`Gemini Vision observed: ${visionAnalysis.description}`);
+    if (visionAnalysis.features?.length) lines.push(`Visual search features: ${visionAnalysis.features.join(", ")}`);
+    lines.push("Similar verified Aqaar matches:");
+  }
   if (response.type === "payment_plans") {
     lines.push("Published payment plans in the verified Aqaar KB:");
     for (const card of response.cards) lines.push(`- ${card.project}: ${card.payment_plan}`);
@@ -1367,9 +1537,12 @@ function buildGroundedFallback(response, nextQuestion) {
   } else if (response.type === "nearby_landmarks") {
     for (const card of response.cards) lines.push(`${card.project} is published in the Aqaar KB as ${card.unit_types} in ${card.location}.`);
   } else {
-    lines.push(response.cards.length === 1 ? "Closest published Aqaar KB match:" : "Published Aqaar KB matches:");
+    if (!visionAnalysis?.used) lines.push(response.cards.length === 1 ? "Closest published Aqaar KB match:" : "Published Aqaar KB matches:");
     for (const card of response.cards) {
-      lines.push(`- ${card.project}: ${card.location}; ${card.unit_types}; price ${card.price}; payment plan ${card.payment_plan}; status ${card.status}.`);
+      const reason = visionAnalysis?.used
+        ? ` Visual match reason: selected from verified KB fields using ${visionAnalysis.features?.slice(0, 5).join(", ") || "the uploaded image features"}.`
+        : "";
+      lines.push(`- ${card.project}: ${card.location}; ${card.unit_types}; price ${card.price}; payment plan ${card.payment_plan}; status ${card.status}.${reason}`);
     }
   }
   if (nextQuestion) lines.push(nextQuestion);

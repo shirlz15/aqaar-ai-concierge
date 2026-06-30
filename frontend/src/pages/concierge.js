@@ -303,6 +303,13 @@ async function sendMessage() {
       await handleLeadCapture(text);
     } else {
       // Normal chat
+      if (outgoingImage) {
+        console.info('[concierge:image_send]', {
+          name: outgoingImage.name,
+          mime_type: outgoingImage.payload?.mime_type,
+          bytes: Math.round(String(outgoingImage.payload?.data || '').replace(/^data:[^;]+;base64,/, '').length * 0.75),
+        });
+      }
       const res = await chat({
         message: outgoingText,
         sessionId: state.sessionId,

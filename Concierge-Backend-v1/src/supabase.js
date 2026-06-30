@@ -4,8 +4,13 @@ const DEFAULT_TIMEOUT_MS = 3500;
 
 function config() {
   const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_ANON_KEY;
-  const testRuntime = process.execArgv.includes("--test") || process.env.NODE_ENV === "test";
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const key = isKnown(serviceRoleKey) && !String(serviceRoleKey).includes("YOUR_") ? serviceRoleKey : anonKey;
+  const testRuntime = process.execArgv.includes("--test")
+    || process.env.NODE_ENV === "test"
+    || process.env.npm_lifecycle_event === "test"
+    || process.argv.some((arg) => /tests[\\/].+\.test\.js$/.test(arg));
   const configured = isKnown(url)
     && isKnown(key)
     && !String(url).includes("YOUR_PROJECT_ID")
@@ -14,17 +19,35 @@ function config() {
   return {
     configured,
     url: String(url || "").replace(/\/rest\/v1\/?$/i, "").replace(/\/+$/, ""),
-    key
+    key,
+    anonConfigured: isKnown(anonKey) && !String(anonKey).includes("YOUR_"),
+    serviceRoleConfigured: isKnown(serviceRoleKey) && !String(serviceRoleKey).includes("YOUR_"),
+    keyType: isKnown(serviceRoleKey) && !String(serviceRoleKey).includes("YOUR_") ? "service_role" : "anon",
+    testRuntime
   };
 }
 
 export function supabaseStatus() {
-  return { configured: config().configured };
+  const cfg = config();
+  return {
+    configured: cfg.configured,
+    url_configured: isKnown(cfg.url),
+    anon_key_configured: cfg.anonConfigured,
+    service_role_key_configured: cfg.serviceRoleConfigured,
+    key_type: cfg.configured ? cfg.keyType : "unavailable",
+    test_runtime_disabled: cfg.testRuntime
+  };
 }
 
-async function supabaseFetch(path, { method = "GET", body, query = "", timeoutMs = DEFAULT_TIMEOUT_MS } = {}) {
+async function supabaseFetch(path, { method = "GET", body, query = "", timeoutMs = DEFAULT_TIMEOUT_MS, label = path } = {}) {
   const cfg = config();
-  if (!cfg.configured) return { ok: false, skipped: true, reason: "supabase_not_configured" };
+  const rows = Array.isArray(body) ? body.length : (body ? 1 : 0);
+  logSupabase("attempt", { label, method, path, rows, configured: cfg.configured, key_type: cfg.keyType, url_configured: isKnown(cfg.url) });
+  if (!cfg.configured) {
+    const skipped = { ok: false, skipped: true, reason: "supabase_not_configured" };
+    logSupabase("skipped", { label, reason: skipped.reason, status: supabaseStatus() });
+    return skipped;
+  }
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -42,13 +65,20 @@ async function supabaseFetch(path, { method = "GET", body, query = "", timeoutMs
     });
     if (!response.ok) {
       const text = await response.text().catch(() => "");
+      logSupabase("failure", { label, status: response.status, reason: text || response.statusText });
       return { ok: false, status: response.status, reason: text || response.statusText };
     }
-    if (response.status === 204) return { ok: true, data: [] };
+    if (response.status === 204) {
+      logSupabase("success", { label, status: response.status, rows });
+      return { ok: true, data: [] };
+    }
     const text = await response.text();
+    logSupabase("success", { label, status: response.status, rows });
     return { ok: true, data: text ? JSON.parse(text) : [] };
   } catch (error) {
-    return { ok: false, reason: error.name === "AbortError" ? "supabase_timeout" : error.message };
+    const reason = error.name === "AbortError" ? "supabase_timeout" : error.message;
+    logSupabase("failure", { label, reason });
+    return { ok: false, reason };
   } finally {
     clearTimeout(timer);
   }
@@ -66,6 +96,7 @@ export async function persistChatExchange({ input = {}, result = {} } = {}) {
 
   const sessionWrite = await supabaseFetch("chat_sessions?on_conflict=session_id", {
     method: "POST",
+    label: "chat_sessions",
     body: [{
       session_id: sessionId,
       memory,
@@ -81,6 +112,7 @@ export async function persistChatExchange({ input = {}, result = {} } = {}) {
   const writes = await Promise.allSettled([
     supabaseFetch("chat_messages", {
       method: "POST",
+      label: "chat_messages",
       body: [{
         session_id: sessionId,
         role: "user",
@@ -102,6 +134,7 @@ export async function persistChatExchange({ input = {}, result = {} } = {}) {
     }),
     hasLead(lead) ? supabaseFetch("leads", {
       method: "POST",
+      label: "leads",
       body: [{
         session_id: sessionId,
         name: knownOrUnknown(lead.name),
@@ -119,6 +152,7 @@ export async function persistChatExchange({ input = {}, result = {} } = {}) {
     }) : Promise.resolve({ ok: true, skipped: true }),
     cards.length ? supabaseFetch("saved_properties", {
       method: "POST",
+      label: "saved_properties",
       body: cards.slice(0, 5).map((card) => ({
         session_id: sessionId,
         project_name: knownOrUnknown(card.project),
@@ -130,6 +164,7 @@ export async function persistChatExchange({ input = {}, result = {} } = {}) {
     }) : Promise.resolve({ ok: true, skipped: true }),
     supabaseFetch("dashboard_events", {
       method: "POST",
+      label: "dashboard_events",
       body: [{
         session_id: sessionId,
         event_type: "chat_response",
@@ -173,4 +208,8 @@ export async function loadDashboardAnalytics() {
 
 function hasLead(lead = {}) {
   return isKnown(lead.name) || isKnown(lead.phone) || isKnown(lead.email);
+}
+
+function logSupabase(stage, payload = {}) {
+  console.log(`[supabase:${stage}] ${JSON.stringify(payload)}`);
 }
