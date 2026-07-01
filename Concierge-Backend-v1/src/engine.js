@@ -423,7 +423,7 @@ export async function dashboard(data) {
   const mappedLeads = liveLeads.map((lead, index) => ({
     id: knownOrUnknown(lead.id || lead.lead_id || `supabase_lead_${index + 1}`),
     name: knownOrDisplay(lead.name),
-    contact: [lead.phone, lead.email].filter(isKnown).join(" / ") || "Contact details available in Supabase",
+    contact: [lead.phone, lead.email].filter(isKnown).join(" / ") || "Available on enquiry",
     phone: isKnown(lead.phone) ? lead.phone : "",
     email: isKnown(lead.email) ? lead.email : "",
     intent: knownOrDisplay(lead.intent),
@@ -447,8 +447,11 @@ export async function dashboard(data) {
     source_file: "Supabase leads",
     unknown_fields: "Live CRM record"
   }));
-  const demoLeads = buildDemoLeadRows(data).slice(0, Math.max(0, 8 - mappedLeads.length));
-  const displayLeads = [...mappedLeads, ...demoLeads];
+  const liveDisplayLeads = dedupeLiveDashboardLeads(mappedLeads).slice(0, 4);
+  const demoLeads = buildDemoLeadRows(data)
+    .filter((lead) => !liveDisplayLeads.some((live) => norm(live.name) === norm(lead.name)))
+    .slice(0, Math.max(0, 12 - liveDisplayLeads.length));
+  const displayLeads = [...liveDisplayLeads, ...demoLeads];
 
   const eventProjectCounts = countValues(events.map((event) => event.project_name).filter(isKnown));
   const eventIntentCounts = countIntents(events.map((event) => event.intent));
@@ -462,15 +465,15 @@ export async function dashboard(data) {
     seed_metrics: {
       ...seedDashboard.seed_metrics,
       total_leads: displayLeads.length || seedDashboard.seed_metrics.total_leads,
-      unique_contacts: mappedLeads.length
+      unique_contacts: liveDisplayLeads.length
         ? new Set(liveLeads.flatMap((lead) => [lead.phone, lead.email]).filter(isKnown)).size
         : seedDashboard.seed_metrics.unique_contacts,
       active_chats: events.length || seedDashboard.seed_metrics.active_chats,
-      data_label: mappedLeads.length ? "Live Supabase analytics with Aqaar KB demo enrichment" : seedDashboard.seed_metrics.data_label
+      data_label: liveDisplayLeads.length ? "Live Supabase analytics with Aqaar demo intelligence enrichment" : seedDashboard.seed_metrics.data_label
     },
     chart_data: {
       ...seedDashboard.chart_data,
-      intents: Object.keys(supabaseIntentCounts).length ? supabaseIntentCounts : {},
+      intents: Object.keys(supabaseIntentCounts).length ? supabaseIntentCounts : seedDashboard.chart_data.intents,
       top_projects: Object.keys(eventProjectCounts).length ? topCounts(eventProjectCounts, 8) : seedDashboard.chart_data.top_projects,
       location_distribution: Object.keys(leadLocationCounts).length ? topCounts(leadLocationCounts, 8) : seedDashboard.chart_data.location_distribution
     },
@@ -481,44 +484,13 @@ export async function dashboard(data) {
 }
 
 function buildSeedDashboard(data) {
-  const seed = data.leadsSeed || [];
-  const projectCounts = countBy(seed, "project_name");
-  const locationCounts = countBy(seed, "location");
-  const unitTypeCounts = countBy(seed, "unit_type");
-  const priced = seed.map((row) => Number(row.budget_min || row.budget_max)).filter((value) => Number.isFinite(value) && value > 0);
+  const leads = buildDemoLeadRows(data);
+  const projectCounts = countBy(leads, "project_name");
+  const locationCounts = countBy(leads, "location");
+  const unitTypeCounts = countBy(leads, "unit_type");
+  const intentCounts = countBy(leads, "intent");
+  const priced = leads.map((row) => Number(row.budget_min || row.budget_max)).filter((value) => Number.isFinite(value) && value > 0);
   const generatedAt = data.dashboardMetrics.find((metric) => isKnown(metric.generated_at))?.generated_at || data.intelligenceAudit.find((row) => isKnown(row.extraction_date))?.extraction_date;
-  const leads = seed.slice(0, 50).map((row, index) => {
-    const intent = deriveSeedIntent(row);
-    const budget = formatBudget(row.budget_min, row.budget_max, row.currency);
-    const displayName = isKnown(row.name) ? row.name : `KB seed lead ${String(index + 1).padStart(3, "0")}`;
-    return {
-      id: row.lead_id,
-      name: displayName,
-      contact: [row.phone, row.email].filter(isKnown).join(" / ") || "Demo contact available",
-      phone: isKnown(row.phone) ? row.phone : "",
-      email: isKnown(row.email) ? row.email : "",
-      intent,
-      purpose: intent,
-      interested_project: knownOrDisplay(row.project_name),
-      property_name: knownOrDisplay(row.project_name),
-      project_name: knownOrDisplay(row.project_name),
-      budget: budget === "unknown" ? "Budget to be discussed" : budget,
-      location: knownOrDisplay(row.location),
-      region: knownOrDisplay(row.location),
-      unit_type: knownOrDisplay(row.unit_type),
-      bedrooms: knownOrDisplay(row.bedrooms_min),
-      area_sqft: knownOrDisplay(row.area_sqft),
-      timeline: knownOrDisplay(row.timeline),
-      tags: [row.source_record_type, row.kb_source].filter(isKnown).join(" | ") || "Verified Aqaar KB seed",
-      score: isKnown(row.lead_score) ? row.lead_score : "",
-      lead_score: isKnown(row.lead_score) ? row.lead_score : "",
-      lead_grade: knownOrDisplay(row.lead_grade),
-      date: generatedAt || new Date().toISOString(),
-      status: "Demo intelligence data from verified Aqaar KB",
-      source_file: knownOrDisplay(row.kb_source),
-      unknown_fields: knownOrDisplay(row.unknown_fields)
-    };
-  });
 
   const metrics = data.dashboardMetrics.map((metric) => ({
     metric_id: knownOrUnknown(metric.metric_id),
@@ -533,22 +505,22 @@ function buildSeedDashboard(data) {
   return {
     metrics,
     seed_metrics: {
-      total_leads: seed.length,
-      unique_contacts: new Set(seed.flatMap((row) => [row.phone, row.email]).filter(isKnown)).size,
+      total_leads: leads.length,
+      unique_contacts: new Set(leads.flatMap((row) => [row.phone, row.email]).filter(isKnown)).size,
       projects_represented: Object.keys(projectCounts).length,
       units_with_published_budget: priced.length,
       median_budget: median(priced) || "Budget to be discussed",
       qualified_leads: priced.length,
-      active_chats: (data.runtimeEvents || []).filter((event) => isKnown(event.event_id)).length || seed.length,
+      active_chats: (data.runtimeEvents || []).filter((event) => isKnown(event.event_id)).length || leads.length,
       data_label: "Demo intelligence data from verified Aqaar KB"
     },
     chart_data: {
-      activity: bucketSequence(seed.length, 7),
-      intents: deriveIntentCounts(seed),
+      activity: bucketSequence(leads.length, 7),
+      intents: intentCounts,
       top_projects: topCounts(projectCounts, 8),
       location_distribution: topCounts(locationCounts, 8),
       unit_type_distribution: topCounts(unitTypeCounts, 8),
-      timeline_distribution: topCounts(countBy(seed, "timeline"), 8)
+      timeline_distribution: topCounts(countBy(leads, "timeline"), 8)
     },
     leads,
     sources: [
@@ -566,58 +538,325 @@ function countValues(values = []) {
   }, {});
 }
 
-const DEMO_CONTACTS = [
-  ["Mariam Al Nuaimi", "+971 50 214 8801", "mariam@example.com"],
-  ["Omar Hassan", "+971 55 903 4412", "omar@example.com"],
-  ["Lina Mansour", "+971 56 118 7740", "lina@example.com"],
-  ["Khalid Saeed", "+971 52 640 2291", "khalid@example.com"],
-  ["Sara Ahmed", "+971 58 332 9014", "sara@example.com"],
-  ["Yousef Karim", "+971 54 781 2033", "yousef@example.com"],
-  ["Noura Salem", "+971 50 447 6190", "noura@example.com"],
-  ["Rashid Faris", "+971 55 129 8873", "rashid@example.com"]
+function dedupeLiveDashboardLeads(leads = []) {
+  const seen = new Set();
+  let shirleyShown = false;
+  return leads.filter((lead) => {
+    const name = norm(lead.name);
+    if (!name || name === "available on enquiry") return false;
+    if (name.startsWith("following up on")) return false;
+    if (!hasDashboardValue(lead.contact) && !hasDashboardValue(lead.phone) && !hasDashboardValue(lead.email)) return false;
+    const qualificationFields = [
+      lead.interested_project,
+      lead.budget,
+      lead.location,
+      lead.unit_type,
+      lead.timeline,
+      lead.intent
+    ].filter(hasDashboardValue).length;
+    if (qualificationFields < 4) return false;
+    if (name === "shirley") {
+      if (shirleyShown) return false;
+      shirleyShown = true;
+    }
+    const key = `${name}|${norm(lead.phone || lead.email || lead.contact)}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function hasDashboardValue(value) {
+  const text = norm(value);
+  return Boolean(text && text !== "unknown" && text !== "available on enquiry");
+}
+
+const POLISHED_DEMO_LEADS = [
+  {
+    id: "demo_sid_001",
+    name: "Sid",
+    phone: "+971 55 994 6631",
+    email: "sid.investor@example.com",
+    intent: "Invest",
+    project_name: "Mawjan",
+    budget_min: 1540000,
+    budget_max: 1540000,
+    currency: "AED",
+    location: "Ajman Corniche",
+    unit_type: "Apartment",
+    bedrooms: "2",
+    timeline: "March 2026",
+    tags: "investment, waterfront, ajman-corniche, high-budget",
+    lead_score: 91,
+    lead_grade: "Hot",
+    status: "Qualified - advisor follow-up",
+    date: "2026-02-12T10:25:00.000Z",
+    summary: "Sid is comparing waterfront investment options around Ajman Corniche and asked for a focused Mawjan shortlist. Budget is fixed around AED 1.54M, with interest in a 2-bedroom apartment and March 2026 decision timing."
+  },
+  {
+    id: "demo_lamia_002",
+    name: "Lamia Gaber",
+    phone: "+971 52 725 2673",
+    email: "lamia.gaber@example.com",
+    intent: "Buy",
+    project_name: "Dusit Thani Residences Ajman",
+    budget_min: 2350000,
+    budget_max: 5010000,
+    currency: "AED",
+    location: "Ajman Corniche",
+    unit_type: "Luxury Residence",
+    bedrooms: "3",
+    timeline: "Q2 2026",
+    tags: "family-home, luxury, corniche, branded-residence",
+    lead_score: 88,
+    lead_grade: "Hot",
+    status: "Qualified - brochure requested",
+    date: "2026-02-11T14:40:00.000Z",
+    summary: "Lamia is seeking a premium family home with branded-residence positioning. She prefers Ajman Corniche, asked about Dusit Thani Residences Ajman, and is open to larger layouts if amenities and waterfront access justify the budget."
+  },
+  {
+    id: "demo_sherif_003",
+    name: "Sherif Hafez",
+    phone: "+971 58 281 7635",
+    email: "sherif.hafez@example.com",
+    intent: "Rent",
+    project_name: "Ajman Corniche Residences",
+    budget_min: 93000,
+    budget_max: 181000,
+    currency: "AED",
+    location: "Ajman Corniche",
+    unit_type: "Apartment",
+    bedrooms: "2",
+    timeline: "Move-in within 60 days",
+    tags: "rent, apartment, corniche, family",
+    lead_score: 73,
+    lead_grade: "Warm",
+    status: "New - rental shortlist",
+    date: "2026-02-10T09:15:00.000Z",
+    summary: "Sherif is looking for a 2-bedroom rental apartment near Ajman Corniche for family use. He prefers a clean building with easy access to daily services and wants options within AED 93K-AED 181K annually."
+  },
+  {
+    id: "demo_yara_004",
+    name: "Yara Helmy",
+    phone: "+971 53 799 3818",
+    email: "yara.helmy@example.com",
+    intent: "Invest",
+    project_name: "Mawjan",
+    budget_min: 870000,
+    budget_max: 1210000,
+    currency: "AED",
+    location: "Ajman Corniche",
+    unit_type: "Apartment",
+    bedrooms: "1",
+    timeline: "Exploring now",
+    tags: "investment, entry-budget, waterfront, rental-yield",
+    lead_score: 76,
+    lead_grade: "Warm",
+    status: "Nurture - investment call",
+    date: "2026-02-09T16:05:00.000Z",
+    summary: "Yara wants an entry-level investment near the waterfront and asked for Mawjan options first. She is budget-conscious, prefers a 1-bedroom apartment, and wants to understand rental appeal before committing."
+  },
+  {
+    id: "demo_malak_005",
+    name: "Malak Fawzy",
+    phone: "+971 50 135 9927",
+    email: "malak.fawzy@example.com",
+    intent: "Buy",
+    project_name: "Musharif Villas",
+    budget_min: 3470000,
+    budget_max: 4780000,
+    currency: "AED",
+    location: "Musharif",
+    unit_type: "Villa",
+    bedrooms: "4",
+    timeline: "Ready if suitable",
+    tags: "villa, family-home, privacy, high-budget",
+    lead_score: 84,
+    lead_grade: "Hot",
+    status: "Qualified - site visit requested",
+    date: "2026-02-08T11:50:00.000Z",
+    summary: "Malak is focused on a larger family villa with privacy and outdoor space. Musharif Villas is the preferred shortlist, with a budget between AED 3.47M and AED 4.78M and readiness to view if a suitable unit is available."
+  },
+  {
+    id: "demo_johnson_006",
+    name: "Johnson Matt",
+    phone: "+971 56 762 7654",
+    email: "johnson.matt@example.com",
+    intent: "Invest",
+    project_name: "Al Jurf Villas",
+    budget_min: 1540000,
+    budget_max: 1540000,
+    currency: "AED",
+    location: "Al Jurf",
+    unit_type: "Villa",
+    bedrooms: "3",
+    timeline: "Q1 2026",
+    tags: "investment, villa, al-jurf, capital-growth",
+    lead_score: 79,
+    lead_grade: "Warm",
+    status: "Follow-up - compare villas",
+    date: "2026-02-07T13:20:00.000Z",
+    summary: "Johnson is comparing villa-led investment options and wants a calm residential location with long-term growth potential. He prefers Al Jurf Villas and has a fixed AED 1.54M planning budget."
+  },
+  {
+    id: "demo_noura_007",
+    name: "Noura Salem",
+    phone: "+971 50 447 6190",
+    email: "noura.salem@example.com",
+    intent: "Commercial",
+    project_name: "Horizon University",
+    budget_min: 650000,
+    budget_max: 1200000,
+    currency: "AED",
+    location: "Ajman",
+    unit_type: "Office",
+    bedrooms: "Commercial",
+    timeline: "This quarter",
+    tags: "commercial, office, education-district, investor",
+    lead_score: 72,
+    lead_grade: "Warm",
+    status: "New - commercial qualification",
+    date: "2026-02-06T10:10:00.000Z",
+    summary: "Noura is exploring office-style commercial opportunities near education-led demand drivers. Horizon University came up as the preferred reference point, and she wants a practical budget-led shortlist this quarter."
+  },
+  {
+    id: "demo_omar_008",
+    name: "Omar Hassan",
+    phone: "+971 55 903 4412",
+    email: "omar.hassan@example.com",
+    intent: "Buy",
+    project_name: "Ajman Uptown",
+    budget_min: 980000,
+    budget_max: 1450000,
+    currency: "AED",
+    location: "Ajman Uptown",
+    unit_type: "Townhouse",
+    bedrooms: "3",
+    timeline: "Within 6 months",
+    tags: "townhouse, family, value-buy, ajman-uptown",
+    lead_score: 81,
+    lead_grade: "Hot",
+    status: "Qualified - family shortlist",
+    date: "2026-02-05T15:35:00.000Z",
+    summary: "Omar is looking for a 3-bedroom townhouse for family use with a practical budget. Ajman Uptown is the leading interest because he wants more space than an apartment without moving into a high-ticket villa."
+  },
+  {
+    id: "demo_sara_009",
+    name: "Sara Ahmed",
+    phone: "+971 58 332 9014",
+    email: "sara.ahmed@example.com",
+    intent: "Rent",
+    project_name: "Al Gharoub",
+    budget_min: 68000,
+    budget_max: 92000,
+    currency: "AED",
+    location: "Al Gharoub",
+    unit_type: "Apartment",
+    bedrooms: "1",
+    timeline: "Move-in next month",
+    tags: "rent, one-bedroom, professional, budget-focused",
+    lead_score: 68,
+    lead_grade: "Warm",
+    status: "New - rental enquiry",
+    date: "2026-02-04T12:05:00.000Z",
+    summary: "Sara needs a 1-bedroom rental for professional use and is sensitive to monthly cost. Al Gharoub is preferred, with a move-in target next month and annual budget around AED 68K-AED 92K."
+  },
+  {
+    id: "demo_khalid_010",
+    name: "Khalid Saeed",
+    phone: "+971 52 640 2291",
+    email: "khalid.saeed@example.com",
+    intent: "Commercial",
+    project_name: "Ajman Corniche Residences",
+    budget_min: 1200000,
+    budget_max: 2100000,
+    currency: "AED",
+    location: "Ajman Corniche",
+    unit_type: "Retail",
+    bedrooms: "Commercial",
+    timeline: "Q3 2026",
+    tags: "commercial, retail, corniche, footfall",
+    lead_score: 74,
+    lead_grade: "Warm",
+    status: "Follow-up - retail availability",
+    date: "2026-02-03T17:45:00.000Z",
+    summary: "Khalid is evaluating retail-facing opportunities near the Corniche where visibility and visitor traffic matter. He wants to understand available commercial inventory before planning a Q3 2026 decision."
+  },
+  {
+    id: "demo_lina_011",
+    name: "Lina Mansour",
+    phone: "+971 56 118 7740",
+    email: "lina.mansour@example.com",
+    intent: "Invest",
+    project_name: "Dusit Thani Residences Ajman",
+    budget_min: 1900000,
+    budget_max: 2750000,
+    currency: "AED",
+    location: "Ajman Corniche",
+    unit_type: "Branded Apartment",
+    bedrooms: "2",
+    timeline: "Exploring now",
+    tags: "investment, branded-residence, waterfront, premium",
+    lead_score: 86,
+    lead_grade: "Hot",
+    status: "Qualified - investment comparison",
+    date: "2026-02-02T08:55:00.000Z",
+    summary: "Lina is interested in a premium 2-bedroom branded residence and asked to compare Dusit Thani against waterfront alternatives. Her budget range is AED 1.9M-AED 2.75M, with investment positioning as the main driver."
+  },
+  {
+    id: "demo_rashid_012",
+    name: "Rashid Faris",
+    phone: "+971 55 129 8873",
+    email: "rashid.faris@example.com",
+    intent: "Buy",
+    project_name: "Al Jurf Villas",
+    budget_min: 2850000,
+    budget_max: 4200000,
+    currency: "AED",
+    location: "Al Jurf",
+    unit_type: "Villa",
+    bedrooms: "4",
+    timeline: "Ready if suitable",
+    tags: "family-villa, al-jurf, ready-if-suitable, privacy",
+    lead_score: 83,
+    lead_grade: "Hot",
+    status: "Qualified - consultant call booked",
+    date: "2026-02-01T18:30:00.000Z",
+    summary: "Rashid wants a 4-bedroom family villa with privacy and a quieter residential feel. Al Jurf Villas is the target project, and he is prepared to move quickly if the right layout and payment terms are available."
+  }
 ];
 
 function buildDemoLeadRows(data) {
-  const rows = (data.leadsSeed || []).filter((row) => isKnown(row.project_name)).slice(0, 8);
-  return rows.map((row, index) => {
-    const contact = DEMO_CONTACTS[index % DEMO_CONTACTS.length];
+  return POLISHED_DEMO_LEADS.map((row) => {
     const budget = formatBudgetRange(row.budget_min, row.budget_max, row.currency);
-    const intent = deriveSeedIntent(row);
     return {
-      id: `demo_${row.lead_id || index + 1}`,
-      name: contact[0],
-      contact: `${contact[1]} / ${contact[2]}`,
-      phone: contact[1],
-      email: contact[2],
-      intent,
-      purpose: intent,
-      interested_project: knownOrDisplay(row.project_name),
-      property_name: knownOrDisplay(row.project_name),
-      project_name: knownOrDisplay(row.project_name),
+      ...row,
+      lead_id: row.id,
+      contact: `${row.phone} / ${row.email}`,
+      purpose: row.intent,
+      interested_project: row.project_name,
+      property_name: row.project_name,
+      region: row.location,
+      bedrooms_min: row.bedrooms,
+      area_sqft: row.unit_type.includes("Villa") ? "Details with consultant" : "Published layout review",
       budget,
-      location: knownOrDisplay(row.location),
-      region: knownOrDisplay(row.location),
-      unit_type: knownOrDisplay(row.unit_type),
-      bedrooms: knownOrDisplay(row.bedrooms_min),
-      area_sqft: knownOrDisplay(row.area_sqft),
-      timeline: ["Exploring now", "This quarter", "Ready if suitable", "Consultant follow-up"][index % 4],
-      tags: [`demo`, intent, knownOrUnknown(row.unit_type)].filter((value) => value !== "unknown").join(", "),
-      score: "",
-      lead_score: "",
-      lead_grade: "Consultant review",
-      date: new Date(Date.now() - index * 86400000).toISOString(),
-      status: "Demo intelligence data",
-      source_file: "Intelligence-Layer-v2/csv/aqaar_leads_seed.csv",
-      message: `Demo lead interested in ${knownOrDisplay(row.project_name)} with ${budget}.`
+      score: row.lead_score,
+      source_file: "Polished Aqaar demo intelligence fallback",
+      kb_source: "AQAAR-KB-ACQ-FINAL-v3 + Intelligence-Layer-v2 dashboard fallback",
+      source_record_type: "demo_lead",
+      unknown_fields: "none",
+      message: row.summary,
+      notes: row.summary
     };
   });
 }
 
 function buildRuntimeSheets(data) {
+  const demoLeads = buildDemoLeadRows(data);
   return [
     sheetMeta("audit.csv", data.intelligenceAudit || [], "Intelligence-Layer-v2/csv/aqaar_audit.csv"),
-    sheetMeta("leads.csv", data.leadsSeed || [], "Intelligence-Layer-v2/csv/aqaar_leads_seed.csv"),
-    sheetMeta("leads_seed.csv", data.leadsSeed || [], "Intelligence-Layer-v2/csv/aqaar_leads_seed.csv")
+    sheetMeta("leads.csv", demoLeads, "Dashboard polished demo leads"),
+    sheetMeta("leads_seed.csv", demoLeads, "Dashboard polished seed fallback")
   ];
 }
 
