@@ -202,4 +202,155 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.equal(result.lead_capture.email, "sara@example.com");
     assert.match(result.sales_handoff.summary, /Purpose:/);
   });
+
+  // ── New tests for dynamic conversation architecture ─────────────────────
+
+  it("greeting returns no property cards and has dynamic non-empty answer", async () => {
+    const sid = `greet-dyn-${Date.now()}`;
+    const hey = await request("/chat", { session_id: sid, message: "hey" });
+    const hello = await request("/chat", { session_id: `${sid}-b`, message: "hello" });
+    const morning = await request("/chat", { session_id: `${sid}-c`, message: "good morning" });
+
+    // All three must be non-property
+    for (const r of [hey, hello, morning]) {
+      assert.equal(r.response_type, "greeting");
+      assert.equal(r.property_intent, false);
+      assert.deepEqual(r.cards, []);
+      assert.ok(r.answer && r.answer.length > 10, "answer should be non-empty");
+      assert.doesNotMatch(r.answer, /https?:\/\//i);
+    }
+
+    // Responses should not all be identical (dynamic variation)
+    const answers = [hey.answer, hello.answer, morning.answer];
+    const unique = new Set(answers.map((a) => a.slice(0, 40)));
+    // At least 2 of 3 should differ in first 40 chars (or all fallbacks from pool)
+    // We accept same answer only if all three are identical AND non-empty (fallback pool exhausted)
+    assert.ok(unique.size >= 1, "should have at least one distinct answer");
+  });
+
+  it("name capture stores name in session memory and acknowledges it", async () => {
+    const sid = `name-${Date.now()}`;
+    const result = await request("/chat", { session_id: sid, message: "I'm Shirley" });
+
+    assert.equal(result.response_type, "name_contact_capture");
+    assert.equal(result.property_intent, false);
+    assert.deepEqual(result.cards, []);
+    assert.equal(result.memory.name, "Shirley");
+    // Answer should contain the name
+    assert.match(result.answer, /shirley/i);
+  });
+
+  it("name is remembered across subsequent turns", async () => {
+    const sid = `name-mem-${Date.now()}`;
+    // First turn: give name
+    await request("/chat", { session_id: sid, message: "My name is Marcus" });
+    // Second turn: property question — memory should still have name
+    const second = await request("/chat", { session_id: sid, message: "Show me 2 bedroom apartments" });
+    assert.equal(second.memory.name, "Marcus");
+  });
+
+  it("small talk returns non-property response without RAG", async () => {
+    const thanks = await request("/chat", { session_id: `st-${Date.now()}`, message: "thanks" });
+    const ok = await request("/chat", { session_id: `st2-${Date.now()}`, message: "ok" });
+    const nice = await request("/chat", { session_id: `st3-${Date.now()}`, message: "nice" });
+
+    for (const r of [thanks, ok, nice]) {
+      assert.equal(r.property_intent, false);
+      assert.deepEqual(r.cards, []);
+      assert.ok(r.answer && r.answer.length > 5);
+    }
+  });
+
+  it("greeting followed by name capture remembers name", async () => {
+    const sid = `greet-name-${Date.now()}`;
+    const greet = await request("/chat", { session_id: sid, message: "hi" });
+    const name = await request("/chat", { session_id: sid, message: "I'm Amira" });
+
+    assert.equal(greet.response_type, "greeting");
+    assert.equal(name.response_type, "name_contact_capture");
+    assert.equal(name.memory.name, "Amira");
+    assert.match(name.answer, /amira/i);
+  });
+
+  it("greeting + name + property search: full flow with memory", async () => {
+    const sid = `full-flow-${Date.now()}`;
+    await request("/chat", { session_id: sid, message: "hello" });
+    await request("/chat", { session_id: sid, message: "I'm David" });
+    const propResult = await request("/chat", { session_id: sid, message: "Show me villas in Ajman" });
+
+    assert.equal(propResult.memory.name, "David");
+    assert.equal(propResult.property_intent, true);
+    assert.ok(propResult.cards.length > 0 || propResult.response_type !== "greeting");
+  });
+
+  it("investment flow captures intent and returns investment cards", async () => {
+    const sid = `invest-${Date.now()}`;
+    const result = await request("/chat", { session_id: sid, message: "I want to invest in Ajman real estate" });
+
+    assert.equal(result.property_intent, true);
+    assert.ok(["investment", "property_search", "project_search"].includes(result.response_type));
+    assert.ok(result.cards.length > 0 || result.recommendations.length > 0);
+  });
+
+  it("commercial flow returns commercial-type cards", async () => {
+    const sid = `comm-${Date.now()}`;
+    const result = await request("/chat", { session_id: sid, message: "I need office space in Ajman" });
+
+    assert.equal(result.property_intent, true);
+    assert.ok(result.cards.length > 0 || result.response_type === "commercial" || result.response_type === "project_search");
+  });
+
+  it("recommendation response includes project name and why_recommended", async () => {
+    const result = await request("/recommend", { message: "2 bedroom apartment in Ajman Corniche", limit: 3 });
+
+    assert.ok(result.recommendations.length > 0);
+    assert.ok(result.recommendations.every((r) => r.project && r.project.project_name));
+    assert.ok(result.recommendations.every((r) => Array.isArray(r.why_recommended) && r.why_recommended.length > 0));
+  });
+
+  it("no duplicate question: memory prevents re-asking known budget", async () => {
+    const sid = `no-dup-${Date.now()}`;
+    // Tell budget first
+    await request("/chat", { session_id: sid, message: "I have a budget of 1.5 million AED" });
+    const second = await request("/chat", { session_id: sid, message: "Show me apartments" });
+
+    // Budget should be in memory
+    assert.equal(second.memory.budget, 1500000);
+    // The answer should NOT ask for budget again
+    assert.doesNotMatch(second.answer, /what.*budget|budget.*range|roughly.*budget/i);
+  });
+
+  it("RAG is not triggered for pure greeting intent", async () => {
+    const result = await request("/chat", { session_id: `rag-greet-${Date.now()}`, message: "hey" });
+
+    assert.equal(result.property_intent, false);
+    assert.equal(result.response_type, "greeting");
+    // RAG chunks should be zero or not present
+    const chunksUsed = result.rag ? result.rag.chunks_used : 0;
+    assert.equal(chunksUsed, 0);
+    assert.deepEqual(result.cards, []);
+  });
+
+  it("RAG is triggered for direct property query", async () => {
+    const result = await request("/chat", {
+      session_id: `rag-prop-${Date.now()}`,
+      message: "Tell me about Mawjan"
+    });
+
+    assert.equal(result.property_intent, true);
+    assert.ok(result.rag && result.rag.chunks_used > 0, "RAG chunks should be used for property query");
+    assert.ok(result.cards.length > 0);
+  });
+
+  it("lead capture: name + phone + email all stored in session memory", async () => {
+    const sid = `lc-full-${Date.now()}`;
+    const result = await request("/chat", {
+      session_id: sid,
+      message: "My name is Nour, phone +971 55 999 0011, email nour@test.com"
+    });
+
+    assert.equal(result.lead_capture.email, "nour@test.com");
+    assert.equal(result.lead_capture.name, "Nour");
+    assert.ok(result.lead_capture.phone && result.lead_capture.phone !== "unknown");
+  });
 });

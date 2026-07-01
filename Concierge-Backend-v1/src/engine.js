@@ -1,4 +1,4 @@
-import { isKnown, knownOrUnknown } from "./csv.js";
+﻿import { isKnown, knownOrUnknown } from "./csv.js";
 import { GEMINI_MODEL, generateWithGemini } from "./gemini.js";
 import { loadDashboardAnalytics, persistChatExchange, supabaseStatus } from "./supabase.js";
 
@@ -12,21 +12,21 @@ const FLOW_ORDER = {
 };
 
 const FLOW_QUESTIONS = {
-  purpose: "Sure, I can help with that. Are you looking to buy, rent, invest, or explore commercial options?",
-  property_type: "Great. Would you prefer an apartment, villa, townhouse, or commercial unit?",
-  commercial_type: "Got it. Are you thinking of office space, retail, or something like a clinic or F&B unit?",
-  bedrooms: "How many bedrooms would feel comfortable for you?",
-  budget: "What budget range should I keep in mind?",
-  location: "Is there a part of Ajman you already like, or should I suggest strong areas for your budget?",
-  business_location: "Which business area in Ajman would be most convenient for your customers or team?",
-  timeline: "That sounds like a good fit. Are you planning to move soon, or are you still exploring options?",
-  move_in_timeline: "Are you hoping to move soon, or do you have some flexibility on timing?",
-  payment_preference: "Would you prefer cash, mortgage, or flexible payment options if available?",
-  roi_expectations: "Are you mainly looking for rental income, long-term capital growth, or a balance of both?",
-  rental_preference: "Would you prefer a property with rental-income potential or one focused more on capital appreciation?",
-  readiness: "Would you prefer something ready-to-move, or are off-plan projects okay too?",
-  family_status: "Is this mainly for family living, or a bachelor/professional requirement?",
-  contact: "Would you like to share your name and WhatsApp number so an Aqaar advisor can follow up?"
+  purpose: "Are you looking to buy, rent, invest, or explore commercial properties in Ajman?",
+  property_type: "Got it — are you thinking of an apartment, villa, or townhouse? Or something more commercial?",
+  commercial_type: "Sounds good. Are you looking for office spaces, retail shops, restaurants, clinics, or something else?",
+  bedrooms: "Just so I can find the right size — how many bedrooms are you thinking? Or is a studio enough?",
+  budget: "Great, that gives me a better idea of what you're looking for. Just roughly, what kind of budget are you working with so I can narrow down the best options?",
+  location: "Do you already have a community in mind, or are you open to recommendations around Ajman?",
+  business_location: "Which part of Ajman would work best for your business — near the Corniche, in an industrial zone, or somewhere central?",
+  timeline: "Are you planning to move soon, or still in the early stages of exploring?",
+  move_in_timeline: "When are you hoping to move in — do you have a rough timeline in mind?",
+  payment_preference: "Would you prefer to pay cash, go through a mortgage, or are flexible payment plans something you'd consider?",
+  roi_expectations: "Are you mainly after rental income, long-term capital growth, or a bit of both?",
+  rental_preference: "Would a steady rental yield work better for you, or are you more focused on capital appreciation over time?",
+  readiness: "Are you looking for something ready to move in, or are you open to off-plan options with a future handover?",
+  family_status: "Is this going to be for family use, or more for a professional/bachelor setup?",
+  contact: "Would you like to share your name and WhatsApp so one of our Aqaar advisors can follow up with you directly?"
 };
 
 const PURPOSE_TO_INTENT = {
@@ -981,12 +981,16 @@ function deriveSeedIntent(row) {
 }
 
 function isGreeting(message) {
-  return /^(hi|hey|hello|good morning|good afternoon|good evening|salam|السلام عليكم|yo)[!.?\s]*$/i.test(String(message || "").trim());
+  return /^(hi|hey|hello|good morning|good afternoon|good evening|salam|السلام عليكم|yo|howdy|greetings|hiya|hii|heyyy?)[!.?\s]*$/i.test(String(message || "").trim());
+}
+
+function isSmallTalk(message) {
+  const text = norm(message).replace(/[!?.,\s]+$/g, "");
+  return /^(how are you|how are you doing|how r u|what'?s up|whats up|thank you|thanks|thx|ok|okay|cool|great|nice|who are you|i'?m good|im good|sounds good|perfect|awesome|no problem|sure|alright|got it|noted|wonderful|excellent)$/.test(text);
 }
 
 function isGeneralChat(message) {
-  const text = norm(message).replace(/[!?.,\s]+$/g, "");
-  return /^(how are you|how are you doing|how r u|what'?s up|whats up|thank you|thanks|ok|okay|cool|great|nice|who are you|i'?m good|im good)$/.test(text);
+  return isSmallTalk(message);
 }
 
 function isNameOrContact(message) {
@@ -1028,7 +1032,7 @@ function routeIntent(data, message) {
   if (/\bfreehold|location|community|area|nearby|landmark|landmarks|school|schools|hospital|hospitals|university\b/.test(text)) return { intent: "location_freehold", property_intent: true, entities };
   if (/\binvest|investment|roi|yield\b/.test(text)) return { intent: "investment", property_intent: true, entities };
   if (/\bcommercial|office|retail|clinic|warehouse|shop\b/.test(text)) return { intent: "commercial", property_intent: true, entities };
-  if (/\b(buy|rent|lease|property|properties|project|projects|apartment|apartments|flat|studio|villa|townhouse|bed|bedroom|br)\b/.test(text)) return { intent: "property_search", property_intent: true, entities };
+  if (/\b(buy|rent|lease|property|properties|project|projects|apartment|apartments|flat|studio|villas?|townhouse|bed|bedroom|br)\b/.test(text)) return { intent: "property_search", property_intent: true, entities };
   if (namedProjects.length) return { intent: "property_search", property_intent: true, entities };
   if (parseBedrooms(text) !== null || Boolean(parseBudget(text))) return { intent: "property_search", property_intent: true, entities };
   return { intent: "unclear", property_intent: false, entities };
@@ -1061,50 +1065,138 @@ function extractEntities(data, message) {
   };
 }
 
-function nonPropertyResponse(session, message, route) {
-  const leadName = route.entities?.name !== "unknown" ? route.entities.name : null;
-  const friendlyAnswer = friendlyNonPropertyAnswer(route.intent, leadName);
-  if (friendlyAnswer) {
-    session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
-    return {
-      fallbackAnswer: friendlyAnswer,
-      response_type: route.intent,
-      intent: { intent: route.intent, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
-      fallback_reason: route.intent,
-      follow_up: route.intent === "name_contact_capture" ? "Are you looking to buy, rent, invest, or explore commercial options?" : ""
-    };
+async function nonPropertyResponse(session, message, route) {
+  const leadName = route.entities && route.entities.name !== "unknown" ? route.entities.name : null;
+  // Persist name into session memory immediately so all subsequent turns know it
+  if (leadName && (!session.memory || !session.memory.name)) {
+    if (!session.memory) session.memory = {};
+    session.memory.name = leadName;
   }
-  const fallbackAnswer = route.intent === "greeting"
-    ? "Hello! I’m here to help with Aqaar properties in Ajman. Are you looking to buy, rent, invest, or explore a commercial space?"
-    : route.intent === "name_contact_capture"
-      ? `Nice to meet you${leadName ? `, ${leadName}` : ""}! Are you looking to buy, rent, invest, or explore commercial properties today?`
-      : "I’m doing well, thank you. Tell me what kind of Aqaar property you have in mind, and I’ll guide you from there.";
+  // Generate a dynamic, context-aware conversational reply via Gemini
+  const convResult = await generateConversationalResponse(route.intent, message, session);
+  const answer = convResult.text;
   session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
+  // Track previous AI replies to avoid repetition
+  if (!session.previousReplies) session.previousReplies = [];
+  session.previousReplies.push(answer);
+  if (session.previousReplies.length > 12) session.previousReplies = session.previousReplies.slice(-12);
   return {
-    fallbackAnswer,
+    fallbackAnswer: answer,
     response_type: route.intent,
     intent: { intent: route.intent, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
     fallback_reason: route.intent,
-    follow_up: route.intent === "name_contact_capture" ? "Would you like to buy, rent, invest, or explore commercial properties?" : ""
+    follow_up: route.intent === "name_contact_capture" ? "Would you like to buy, rent, invest, or explore commercial properties?" : "",
+    llm_used: convResult.llm_used,
+    model_used: convResult.model_used
   };
 }
+// ── Dynamic Conversational Response Engine ────────────────────────────────
+// Generates fresh, context-aware replies using Gemini for every non-property
+// interaction. Falls back to varied local text only when Gemini is unavailable
+// (e.g. test environments). No static template arrays — every response is
+// generated from context so it never repeats verbatim.
 
-function friendlyNonPropertyAnswer(intent, leadName = null) {
-  if (intent === "greeting") {
-    return "Sure, I can help with Aqaar properties in Ajman. Are you looking to buy, rent, invest, or explore commercial options?";
-  }
-  if (intent === "name_contact_capture") {
-    return `Nice to meet you${leadName ? `, ${leadName}` : ""}! Are you looking to buy, rent, invest, or explore commercial options today?`;
-  }
-  if (intent === "nationality_capture") {
-    return "Perfect, we can keep this easy with a virtual walkthrough and WhatsApp updates. Are you looking at this as an investment or for business use?";
-  }
-  if (intent === "unclear") {
-    return "I am doing well, thank you. What kind of Aqaar property are you considering in Ajman?";
-  }
-  return "";
+function buildConversationalPrompt(intent, message, session) {
+  const name = session && session.memory ? session.memory.name || null : null;
+  const recentHistory = (session && session.turns ? session.turns : []).slice(-6).map(function(t) {
+    return { user: t.message, intent: t.intent };
+  });
+  const previousAiReplies = (session && session.previousReplies ? session.previousReplies : []).slice(-4);
+  const memorySnapshot = {
+    name: name,
+    purpose: session && session.memory ? (session.memory.purpose || null) : null,
+    property_type: session && session.memory ? (session.memory.property_type || null) : null,
+    location: session && session.memory ? (session.memory.location || null) : null,
+    budget: session && session.memory ? (session.memory.budget || null) : null,
+    bedrooms: session && session.memory ? (session.memory.bedrooms || null) : null
+  };
+
+  return [
+    "You are Aqaar AI — a senior luxury real-estate consultant for Ajman, UAE.",
+    "Your personality: warm, confident, premium, and never robotic. You sound like a 5-star hotel concierge who happens to know Ajman real estate inside out.",
+    "",
+    "TASK: Write a short conversational reply to the user message below.",
+    "This is a lightweight conversational moment — NOT a property search.",
+    "",
+    "RULES:",
+    "1. Do NOT mention any property name, project, price, KB data, or Aqaar KB facts.",
+    "2. Keep it to 1-2 short sentences maximum.",
+    "3. Sound natural, warm, and slightly different every time — never templated.",
+    "4. If the user shared their name, acknowledge them by name warmly.",
+    "5. After acknowledging, transition with ONE gentle open question to understand what they need.",
+    "6. Do NOT ask multiple questions at once.",
+    "7. Do NOT repeat any sentence from the previous AI replies list.",
+    "8. Vary your language — do not always start with the same phrase.",
+    "9. No markdown, no bullet points, no emojis unless very natural.",
+    "",
+    "Intent type: " + intent,
+    "User message: \"" + message + "\"",
+    "User name: " + (name ? name : "not yet known"),
+    "",
+    "Conversation so far (last 6 turns):",
+    JSON.stringify(recentHistory, null, 2),
+    "",
+    "Previous AI replies — do NOT repeat these:",
+    JSON.stringify(previousAiReplies, null, 2),
+    "",
+    "Session context:",
+    JSON.stringify(memorySnapshot, null, 2),
+    "",
+    "Write your reply now (plain text only, 1-2 sentences):"
+  ].join("\n");
 }
 
+// Local fallbacks — used ONLY when Gemini is unavailable (test environment / timeout).
+// Kept varied per intent so even offline mode avoids repetition.
+const CONV_FALLBACKS = {
+  greeting: [
+    "Hey there! Great to have you here. What can I help you with today — buying, renting, or investing in Ajman?",
+    "Hello! Welcome to Aqaar. Are you looking to buy, rent, invest, or explore commercial options?",
+    "Hi! Good to see you. What kind of property are you exploring today?",
+    "Hey! Happy to help. Are you thinking about buying, renting, or investing in Ajman?"
+  ],
+  name_contact_capture: [
+    "Pleasure to meet you! What kind of property are you looking for today?",
+    "Great to have you here! Are you exploring something in Ajman — apartments, villas, or something else?",
+    "Lovely to meet you. What brings you to Aqaar today?",
+    "Nice to connect! Are you looking to buy, rent, or invest?"
+  ],
+  nationality_capture: [
+    "Wonderful — we love working with international clients. Are you thinking of this as an investment or for personal use?",
+    "That's great — we can make the whole process smooth. Are you looking to buy or invest?",
+    "Perfect, we handle this regularly. Is this for investment or personal use?"
+  ],
+  unclear: [
+    "All good here! Ready to help whenever you are. What kind of property are you exploring?",
+    "Doing well, thanks! What can I help you find today?",
+    "Happy to help — what's on your mind?",
+    "Great to hear from you! What kind of property are you looking into?"
+  ]
+};
+
+function getFallbackConversationalReply(intent, session) {
+  const variants = CONV_FALLBACKS[intent] || CONV_FALLBACKS.unclear;
+  const previousReplies = session && session.previousReplies ? session.previousReplies : [];
+  const unused = variants.filter(function(v) { return !previousReplies.includes(v); });
+  const pool = unused.length ? unused : variants;
+  const idx = ((session && session.turns ? session.turns.length : 0)) % pool.length;
+  return pool[idx];
+}
+
+async function generateConversationalResponse(intent, message, session) {
+  const prompt = buildConversationalPrompt(intent, message, session);
+  const result = await generateWithGemini({ prompt, maxAttempts: 1, fallbackModels: false, timeoutMs: 6000 });
+  if (result.used && result.text) {
+    return { text: result.text.trim(), llm_used: true, model_used: result.model_used };
+  }
+  // Gemini unavailable — use local variant
+  const name = session && session.memory ? (session.memory.name || null) : null;
+  let fallback = getFallbackConversationalReply(intent, session);
+  if (intent === "name_contact_capture" && name && !fallback.includes(name)) {
+    fallback = "Nice to meet you, " + name + "! " + fallback.replace(/^[A-Z][^!]+!\s*/, "");
+  }
+  return { text: fallback, llm_used: false, model_used: null };
+}
 function buildGreetingPrompt(message, type) {
   return [
     "You are the Aqaar AI Concierge.",
@@ -1304,12 +1396,14 @@ function buildPlannerPrompt(data, message, session, images = [], visionAnalysis 
   const knownProjects = allProfiles(data).map((profile) => profile.project_name).filter(isKnown).slice(0, 160);
   const memory = {
     ...session.memory,
+    client_name: (session.memory && session.memory.name) ? session.memory.name : null,
     recent_turns: (session.turns || []).slice(-5).map((turn) => ({
       user_message: turn.message,
       intent: turn.intent,
       parsed: turn.parsed
     })),
-    last_project_ids: session.lastProfiles || []
+    last_project_ids: session.lastProfiles || [],
+    previous_ai_replies: (session.previousReplies || []).slice(-4)
   };
   return [
     "You are the Aqaar AI Concierge orchestration planner.",
@@ -1592,6 +1686,66 @@ export async function chat(data, input = {}) {
     chatDebug("final.json", summarizeFinalJson(result));
     return result;
   }
+    // ── EARLY GATE: Greetings, name capture, and small talk bypass Gemini planner & RAG ──
+  // nonPropertyResponse now calls Gemini with a lightweight conversational prompt,
+  // so every greeting / name-capture / small-talk response is generated dynamically.
+  if (!images.length) {
+    const quickRoute = routeIntent(data, message);
+    if (!quickRoute.property_intent) {
+      const quickGate = await nonPropertyResponse(session, message, quickRoute);
+      sessions.set(sessionId, session);
+      // Persist ALL lead fields (name, phone, email) into session memory for downstream compatibility
+      if (quickRoute.intent === "name_contact_capture" && quickRoute.entities) {
+        const leadFields = {};
+        if (quickRoute.entities.name && quickRoute.entities.name !== "unknown") leadFields.name = quickRoute.entities.name;
+        if (quickRoute.entities.phone && quickRoute.entities.phone !== "unknown") leadFields.phone = quickRoute.entities.phone;
+        if (quickRoute.entities.email && quickRoute.entities.email !== "unknown") leadFields.email = quickRoute.entities.email;
+        session.memory.lead_capture = mergeKnown(session.memory.lead_capture || {}, leadFields);
+      }
+      const quickResult = {
+        session_id: sessionId,
+        llm_used: quickGate.llm_used || false,
+        property_intent: false,
+        fallback_reason: null,
+        answer: quickGate.fallbackAnswer,
+        reply: quickGate.fallbackAnswer,
+        sources: [],
+        sources_used: [],
+        cards: [],
+        response_cards: [],
+        follow_up: quickGate.follow_up || "",
+        response_type: quickRoute.intent,
+        model_used: quickGate.model_used || null,
+        ai_plan: { used: false, model_used: null, error: null, plan: null },
+        visual_analysis: { used: false, description: "", features: [], error: null },
+        intent: quickRoute.intent,
+        entities: quickRoute.entities,
+        memory: session.memory,
+        lead_capture: session.memory.lead_capture || {},
+        recommendations: [],
+        sales_handoff: {
+          status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
+          summary: buildSalesSummary(session.memory, []),
+          captured_fields: session.memory.lead_capture || {},
+          source: "Concierge-Backend-v1 session memory"
+        },
+        llm: {
+          provider: quickGate.llm_used ? "gemini" : "none",
+          model: quickGate.model_used || null,
+          model_used: quickGate.model_used || null,
+          attempted_models: quickGate.model_used ? [quickGate.model_used] : [],
+          used: quickGate.llm_used || false,
+          reason: quickGate.llm_used ? "conversational_response" : "early_gate_gemini_unavailable",
+          fallback_reason: null
+        },
+        validation: validation("non_property_no_retrieval")
+      };
+      logChatOrchestration({ intent: quickRoute.intent, entities: quickRoute.entities, shouldUseRag: false, chunksCount: 0, model: quickGate.model_used || null, geminiError: null, fallback_reason: null, vision: { used: false, features: [], error: null } });
+      quickResult.persistence = await persistChatExchange({ input, result: quickResult });
+      chatDebug("final.json", summarizeFinalJson(quickResult));
+      return quickResult;
+    }
+  }
   const aiPlanner = visionAnalysis.used
     ? {
         used: true,
@@ -1678,7 +1832,7 @@ export async function chat(data, input = {}) {
     result.persistence = await persistChatExchange({ input, result });
     return result;
   }
-  const preGate = !route.property_intent ? nonPropertyResponse(session, message, route) : null;
+  const preGate = !route.property_intent ? await nonPropertyResponse(session, message, route) : null;
   if (preGate) {
     chatDebug("intent.detected", { intent: route.intent, entities: route.entities, property_intent: false, retrieval_skipped: true });
     if (route.intent === "name_contact_capture") {
@@ -1692,6 +1846,10 @@ export async function chat(data, input = {}) {
       session.memory.nationality = route.entities.nationality;
     }
     const answer = isKnown(aiPlan.response_hint) ? aiPlan.response_hint : preGate.fallbackAnswer;
+    // Track previous AI replies to avoid repetition across turns
+    if (!session.previousReplies) session.previousReplies = [];
+    session.previousReplies.push(answer);
+    if (session.previousReplies.length > 12) session.previousReplies = session.previousReplies.slice(-12);
     const fallbackReason = null;
     sessions.set(sessionId, session);
     const result = {
@@ -1809,8 +1967,11 @@ export async function chat(data, input = {}) {
     cards: response.cards,
     rag: promptRag,
     nextQuestion,
-    visionAnalysis
+    visionAnalysis,
+    session
   });
+  // Track this as an ongoing conversation turn for future reply variation
+  if (!session.previousReplies) session.previousReplies = [];
   chatDebug("prompt.sent_to_gemini", { prompt });
   const hasGroundedContext = response.cards.length > 0 || rag.chunks.length > 0;
   const unsupported = response.cards.length === 0 && /^(This is not published in the verified Aqaar KB\.|Not published in verified Aqaar KB\.)$/.test(response.answer);
@@ -1833,6 +1994,10 @@ export async function chat(data, input = {}) {
     : fallbackAnswer;
   const groundedAnswer = sanitizeAnswer(llmResult.used ? llmResult.text : gracefulFallback);
   const finalAnswer = groundedAnswer || response.answer || "Not published in verified Aqaar KB.";
+  // Track final answer for reply variation (avoid repeating same phrasing)
+  if (!session.previousReplies) session.previousReplies = [];
+  session.previousReplies.push(finalAnswer);
+  if (session.previousReplies.length > 12) session.previousReplies = session.previousReplies.slice(-12);
   const sourcePool = uniqueSources(rag.sources);
   const cleanSources = cleanSourceLabels(sourcePool);
   const result = {
@@ -2052,56 +2217,63 @@ function entityMatchesDocument(entities = {}, text = "") {
   return score;
 }
 
-function buildGroundedPrompt({ message, memory, extractedEntities, detected, response, cards, rag, nextQuestion, visionAnalysis = null }) {
+function buildGroundedPrompt({ message, memory, extractedEntities, detected, response, cards, rag, nextQuestion, visionAnalysis = null, session = null }) {
+  const clientName = (session && session.memory && session.memory.name) ? session.memory.name : (memory && memory.name ? memory.name : null);
+  const previousReplies = (session && session.previousReplies ? session.previousReplies : []).slice(-4);
+  const recentTurns = (session && session.turns ? session.turns : []).slice(-5).map(function(t) {
+    return { user: t.message, intent: t.intent };
+  });
+
   const context = {
     user_message: message,
-    detected_intent: detected?.intent || "unknown",
+    client_name: clientName || "unknown",
+    detected_intent: detected && detected.intent ? detected.intent : "unknown",
     extracted_entities: extractedEntities || {},
     conversation_memory: memory,
-    uploaded_image_analysis: visionAnalysis?.used ? {
+    recent_conversation_history: recentTurns,
+    uploaded_image_analysis: visionAnalysis && visionAnalysis.used ? {
       visual_description: visionAnalysis.description,
       features: visionAnalysis.features,
       details: visionAnalysis.raw
     } : null,
     response_type: response.type,
     allowed_project_cards: cards || [],
-    retrieved_chunks: rag.chunks.map((chunk) => ({
-      title: chunk.title,
-      project: chunk.project,
-      section: chunk.section,
-      text: chunk.text,
-      source_label: chunk.source_label
-    })),
-    required_follow_up: nextQuestion
+    retrieved_chunks: rag.chunks.map(function(chunk) {
+      return { title: chunk.title, project: chunk.project, section: chunk.section, text: chunk.text, source_label: chunk.source_label };
+    }),
+    required_follow_up_slot: nextQuestion,
+    previous_ai_replies_to_avoid_repeating: previousReplies
   };
 
+  const nameRef = clientName ? clientName : null;
+
   return [
-    "You are the Aqaar AI Concierge, a senior real estate sales advisor.",
-    "Answer only from the verified Aqaar KB context below.",
-    "Sound like a warm, confident real estate salesperson. Keep the answer short and conversational.",
-    "Do not write survey-style labels such as Purpose:, Type:, Location:, Preferred Region:, Budget:, or Price Range: unless the user explicitly asks for a structured comparison.",
-    "Ask only one natural follow-up question at the end, and only when it helps move the user forward.",
-    "For recommendations, give 2 or 3 options maximum. One short sentence for why each fits is enough.",
-    "Do not dump long paragraphs, reports, or all available facts.",
-    "Avoid robotic templates and avoid repeating the same opening phrase.",
-    "Maintain the conversation context and treat the latest user message as part of the ongoing property brief.",
-    "Do not invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
-    "Do not print raw URLs. Refer to sources by clean label only.",
-    "If the answer is absent from the context, say exactly: Not published in verified Aqaar KB.",
-    "If allowed_project_cards is empty, do not recommend or name any property.",
-    "For property/project recommendations, mention only project names from allowed_project_cards.",
-    "Use retrieved_chunks only as evidence for allowed_project_cards, or for a direct non-property fact requested by the user.",
-    "Prioritize allowed_project_cards for project names, prices, payment plans, amenities, locations, and statuses.",
-    "Give a natural, concise answer that directly answers the user's latest question.",
-    "If relevant projects are present, briefly explain why each matches using only card/chunk fields.",
-    "If uploaded_image_analysis is present, first summarize what Gemini Vision observed, then explain why each recommendation is visually or semantically similar.",
-    "Ask one useful follow-up question only when it helps move the user forward.",
+    "You are the Aqaar AI Concierge — a senior luxury real-estate consultant for Ajman, UAE.",
+    "You sound like an experienced, warm sales advisor at a premium property brand.",
+    "You are NOT a chatbot, NOT a FAQ engine, and NOT a form. You are a human-sounding consultant.",
+    "",
+    "CORE RULES:",
+    "1. Answer ONLY from the verified Aqaar KB context provided in VERIFIED_CONTEXT_JSON below.",
+    "2. Sound natural, conversational, and premium — like a trusted advisor, not a script.",
+    "3. NEVER use survey-style labels: Purpose:, Type:, Location:, Budget:, Bedrooms: — unless explicitly comparing projects.",
+    "4. Ask only ONE follow-up question, and make it feel like a natural next step in the conversation.",
+    "5. For recommendations, give 2-3 options maximum with one warm sentence per option explaining why it fits.",
+    "6. Do NOT dump all available data. Be selective and human.",
+    "7. If the client's name is known, use it naturally once in your response.",
+    "8. DO NOT repeat any sentence from previous_ai_replies_to_avoid_repeating.",
+    "9. Vary your language — avoid always starting with the same phrase.",
+    "10. Do NOT invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
+    "11. Do NOT print raw URLs. Refer to sources by clean label only.",
+    "12. If the answer is absent from the context, say exactly: Not published in verified Aqaar KB.",
+    "13. If allowed_project_cards is empty, do not recommend or name any property.",
+    "14. When recommending, start with something like 'Based on what you've shared...' or 'Given your interest in...' — vary it.",
+    "15. Treat this as a continuation of an ongoing conversation — acknowledge the flow naturally.",
+    nameRef ? ("16. The client's name is " + nameRef + ". Use it warmly, but only once.") : "16. Client name not yet known.",
     "",
     "VERIFIED_CONTEXT_JSON:",
     JSON.stringify(context, null, 2)
   ].join("\n");
 }
-
 function sanitizeAnswer(text) {
   const cleaned = String(text || "")
     .replace(/https?:\/\/\S+/gi, "")
@@ -2439,17 +2611,27 @@ function buildMemoryQuery(message, memory) {
 }
 
 function nextQuestionFor(memory, purpose) {
+  // Ask only the most contextually relevant next question based on what's missing.
+  // The order is conversational — start with the most impactful missing slot.
   const order = FLOW_ORDER[purpose] || FLOW_ORDER.buy;
+  const name = (memory && memory.name) ? memory.name : null;
+
   for (const slot of order) {
     if (slot === "contact") {
-      if (!hasContact(memory.lead_capture)) return FLOW_QUESTIONS.contact;
+      if (!hasContact(memory && memory.lead_capture ? memory.lead_capture : {})) {
+        return FLOW_QUESTIONS.contact;
+      }
       continue;
     }
-    if (!memory[slot]) return FLOW_QUESTIONS[slot];
+    if (!memory || !memory[slot]) {
+      // Return a warm, context-aware version of the question
+      const q = FLOW_QUESTIONS[slot];
+      if (!q) continue;
+      return q;
+    }
   }
-  return "Would you like me to prepare a sales handoff summary for this shortlist?";
+  return null; // All key slots filled — no forced follow-up
 }
-
 function classifyQuestion(message) {
   const text = norm(message);
   if (/\b(email|phone|call me|my name is|enquiry|enquire|contact me)\b/.test(text)) return "enquiry";
@@ -2855,9 +3037,9 @@ function captureLead(message) {
   const text = String(message || "");
   const email = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0];
   const phone = text.match(/(?:\+?\d[\d\s().-]{6,}\d)/)?.[0];
-  const rawName = text.match(/\bmy name is\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim()
-    || text.match(/\bi am\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim()
-    || text.match(/\bi['’`]?m\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim();
+  const rawName = text.match(/\bmy name is\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|,|$)/i)?.[1]?.trim()
+    || text.match(/\bi am\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|,|$)/i)?.[1]?.trim()
+    || text.match(/\bi['’`]?m\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|,|$)/i)?.[1]?.trim();
   const name = rawName?.replace(/\b(my|phone|email|number)\b.*$/i, "").trim();
   const cleanName = name && !/^(from|looking|interested|planning|searching|buying|renting|investing)\b/i.test(name) ? name : undefined;
   return {
