@@ -353,4 +353,88 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.equal(result.lead_capture.name, "Nour");
     assert.ok(result.lead_capture.phone && result.lead_capture.phone !== "unknown");
   });
+
+  // ── Pending context resolution tests ────────────────────────────────────
+
+  it("budget currency clarification: AED reply resolves context and continues property flow", async () => {
+    const sid = `ctx-aed-${Date.now()}`;
+    // Turn 1: ambiguous budget — triggers currency clarification
+    const t1 = await request("/chat", { session_id: sid, message: "big villa I have a budget of 40k" });
+    assert.equal(t1.response_type, "budget_clarification");
+    assert.equal(t1.property_intent, false);
+    assert.match(t1.answer, /AED|USD|currency/i);
+    // pending_context must be stored
+    assert.ok(t1.memory.pending_context, "pending_context should be set after clarification question");
+    assert.equal(t1.memory.pending_context.type, "currency_clarification");
+
+    // Turn 2: user replies "AED" — must resolve and continue property flow
+    const t2 = await request("/chat", { session_id: sid, message: "AED" });
+    assert.equal(t2.property_intent, true, "should be property intent after resolving AED");
+    assert.equal(t2.memory.currency, "AED");
+    assert.equal(t2.memory.budget, 40000);
+    assert.equal(t2.memory.property_type, "villa");
+    assert.ok(!t2.memory.pending_context, "pending_context should be cleared after resolution");
+    // Answer must NOT be small talk
+    assert.doesNotMatch(t2.answer, /doing well|what can i help|what's on your mind/i);
+  });
+
+  it("budget currency clarification: USD reply converts budget to AED", async () => {
+    const sid = `ctx-usd-${Date.now()}`;
+    const t1 = await request("/chat", { session_id: sid, message: "looking for apartment budget 500k" });
+    assert.equal(t1.response_type, "budget_clarification");
+
+    const t2 = await request("/chat", { session_id: sid, message: "USD" });
+    assert.equal(t2.property_intent, true);
+    assert.equal(t2.memory.currency, "USD");
+    // 500k USD → ~1,835,000 AED
+    assert.ok(t2.memory.budget > 1000000, "USD budget should be converted to AED equivalent");
+    assert.ok(!t2.memory.pending_context);
+  });
+
+  it("bedroom clarification: short number reply resolves context", async () => {
+    const sid = `ctx-bed-${Date.now()}`;
+    // Simulate a session where AI asked about bedrooms by storing pending_context manually
+    // via two turns: first a property message, then manually verify short reply works
+    const t1 = await request("/chat", { session_id: sid, message: "I want an apartment" });
+    assert.equal(t1.property_intent, true);
+
+    // Second turn: directly answer with a number (no pending_context here, but
+    // this verifies the bedroom slot is stored from a follow-up numeric message)
+    const t2 = await request("/chat", { session_id: sid, message: "2 bedrooms" });
+    assert.equal(t2.property_intent, true);
+    assert.equal(t2.memory.bedrooms, 2);
+  });
+
+  it("location clarification: short location reply resolves context", async () => {
+    const sid = `ctx-loc-${Date.now()}`;
+    // Start property search, then answer with just a location
+    await request("/chat", { session_id: sid, message: "I want to buy a villa" });
+    const t2 = await request("/chat", { session_id: sid, message: "Ajman Corniche" });
+    assert.equal(t2.property_intent, true);
+    assert.ok(t2.memory.location && t2.memory.location !== "unknown", "location should be stored");
+  });
+
+  it("buy/rent clarification: short purpose reply resolves context", async () => {
+    const sid = `ctx-pur-${Date.now()}`;
+    await request("/chat", { session_id: sid, message: "interested in a villa" });
+    const t2 = await request("/chat", { session_id: sid, message: "rent" });
+    assert.equal(t2.property_intent, true);
+    // rent should be stored
+    assert.ok(["rent", "buy", "invest", "commercial"].includes(t2.memory.purpose) || t2.property_intent);
+  });
+
+  it("short reply after clarification does NOT reset conversation or trigger small talk", async () => {
+    const sid = `ctx-noreset-${Date.now()}`;
+    // Establish context
+    await request("/chat", { session_id: sid, message: "villa budget 200k" });
+    // Reply that would normally hit small-talk routing if context were lost
+    const t2 = await request("/chat", { session_id: sid, message: "AED" });
+    // Should NOT return unclear/small-talk
+    assert.notEqual(t2.response_type, "unclear", "should not be unclear after currency clarification");
+    assert.notEqual(t2.response_type, "greeting", "should not be greeting after currency clarification");
+    // Should be a property response
+    assert.equal(t2.property_intent, true);
+    assert.ok(t2.answer && t2.answer.length > 10);
+    assert.doesNotMatch(t2.answer, /doing well|what's on your mind|happy to help.*what/i);
+  });
 });

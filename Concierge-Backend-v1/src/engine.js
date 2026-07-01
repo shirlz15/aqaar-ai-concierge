@@ -1009,6 +1009,145 @@ function isNationalityMessage(message) {
   return nationality !== "unknown" && /\b(from|based|india|uae|dubai|abu dhabi|pakistan|uk|usa|saudi)\b/i.test(String(message || ""));
 }
 
+// ── Pending Context Resolution ─────────────────────────────────────────────
+// When the AI asks a clarification question, it stores pending_context in
+// session.memory. The next user message is checked here BEFORE any routing.
+// Short replies like "USD", "AED", "2", "rent", "Ajman" are merged back into
+// the original context and the conversation continues naturally.
+
+const CURRENCY_REPLY_MAP = {
+  aed: "AED", dirham: "AED", dirhams: "AED", دراهم: "AED",
+  usd: "USD", dollar: "USD", dollars: "USD",
+  inr: "INR", rupee: "INR", rupees: "INR",
+  sar: "SAR", riyal: "SAR", riyals: "SAR",
+  gbp: "GBP", pound: "GBP", pounds: "GBP",
+  eur: "EUR", euro: "EUR", euros: "EUR"
+};
+
+function parseCurrencyReply(message) {
+  const t = norm(message).trim();
+  return CURRENCY_REPLY_MAP[t] || parseCurrency(message) || null;
+}
+
+function isClarificationReply(message, session) {
+  const pc = session && session.memory && session.memory.pending_context ? session.memory.pending_context : null;
+  if (!pc) return false;
+  const t = norm(message).trim();
+  // A clarification reply is a SHORT message (≤5 words) that doesn't look like
+  // a new greeting or a full new question
+  const wordCount = t.split(/\s+/).filter(Boolean).length;
+  if (wordCount > 6) return false;
+  if (isGreeting(message)) return false;
+  return true;
+}
+
+function resolvePendingContext(message, session) {
+  const pc = session.memory.pending_context;
+  if (!pc) return null;
+
+  const t = norm(message).trim();
+  const currency = parseCurrencyReply(message);
+
+  // ── currency_clarification ──────────────────────────────────────────────
+  if (pc.type === "currency_clarification") {
+    const resolved = currency || "AED"; // default to AED if still ambiguous
+    const rawAmount = pc.budget_amount || 0;
+    let finalBudget = rawAmount;
+    if (resolved === "USD") finalBudget = Math.round(rawAmount * 3.67);
+    else if (resolved === "INR") finalBudget = Math.round(rawAmount / 22.5);
+    else if (resolved === "SAR") finalBudget = Math.round(rawAmount * 0.98);
+    else if (resolved === "GBP") finalBudget = Math.round(rawAmount * 4.62);
+    else if (resolved === "EUR") finalBudget = Math.round(rawAmount * 4.0);
+    session.memory.budget = finalBudget;
+    session.memory.currency = resolved;
+    if (pc.property_type) session.memory.property_type = pc.property_type;
+    delete session.memory.pending_context;
+    const displayOriginal = rawAmount.toLocaleString("en-US");
+    const displayAed = finalBudget.toLocaleString("en-US");
+    return {
+      resolved: true,
+      type: "currency_clarification",
+      merged_message: (pc.original_message || "") + " currency: " + resolved,
+      summary: resolved + " " + displayOriginal + " (AED " + displayAed + ")",
+      context_note: "Currency clarified: " + resolved + " " + displayOriginal + " = AED " + displayAed
+    };
+  }
+
+  // ── bedroom_clarification ───────────────────────────────────────────────
+  if (pc.type === "bedroom_clarification") {
+    const beds = parseBedrooms(t);
+    if (beds !== null) {
+      session.memory.bedrooms = beds;
+      delete session.memory.pending_context;
+      return {
+        resolved: true,
+        type: "bedroom_clarification",
+        merged_message: (pc.original_message || "") + " " + beds + " bedrooms",
+        context_note: "Bedrooms clarified: " + beds
+      };
+    }
+  }
+
+  // ── location_clarification ──────────────────────────────────────────────
+  if (pc.type === "location_clarification") {
+    const loc = parseLocation(t) || (t.length > 1 && t.length < 40 ? t : null);
+    if (loc) {
+      session.memory.location = loc;
+      delete session.memory.pending_context;
+      return {
+        resolved: true,
+        type: "location_clarification",
+        merged_message: (pc.original_message || "") + " location: " + loc,
+        context_note: "Location clarified: " + loc
+      };
+    }
+  }
+
+  // ── purpose_clarification ───────────────────────────────────────────────
+  if (pc.type === "purpose_clarification") {
+    const purposeMap = {
+      buy: "buy", purchase: "buy", buying: "buy",
+      rent: "rent", renting: "rent", rental: "rent",
+      invest: "invest", investing: "invest", investment: "invest",
+      commercial: "commercial", business: "commercial",
+      yes: null, no: null
+    };
+    const purpose = purposeMap[t] || null;
+    if (purpose) {
+      session.memory.purpose = purpose;
+      delete session.memory.pending_context;
+      return {
+        resolved: true,
+        type: "purpose_clarification",
+        merged_message: (pc.original_message || "") + " purpose: " + purpose,
+        context_note: "Purpose clarified: " + purpose
+      };
+    }
+  }
+
+  // ── generic short clarification: try to resolve any known field ─────────
+  // If currency reply detected regardless of type
+  if (currency) {
+    const rawAmount = session.memory.budget || 0;
+    let finalBudget = rawAmount;
+    if (currency === "USD") finalBudget = Math.round(rawAmount * 3.67);
+    else if (currency === "INR") finalBudget = Math.round(rawAmount / 22.5);
+    session.memory.currency = currency;
+    if (finalBudget !== rawAmount) session.memory.budget = finalBudget;
+    delete session.memory.pending_context;
+    return {
+      resolved: true,
+      type: "generic_currency_clarification",
+      merged_message: (pc.original_message || message) + " currency: " + currency,
+      context_note: "Currency inferred: " + currency
+    };
+  }
+
+  // Could not resolve — clear pending_context to avoid stale state and let
+  // the message flow through normal routing
+  delete session.memory.pending_context;
+  return { resolved: false, type: pc.type };
+}
 function isAmbiguousBudgetMessage(message) {
   const text = String(message || "");
   if (!/\b(budget|under|below|around|up to|price|cost)\b/i.test(text)) return false;
@@ -1698,7 +1837,114 @@ export async function chat(data, input = {}) {
     chatDebug("final.json", summarizeFinalJson(result));
     return result;
   }
-    // ── EARLY GATE: Greetings, name capture, and small talk bypass Gemini planner & RAG ──
+    // ── PENDING CONTEXT RESOLUTION ─────────────────────────────────────────
+  // Must run BEFORE routing so short replies like "USD", "AED", "2 bedrooms",
+  // "Ajman", "rent" are resolved against the AI's last clarification question
+  // rather than being misrouted as greetings or small talk.
+  if (!images.length && session.memory && session.memory.pending_context && isClarificationReply(message, session)) {
+    const resolved = resolvePendingContext(message, session);
+    if (resolved && resolved.resolved) {
+      // Merge resolved context and continue as a property search with full memory
+      sessions.set(sessionId, session);
+      const mergedMessage = resolved.merged_message || message;
+      chatDebug("pending_context.resolved", { type: resolved.type, context_note: resolved.context_note, merged_message: mergedMessage });
+
+      // Re-enter the property flow with the resolved/merged message
+      const resolvedRoute = routeIntent(data, mergedMessage);
+      // Force property intent so we get proper KB response
+      resolvedRoute.property_intent = true;
+      if (!resolvedRoute.intent || resolvedRoute.intent === "unclear") {
+        resolvedRoute.intent = "property_search";
+      }
+
+      // Build a grounded contextual response using full session memory
+      const resolvedMessage = mergedMessage;
+      const resolvedRetrieved = search(data, buildMemoryQuery(resolvedMessage, session.memory), 10);
+      const resolvedRecs = recommend(data, { ...session.memory, message: resolvedMessage, intent: session.memory.purpose || "buy", limit: 4 });
+      if (resolvedRecs.recommendations.length) session.lastProfiles = resolvedRecs.recommendations.map((r) => r.project.property_id);
+      const resolvedNextQ = nextQuestionFor(session.memory, session.memory.purpose || "buy");
+      const resolvedResponse = buildContextualResponse(data, resolvedMessage, session.memory, resolvedRetrieved, resolvedRecs, resolvedNextQ);
+      const resolvedRag = retrieveAqaarContext(data, resolvedMessage, resolvedRoute, resolvedResponse, resolvedRecs, 8);
+      const resolvedPromptRag = { ...resolvedRag, chunks: resolvedRag.chunks.slice(0, 4).map((c) => ({ ...c, text: String(c.text || "").slice(0, 650) })) };
+
+      const resolvedPrompt = buildGroundedPrompt({
+        message: resolvedMessage,
+        memory: session.memory,
+        extractedEntities: resolvedRoute.entities,
+        route: resolvedRoute,
+        detected: { intent: resolvedRoute.intent },
+        response: resolvedResponse,
+        cards: resolvedResponse.cards,
+        rag: resolvedPromptRag,
+        nextQuestion: resolvedNextQ,
+        visionAnalysis: { used: false },
+        session
+      });
+
+      const hasCtx = resolvedResponse.cards.length > 0 || resolvedRag.chunks.length > 0;
+      const resolvedLlm = hasCtx
+        ? await generateWithGemini({ prompt: resolvedPrompt })
+        : { provider: "gemini", model: GEMINI_MODEL, used: false, reason: "no_retrieved_context", text: "" };
+
+      const resolvedFallback = buildGroundedFallback(resolvedResponse, resolvedNextQ, null);
+      const resolvedFallbackReason = resolvedLlm.used ? null : (resolvedLlm.reason || "gemini_unavailable");
+      const resolvedGrounded = sanitizeAnswer(resolvedLlm.used ? resolvedLlm.text : resolvedFallback);
+      const resolvedFinal = resolvedGrounded || resolvedResponse.answer || ("Got it — " + resolved.context_note + ". Let me find the best options for you.");
+
+      // Track reply
+      if (!session.previousReplies) session.previousReplies = [];
+      session.previousReplies.push(resolvedFinal);
+      if (session.previousReplies.length > 12) session.previousReplies = session.previousReplies.slice(-12);
+      session.turns.push({ message, intent: resolvedRoute.intent, parsed: resolvedRoute.entities, lead: {}, context_note: resolved.context_note });
+      sessions.set(sessionId, session);
+
+      const cleanSrcs = cleanSourceLabels(uniqueSources(resolvedRag.sources));
+      const resolvedResult = {
+        session_id: sessionId,
+        llm_used: Boolean(resolvedLlm.used),
+        property_intent: true,
+        fallback_reason: resolvedFallbackReason,
+        answer: resolvedFinal,
+        reply: resolvedFinal,
+        sources: cleanSrcs,
+        sources_used: cleanSrcs,
+        cards: resolvedResponse.cards,
+        response_cards: resolvedResponse.cards,
+        follow_up: resolvedNextQ || "",
+        response_type: resolvedResponse.type || "property_search",
+        model_used: resolvedLlm.model_used || (resolvedLlm.used ? resolvedLlm.model : null),
+        ai_plan: { used: false, model_used: null, error: null, plan: null },
+        visual_analysis: { used: false, description: "", features: [], error: null },
+        intent: resolvedRoute.intent,
+        entities: resolvedRoute.entities,
+        memory: session.memory,
+        lead_capture: session.memory.lead_capture || {},
+        recommendations: resolvedResponse.recommendations || resolvedRecs.recommendations,
+        sales_handoff: {
+          status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
+          summary: buildSalesSummary(session.memory, resolvedResponse.recommendations || resolvedRecs.recommendations),
+          captured_fields: session.memory.lead_capture || {},
+          source: "Concierge-Backend-v1 session memory"
+        },
+        llm: {
+          provider: resolvedLlm.provider || "gemini",
+          model: resolvedLlm.model || GEMINI_MODEL,
+          model_used: resolvedLlm.model_used || (resolvedLlm.used ? resolvedLlm.model : null),
+          attempted_models: resolvedLlm.attempted_models || [],
+          used: Boolean(resolvedLlm.used),
+          reason: resolvedLlm.reason,
+          fallback_reason: resolvedFallbackReason
+        },
+        validation: validation("pending_context_resolved")
+      };
+      logChatOrchestration({ intent: resolvedRoute.intent, entities: resolvedRoute.entities, shouldUseRag: true, chunksCount: resolvedRag.chunks.length, model: resolvedLlm.model_used || resolvedLlm.model || GEMINI_MODEL, geminiError: resolvedLlm.used ? null : resolvedLlm.error || resolvedLlm.reason, fallback_reason: resolvedFallbackReason, vision: { used: false, features: [], error: null } });
+      resolvedResult.persistence = await persistChatExchange({ input, result: resolvedResult });
+      chatDebug("final.json", summarizeFinalJson(resolvedResult));
+      return resolvedResult;
+    }
+    // Could not resolve — fall through to normal routing
+  }
+  // ── EARLY GATE: Greetings, name capture, and small talk bypass Gemini planner & RAG ──
   // nonPropertyResponse now calls Gemini with a lightweight conversational prompt,
   // so every greeting / name-capture / small-talk response is generated dynamically.
   if (!images.length) {
@@ -1771,9 +2017,19 @@ export async function chat(data, input = {}) {
   if (isAmbiguousBudgetMessage(message)) {
     const budget = parseBudget(norm(message));
     if (budget) session.memory.budget = budget;
+    // Store pending_context so the next short reply ("AED", "USD", etc.) resolves correctly
+    const budgetSlots = parseSlots(message);
+    session.memory.pending_context = {
+      type: "currency_clarification",
+      original_message: message,
+      property_type: budgetSlots.property_type || session.memory.property_type || null,
+      budget_amount: budget,
+      missing_field: "currency"
+    };
     session.turns.push({ message, intent: "budget_clarification", parsed: { budget }, lead: {} });
     sessions.set(sessionId, session);
-    const answer = `Thanks. Is that AED ${budget ? Number(budget).toLocaleString("en-US") : "budget"}, or did you mean another currency?`;
+    const budgetDisplay = budget ? Number(budget).toLocaleString("en-US") : "budget";
+    const answer = "Thanks. Is that AED " + budgetDisplay + ", or did you mean another currency?";
     const result = {
       session_id: sessionId,
       llm_used: false,
@@ -1809,6 +2065,15 @@ export async function chat(data, input = {}) {
   }
   const organicClarifier = organicClarifierFor(message, route, session);
   if (organicClarifier) {
+    // Store pending_context so the user's short clarification answer resolves correctly
+    const orgSlots = parseSlots(message);
+    if (/buy|rent|invest|commercial/i.test(organicClarifier)) {
+      session.memory.pending_context = { type: "purpose_clarification", original_message: message, property_type: orgSlots.property_type || null, missing_field: "purpose" };
+    } else if (/community|location|area|ajman/i.test(organicClarifier)) {
+      session.memory.pending_context = { type: "location_clarification", original_message: message, property_type: orgSlots.property_type || null, missing_field: "location" };
+    } else if (/office|retail|clinic|commercial/i.test(organicClarifier)) {
+      session.memory.pending_context = { type: "purpose_clarification", original_message: message, property_type: "commercial", missing_field: "commercial_type" };
+    }
     session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
     sessions.set(sessionId, session);
     const result = {
