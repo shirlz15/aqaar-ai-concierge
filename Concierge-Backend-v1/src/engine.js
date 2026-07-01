@@ -1174,15 +1174,27 @@ const CONV_FALLBACKS = {
   ]
 };
 
-function getFallbackConversationalReply(intent, session) {
+function messageHash(message) {
+  // Simple deterministic hash of message content so different greeting words
+  // get different fallback variants even in fresh sessions with 0 turns.
+  let h = 0;
+  const s = String(message || "").toLowerCase().trim();
+  for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) & 0xffffff; }
+  return h;
+}
+
+function getFallbackConversationalReply(intent, session, message) {
   const variants = CONV_FALLBACKS[intent] || CONV_FALLBACKS.unclear;
   const previousReplies = session && session.previousReplies ? session.previousReplies : [];
   const unused = variants.filter(function(v) { return !previousReplies.includes(v); });
   const pool = unused.length ? unused : variants;
-  const idx = ((session && session.turns ? session.turns.length : 0)) % pool.length;
+  // Use message hash so different greeting words ("hey" vs "hello" vs "hi")
+  // produce different variants even in fresh sessions with identical turn count.
+  const turnCount = (session && session.turns ? session.turns.length : 0);
+  const hash = messageHash(message || "");
+  const idx = (turnCount + hash) % pool.length;
   return pool[idx];
 }
-
 async function generateConversationalResponse(intent, message, session) {
   const prompt = buildConversationalPrompt(intent, message, session);
   const result = await generateWithGemini({ prompt, maxAttempts: 1, fallbackModels: false, timeoutMs: 6000 });
@@ -1191,7 +1203,7 @@ async function generateConversationalResponse(intent, message, session) {
   }
   // Gemini unavailable — use local variant
   const name = session && session.memory ? (session.memory.name || null) : null;
-  let fallback = getFallbackConversationalReply(intent, session);
+  let fallback = getFallbackConversationalReply(intent, session, message);
   if (intent === "name_contact_capture" && name && !fallback.includes(name)) {
     fallback = "Nice to meet you, " + name + "! " + fallback.replace(/^[A-Z][^!]+!\s*/, "");
   }
