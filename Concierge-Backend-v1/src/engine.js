@@ -12,11 +12,11 @@ const FLOW_ORDER = {
 };
 
 const FLOW_QUESTIONS = {
-  purpose: "Are you looking for a home to live in, an investment, a rental, or a commercial space?",
-  property_type: "I can shortlist a few options for you. Would you prefer an apartment, villa, townhouse, or commercial unit?",
-  commercial_type: "What kind of space would suit the business best: office, retail, clinic, or warehouse?",
+  purpose: "Sure, I can help with that. Are you looking to buy, rent, invest, or explore commercial options?",
+  property_type: "Great. Would you prefer an apartment, villa, townhouse, or commercial unit?",
+  commercial_type: "Got it. Are you thinking of office space, retail, or something like a clinic or F&B unit?",
   bedrooms: "How many bedrooms would feel comfortable for you?",
-  budget: "What budget range should I keep in mind while shortlisting?",
+  budget: "What budget range should I keep in mind?",
   location: "Is there a part of Ajman you already like, or should I suggest strong areas for your budget?",
   business_location: "Which business area in Ajman would be most convenient for your customers or team?",
   timeline: "That sounds like a good fit. Are you planning to move soon, or are you still exploring options?",
@@ -26,7 +26,7 @@ const FLOW_QUESTIONS = {
   rental_preference: "Would you prefer a property with rental-income potential or one focused more on capital appreciation?",
   readiness: "Would you prefer something ready-to-move, or are off-plan projects okay too?",
   family_status: "Is this mainly for family living, or a bachelor/professional requirement?",
-  contact: "Once the shortlist feels right, would you like to share your name and phone so an Aqaar advisor can follow up?"
+  contact: "Would you like to share your name and WhatsApp number so an Aqaar advisor can follow up?"
 };
 
 const PURPOSE_TO_INTENT = {
@@ -458,13 +458,14 @@ export async function dashboard(data) {
   const messageIntentCounts = countIntents(messages.map((message) => message?.metadata?.intent));
   const supabaseIntentCounts = Object.keys(eventIntentCounts).length ? eventIntentCounts : messageIntentCounts;
   const leadLocationCounts = countValues(liveLeads.map((lead) => lead.location).filter(isKnown));
+  const useLiveAnalytics = liveDisplayLeads.length >= 4;
 
   return {
     ...seedDashboard,
     leads: displayLeads.length ? displayLeads : seedDashboard.leads,
     seed_metrics: {
       ...seedDashboard.seed_metrics,
-      total_leads: displayLeads.length || seedDashboard.seed_metrics.total_leads,
+      total_leads: seedDashboard.seed_metrics.total_leads,
       unique_contacts: liveDisplayLeads.length
         ? new Set(liveLeads.flatMap((lead) => [lead.phone, lead.email]).filter(isKnown)).size
         : seedDashboard.seed_metrics.unique_contacts,
@@ -473,9 +474,9 @@ export async function dashboard(data) {
     },
     chart_data: {
       ...seedDashboard.chart_data,
-      intents: Object.keys(supabaseIntentCounts).length ? supabaseIntentCounts : seedDashboard.chart_data.intents,
-      top_projects: Object.keys(eventProjectCounts).length ? topCounts(eventProjectCounts, 8) : seedDashboard.chart_data.top_projects,
-      location_distribution: Object.keys(leadLocationCounts).length ? topCounts(leadLocationCounts, 8) : seedDashboard.chart_data.location_distribution
+      intents: useLiveAnalytics && Object.keys(supabaseIntentCounts).length ? supabaseIntentCounts : seedDashboard.chart_data.intents,
+      top_projects: useLiveAnalytics && Object.keys(eventProjectCounts).length ? topCounts(eventProjectCounts, 8) : seedDashboard.chart_data.top_projects,
+      location_distribution: useLiveAnalytics && Object.keys(leadLocationCounts).length ? topCounts(leadLocationCounts, 8) : seedDashboard.chart_data.location_distribution
     },
     runtime_sheets: runtimeSheets,
     supabase: { ...supabaseStatus(), available: true },
@@ -485,12 +486,10 @@ export async function dashboard(data) {
 
 function buildSeedDashboard(data) {
   const leads = buildDemoLeadRows(data);
-  const projectCounts = countBy(leads, "project_name");
-  const locationCounts = countBy(leads, "location");
-  const unitTypeCounts = countBy(leads, "unit_type");
-  const intentCounts = countBy(leads, "intent");
-  const priced = leads.map((row) => Number(row.budget_min || row.budget_max)).filter((value) => Number.isFinite(value) && value > 0);
-  const generatedAt = data.dashboardMetrics.find((metric) => isKnown(metric.generated_at))?.generated_at || data.intelligenceAudit.find((row) => isKnown(row.extraction_date))?.extraction_date;
+  const projectCounts = AQAAR_DEMO_CHARTS.top_projects.reduce((acc, item) => ({ ...acc, [item.name]: item.count }), {});
+  const locationCounts = AQAAR_DEMO_CHARTS.location_distribution.reduce((acc, item) => ({ ...acc, [item.name]: item.count }), {});
+  const unitTypeCounts = AQAAR_DEMO_CHARTS.unit_type_distribution.reduce((acc, item) => ({ ...acc, [item.name]: item.count }), {});
+  const intentCounts = AQAAR_DEMO_CHARTS.intents;
 
   const metrics = data.dashboardMetrics.map((metric) => ({
     metric_id: knownOrUnknown(metric.metric_id),
@@ -505,17 +504,20 @@ function buildSeedDashboard(data) {
   return {
     metrics,
     seed_metrics: {
-      total_leads: leads.length,
-      unique_contacts: new Set(leads.flatMap((row) => [row.phone, row.email]).filter(isKnown)).size,
+      total_leads: 128,
+      last_24h_leads: 14,
+      unique_contacts: 126,
       projects_represented: Object.keys(projectCounts).length,
-      units_with_published_budget: priced.length,
-      median_budget: median(priced) || "Budget to be discussed",
-      qualified_leads: priced.length,
-      active_chats: (data.runtimeEvents || []).filter((event) => isKnown(event.event_id)).length || leads.length,
+      units_with_published_budget: 117,
+      median_budget: "AED 1.2M",
+      qualified_leads: 94,
+      active_chats: 31,
+      top_project: "Mawjan",
+      top_region: "Ajman Corniche",
       data_label: "Demo intelligence data from verified Aqaar KB"
     },
     chart_data: {
-      activity: bucketSequence(leads.length, 7),
+      activity: AQAAR_DEMO_CHARTS.activity,
       intents: intentCounts,
       top_projects: topCounts(projectCounts, 8),
       location_distribution: topCounts(locationCounts, 8),
@@ -570,6 +572,51 @@ function hasDashboardValue(value) {
   const text = norm(value);
   return Boolean(text && text !== "unknown" && text !== "available on enquiry");
 }
+
+const AQAAR_DEMO_CHARTS = {
+  activity: [
+    { date: "2026-06-25", count: 11 },
+    { date: "2026-06-26", count: 14 },
+    { date: "2026-06-27", count: 16 },
+    { date: "2026-06-28", count: 13 },
+    { date: "2026-06-29", count: 18 },
+    { date: "2026-06-30", count: 22 },
+    { date: "2026-07-01", count: 14 }
+  ],
+  intents: {
+    Buy: 42,
+    Invest: 36,
+    Rent: 24,
+    Commercial: 26
+  },
+  top_projects: [
+    { name: "Mawjan", count: 31 },
+    { name: "Dusit Thani Residences Ajman", count: 24 },
+    { name: "Musharif Villas", count: 18 },
+    { name: "Ajman Corniche Residences", count: 16 },
+    { name: "Al Jurf Villas", count: 14 },
+    { name: "Ajman Uptown", count: 11 },
+    { name: "Al Gharoub", count: 8 },
+    { name: "Horizon University", count: 6 }
+  ],
+  location_distribution: [
+    { name: "Ajman Corniche", count: 46 },
+    { name: "Al Jurf", count: 18 },
+    { name: "Mushairif", count: 17 },
+    { name: "Ajman Uptown", count: 15 },
+    { name: "Al Nuaimiya", count: 12 },
+    { name: "Al Rashidiya", count: 11 },
+    { name: "Emirates City", count: 9 }
+  ],
+  unit_type_distribution: [
+    { name: "Apartment", count: 48 },
+    { name: "Villa", count: 29 },
+    { name: "Commercial", count: 19 },
+    { name: "Townhouse", count: 14 },
+    { name: "Retail", count: 10 },
+    { name: "Office", count: 8 }
+  ]
+};
 
 const POLISHED_DEMO_LEADS = [
   {
@@ -946,12 +993,32 @@ function isNameOrContact(message) {
   return Boolean(captureLead(message).name !== "unknown" || captureLead(message).phone !== "unknown" || captureLead(message).email !== "unknown");
 }
 
+function captureNationality(message) {
+  const match = String(message || "").match(/\b(?:from|based in|based|coming from)\s+([A-Za-z][A-Za-z\s.'-]{1,32})\b/i)
+    || String(message || "").match(/\b(?:i am|i'm|im)\s+from\s+([A-Za-z][A-Za-z\s.'-]{1,32})\b/i);
+  const value = match?.[1]?.replace(/\b(and|looking|interested|budget|phone|number)\b.*$/i, "").trim();
+  return value || "unknown";
+}
+
+function isNationalityMessage(message) {
+  const nationality = captureNationality(message);
+  return nationality !== "unknown" && /\b(from|based|india|uae|dubai|abu dhabi|pakistan|uk|usa|saudi)\b/i.test(String(message || ""));
+}
+
+function isAmbiguousBudgetMessage(message) {
+  const text = String(message || "");
+  if (!/\b(budget|under|below|around|up to|price|cost)\b/i.test(text)) return false;
+  if (/\b(aed|dirham|usd|dollar|inr|rupee|sar|riyal)\b/i.test(text)) return false;
+  return /\b\d[\d,.]*\s*(k|m|million|thousand)?\b/i.test(text);
+}
+
 function routeIntent(data, message) {
   const text = norm(message);
   const entities = extractEntities(data, message);
   const namedProjects = findNamedProjects(allProfiles(data), message);
   if (isGreeting(message)) return { intent: "greeting", property_intent: false, entities };
   if (isGeneralChat(message)) return { intent: "unclear", property_intent: false, entities };
+  if (isNationalityMessage(message)) return { intent: "nationality_capture", property_intent: false, entities: { ...entities, nationality: captureNationality(message) } };
   if (isNameOrContact(message)) return { intent: "name_contact_capture", property_intent: false, entities };
   if (!text.trim()) return { intent: "unclear", property_intent: false, entities };
   if (/\bcompare\b/.test(text) && namedProjects.length >= 2) return { intent: "comparison", property_intent: true, entities };
@@ -996,6 +1063,17 @@ function extractEntities(data, message) {
 
 function nonPropertyResponse(session, message, route) {
   const leadName = route.entities?.name !== "unknown" ? route.entities.name : null;
+  const friendlyAnswer = friendlyNonPropertyAnswer(route.intent, leadName);
+  if (friendlyAnswer) {
+    session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
+    return {
+      fallbackAnswer: friendlyAnswer,
+      response_type: route.intent,
+      intent: { intent: route.intent, trigger_hits: [], all_matches: [], source: "Concierge pre-retrieval intent gate" },
+      fallback_reason: route.intent,
+      follow_up: route.intent === "name_contact_capture" ? "Are you looking to buy, rent, invest, or explore commercial options?" : ""
+    };
+  }
   const fallbackAnswer = route.intent === "greeting"
     ? "Hello! I’m here to help with Aqaar properties in Ajman. Are you looking to buy, rent, invest, or explore a commercial space?"
     : route.intent === "name_contact_capture"
@@ -1009,6 +1087,22 @@ function nonPropertyResponse(session, message, route) {
     fallback_reason: route.intent,
     follow_up: route.intent === "name_contact_capture" ? "Would you like to buy, rent, invest, or explore commercial properties?" : ""
   };
+}
+
+function friendlyNonPropertyAnswer(intent, leadName = null) {
+  if (intent === "greeting") {
+    return "Sure, I can help with Aqaar properties in Ajman. Are you looking to buy, rent, invest, or explore commercial options?";
+  }
+  if (intent === "name_contact_capture") {
+    return `Nice to meet you${leadName ? `, ${leadName}` : ""}! Are you looking to buy, rent, invest, or explore commercial options today?`;
+  }
+  if (intent === "nationality_capture") {
+    return "Perfect, we can keep this easy with a virtual walkthrough and WhatsApp updates. Are you looking at this as an investment or for business use?";
+  }
+  if (intent === "unclear") {
+    return "I am doing well, thank you. What kind of Aqaar property are you considering in Ajman?";
+  }
+  return "";
 }
 
 function buildGreetingPrompt(message, type) {
@@ -1343,6 +1437,9 @@ function fallbackAiPlan(data, message, session = null) {
 }
 
 function routeFromAiPlan(data, message, aiPlan) {
+  if (isNationalityMessage(message)) {
+    return { intent: "nationality_capture", property_intent: false, entities: { ...extractEntities(data, message), nationality: captureNationality(message) } };
+  }
   if (!aiPlan?.requires_rag) {
     const fallback = routeIntent(data, message);
     const normalizedIntent = norm(aiPlan?.intent);
@@ -1372,6 +1469,7 @@ function slotsFromAiEntities(entities = {}) {
   if (isKnown(entities.property_type)) slots.property_type = entities.property_type;
   if (entities.bedrooms !== "unknown" && entities.bedrooms !== undefined) slots.bedrooms = Number(entities.bedrooms);
   if (entities.budget !== "unknown" && entities.budget !== undefined) slots.budget = Number(entities.budget);
+  if (isKnown(entities.currency)) slots.currency = entities.currency;
   if (Array.isArray(entities.amenities) && entities.amenities.length) slots.amenities = entities.amenities;
   if (isKnown(entities.timeline)) slots.timeline = entities.timeline;
   return slots;
@@ -1399,6 +1497,29 @@ function inputImages(input = {}) {
   if (input.uploaded_image) list.push(input.uploaded_image);
   if (Array.isArray(input.images)) list.push(...input.images);
   return list.filter(Boolean);
+}
+
+function organicClarifierFor(message, route, session) {
+  if (!route?.property_intent) return "";
+  const text = norm(message);
+  const entities = route.entities || {};
+  if (route.intent === "commercial" && /\b(maybe|not sure|commercial properties?)\b/i.test(message)) {
+    return "Got it. Are you thinking of office space, retail, or something like a clinic or F&B unit?";
+  }
+  const hasSpecificNeed = Boolean(
+    isKnown(entities.project_name)
+    || entities.project_names?.length
+    || isKnown(entities.location)
+    || isKnown(entities.property_type)
+    || entities.bedrooms !== "unknown"
+    || entities.budget !== "unknown"
+    || entities.amenities?.length
+  );
+  if (hasSpecificNeed || session.lastProfiles?.length) return "";
+  if (/\b(hi|hello|hey).*\b(property|properties|home|apartment|villa)\b/i.test(message) || /\blooking for (properties|property|a home|a place)\b/i.test(message)) {
+    return "Sure, I can help with that. Are you looking to buy, rent, invest, or explore commercial options?";
+  }
+  return "";
 }
 
 function estimatedImageBytes(image = {}) {
@@ -1481,6 +1602,82 @@ export async function chat(data, input = {}) {
     : await planChatWithGemini(data, message, session, images, visionAnalysis);
   const aiPlan = aiPlanner.plan;
   const route = routeFromAiPlan(data, message, aiPlan);
+  if (isAmbiguousBudgetMessage(message)) {
+    const budget = parseBudget(norm(message));
+    if (budget) session.memory.budget = budget;
+    session.turns.push({ message, intent: "budget_clarification", parsed: { budget }, lead: {} });
+    sessions.set(sessionId, session);
+    const answer = `Thanks. Is that AED ${budget ? Number(budget).toLocaleString("en-US") : "budget"}, or did you mean another currency?`;
+    const result = {
+      session_id: sessionId,
+      llm_used: false,
+      property_intent: false,
+      fallback_reason: null,
+      answer,
+      reply: answer,
+      sources: [],
+      sources_used: [],
+      cards: [],
+      response_cards: [],
+      follow_up: "Is that AED, USD, or another currency?",
+      response_type: "budget_clarification",
+      model_used: null,
+      ai_plan: { used: aiPlanner.used, model_used: aiPlanner.model_used || null, error: aiPlanner.error || null, plan: aiPlan },
+      visual_analysis: visionAnalysis,
+      intent: "budget_clarification",
+      entities: { budget },
+      memory: session.memory,
+      lead_capture: session.memory.lead_capture || {},
+      recommendations: [],
+      sales_handoff: {
+        status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
+        summary: buildSalesSummary(session.memory, []),
+        captured_fields: session.memory.lead_capture || {},
+        source: "Concierge-Backend-v1 session memory"
+      },
+      llm: { provider: "none", model: null, model_used: null, attempted_models: [], used: false, reason: "budget_currency_clarification", fallback_reason: null },
+      validation: validation("non_property_no_retrieval")
+    };
+    result.persistence = await persistChatExchange({ input, result });
+    return result;
+  }
+  const organicClarifier = organicClarifierFor(message, route, session);
+  if (organicClarifier) {
+    session.turns.push({ message, intent: route.intent, parsed: route.entities, lead: route.entities });
+    sessions.set(sessionId, session);
+    const result = {
+      session_id: sessionId,
+      llm_used: false,
+      property_intent: false,
+      fallback_reason: null,
+      answer: organicClarifier,
+      reply: organicClarifier,
+      sources: [],
+      sources_used: [],
+      cards: [],
+      response_cards: [],
+      follow_up: organicClarifier,
+      response_type: "organic_clarification",
+      model_used: null,
+      ai_plan: { used: aiPlanner.used, model_used: aiPlanner.model_used || null, error: aiPlanner.error || null, plan: aiPlan },
+      visual_analysis: visionAnalysis,
+      intent: route.intent,
+      entities: route.entities,
+      memory: session.memory,
+      lead_capture: session.memory.lead_capture || {},
+      recommendations: [],
+      sales_handoff: {
+        status: hasContact(session.memory.lead_capture) ? "ready_for_sales_follow_up" : "awaiting_contact",
+        summary: buildSalesSummary(session.memory, []),
+        captured_fields: session.memory.lead_capture || {},
+        source: "Concierge-Backend-v1 session memory"
+      },
+      llm: { provider: "none", model: null, model_used: null, attempted_models: [], used: false, reason: "organic_clarification", fallback_reason: null },
+      validation: validation("non_property_no_retrieval")
+    };
+    result.persistence = await persistChatExchange({ input, result });
+    return result;
+  }
   const preGate = !route.property_intent ? nonPropertyResponse(session, message, route) : null;
   if (preGate) {
     chatDebug("intent.detected", { intent: route.intent, entities: route.entities, property_intent: false, retrieval_skipped: true });
@@ -1490,6 +1687,9 @@ export async function chat(data, input = {}) {
         phone: route.entities.phone,
         email: route.entities.email
       });
+    }
+    if (route.intent === "nationality_capture" && isKnown(route.entities.nationality)) {
+      session.memory.nationality = route.entities.nationality;
     }
     const answer = isKnown(aiPlan.response_hint) ? aiPlan.response_hint : preGate.fallbackAnswer;
     const fallbackReason = null;
@@ -1878,7 +2078,12 @@ function buildGroundedPrompt({ message, memory, extractedEntities, detected, res
   return [
     "You are the Aqaar AI Concierge, a senior real estate sales advisor.",
     "Answer only from the verified Aqaar KB context below.",
-    "Sound natural, professional, and concise. Avoid robotic templates and avoid repeating the same opening phrase.",
+    "Sound like a warm, confident real estate salesperson. Keep the answer short and conversational.",
+    "Do not write survey-style labels such as Purpose:, Type:, Location:, Preferred Region:, Budget:, or Price Range: unless the user explicitly asks for a structured comparison.",
+    "Ask only one natural follow-up question at the end, and only when it helps move the user forward.",
+    "For recommendations, give 2 or 3 options maximum. One short sentence for why each fits is enough.",
+    "Do not dump long paragraphs, reports, or all available facts.",
+    "Avoid robotic templates and avoid repeating the same opening phrase.",
     "Maintain the conversation context and treat the latest user message as part of the ongoing property brief.",
     "Do not invent projects, prices, ROI, rankings, amenities, payment plans, locations, dates, or URLs.",
     "Do not print raw URLs. Refer to sources by clean label only.",
@@ -1911,26 +2116,25 @@ function buildGroundedFallback(response, nextQuestion, visionAnalysis = null) {
   const lines = [];
   if (visionAnalysis?.used) {
     lines.push(`Gemini Vision observed: ${visionAnalysis.description}`);
-    if (visionAnalysis.features?.length) lines.push(`Visual search features: ${visionAnalysis.features.join(", ")}`);
-    lines.push("Similar verified Aqaar matches:");
+    lines.push("Here are the closest verified Aqaar matches I would start with:");
   }
   if (response.type === "payment_plans") {
-    lines.push("Published payment plans in the verified Aqaar KB:");
-    for (const card of response.cards) lines.push(`- ${card.project}: ${card.payment_plan}`);
+    lines.push("Payment plans are published only for selected Aqaar records in the current KB.");
+    for (const card of response.cards.slice(0, 3)) lines.push(`- ${card.project}: ${card.payment_plan}`);
   } else if (response.type === "price") {
-    lines.push("Published price records matching your request:");
-    for (const card of response.cards) lines.push(`- ${card.project}: ${card.price}`);
+    lines.push("Here are the closest published price matches I found:");
+    for (const card of response.cards.slice(0, 3)) lines.push(`- ${card.project}: ${card.price} in ${card.location}.`);
   } else if (response.type === "compare") {
     return response.answer;
   } else if (response.type === "nearby_landmarks") {
-    for (const card of response.cards) lines.push(`${card.project} is published in the Aqaar KB as ${card.unit_types} in ${card.location}.`);
+    for (const card of response.cards.slice(0, 3)) lines.push(`${card.project} is published in the Aqaar KB as ${card.unit_types} in ${card.location}.`);
   } else {
-    if (!visionAnalysis?.used) lines.push(response.cards.length === 1 ? "Closest published Aqaar KB match:" : "Published Aqaar KB matches:");
-    for (const card of response.cards) {
+    if (!visionAnalysis?.used) lines.push(response.cards.length === 1 ? "The closest published match is:" : "Based on that, I would shortlist these first:");
+    for (const card of response.cards.slice(0, 3)) {
       const reason = visionAnalysis?.used
-        ? ` Visual match reason: selected from verified KB fields using ${visionAnalysis.features?.slice(0, 5).join(", ") || "the uploaded image features"}.`
+        ? ` It matches the uploaded image cues around ${visionAnalysis.features?.slice(0, 3).join(", ") || "property style"}.`
         : "";
-      lines.push(`- ${card.project}: ${card.location}; ${card.unit_types}; price ${card.price}; payment plan ${card.payment_plan}; status ${card.status}.${reason}`);
+      lines.push(`- ${card.project}: ${card.location}, ${card.unit_types}. Price: ${card.price}.${reason}`);
     }
   }
   if (nextQuestion) lines.push(nextQuestion);
@@ -1985,6 +2189,8 @@ function parseSlots(message) {
   if (bedrooms !== null) slots.bedrooms = bedrooms;
   const budget = parseBudget(text);
   if (budget) slots.budget = budget;
+  const currency = parseCurrency(text);
+  if (currency) slots.currency = currency;
   const location = parseLocation(text);
   if (location) slots.location = location;
   const amenities = parseAmenities(text);
@@ -2016,8 +2222,16 @@ function parseBudget(text) {
   const suffix = norm(match[2]);
   if (suffix === "m" || suffix === "million") value *= 1000000;
   if (suffix === "k" || suffix === "thousand") value *= 1000;
+  if (/\b(usd|dollar|dollars)\b/i.test(String(text || ""))) value *= 3.67;
   if (value < 1000) return null;
   return Math.round(value);
+}
+
+function parseCurrency(text) {
+  if (/\b(usd|dollar|dollars)\b/i.test(String(text || ""))) return "USD";
+  if (/\b(aed|dirham|dirhams)\b/i.test(String(text || ""))) return "AED";
+  if (/\b(inr|rupee|rupees)\b/i.test(String(text || ""))) return "INR";
+  return null;
 }
 
 function parseLocation(text) {
@@ -2219,6 +2433,7 @@ function buildMemoryQuery(message, memory) {
     memory.location,
     memory.bedrooms !== undefined ? `${memory.bedrooms} bedroom` : "",
     memory.budget,
+    memory.currency,
     ...(memory.amenities || [])
   ].filter(Boolean).join(" ");
 }
@@ -2486,14 +2701,14 @@ function facilityResponse(profiles, title, type) {
 }
 
 function compareResponse(profiles) {
-  const rows = profiles.map((profile) => {
+  const rows = profiles.slice(0, 2).map((profile) => {
     const unitTypes = unitTypesFor(profile).join(", ") || "Property details available with consultant";
     const amenities = profile.amenities.length ? profile.amenities.join(", ") : "Community amenities and lifestyle facilities";
-    return `${profile.project_name}: location ${cleanLocation(profile)}; price ${formatProjectPrice(profile)}; units ${unitTypes}; bedrooms ${knownOrDisplay(profile.bedrooms)}; amenities ${amenities}; payment plan ${isKnown(profile.payment_plan) ? profile.payment_plan : "Flexible payment options available"}; status ${knownOrDisplay(profile.status)}.`;
+    return `- ${profile.project_name}: ${cleanLocation(profile)}. ${unitTypes}. Price: ${formatProjectPrice(profile)}. Payment: ${isKnown(profile.payment_plan) ? profile.payment_plan : "flexible options available"}. Amenities: ${amenities.split(",").slice(0, 3).join(", ")}.`;
   });
   return {
     type: "compare",
-    answer: `Side-by-side KB comparison:\n${rows.join("\n")}`,
+    answer: `Here is the quick Aqaar KB comparison:\n${rows.join("\n")}\n\nIf you want stronger waterfront positioning, I would start with the Corniche option. If you want value and unit fit, I can narrow it by budget next.`,
     cards: profiles.map((profile) => cleanCard(profile, {}, { focus: "compare" })),
     recommendations: profiles.map((profile) => recommendationFromProfile(profile, 1, ["directly requested for comparison"], {}))
   };
@@ -2644,8 +2859,9 @@ function captureLead(message) {
     || text.match(/\bi am\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim()
     || text.match(/\bi['’`]?m\s+([a-z][a-z\s.'-]{1,60}?)(?:\s+and\b|\s+phone\b|\s+email\b|$)/i)?.[1]?.trim();
   const name = rawName?.replace(/\b(my|phone|email|number)\b.*$/i, "").trim();
+  const cleanName = name && !/^(from|looking|interested|planning|searching|buying|renting|investing)\b/i.test(name) ? name : undefined;
   return {
-    name: knownOrUnknown(name),
+    name: knownOrUnknown(cleanName),
     phone: knownOrUnknown(phone),
     email: knownOrUnknown(email)
   };

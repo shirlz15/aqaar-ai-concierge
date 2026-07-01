@@ -39,6 +39,19 @@ export function initializeGemini({ log = false } = {}) {
 }
 
 export async function generateWithGemini({ prompt, model = process.env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL, images = [], maxAttempts = 3, fallbackModels = true, timeoutMs = Number(process.env.GEMINI_TIMEOUT_MS || 60000) } = {}) {
+  if (isTestRuntime()) {
+    return {
+      provider: "gemini",
+      model,
+      model_used: null,
+      used: false,
+      text: "",
+      reason: "test_runtime_gemini_disabled",
+      error: "Gemini calls are skipped during automated tests.",
+      attempted_models: [model],
+      attempts: []
+    };
+  }
   const { client, model: configuredModel } = initializeGemini();
   const activeModel = model || configuredModel;
   const models = fallbackModels
@@ -73,6 +86,13 @@ export async function generateWithGemini({ prompt, model = process.env.GEMINI_MO
     attempted_models: models,
     attempts
   };
+}
+
+function isTestRuntime() {
+  return process.execArgv.includes("--test")
+    || process.env.NODE_ENV === "test"
+    || process.env.npm_lifecycle_event === "test"
+    || process.argv.some((arg) => /tests[\\/].+\.test\.js$/.test(arg));
 }
 
 function configuredFallbackModels() {

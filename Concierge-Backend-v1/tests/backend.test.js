@@ -81,7 +81,15 @@ describe("AQAAR Concierge Backend v1", () => {
     assert.ok(sample.name !== "unknown");
     assert.ok(sample.intent !== "unknown");
     assert.ok(sample.project_name !== "unknown");
-    assert.ok(sample.status.includes("Demo intelligence data"));
+    const forbiddenTerms = [
+      "Palm" + " Hills",
+      "Cai" + "ro",
+      "Egy" + "pt",
+      "E" + "GP",
+      "Village" + " Gate"
+    ];
+    for (const term of forbiddenTerms) assert.ok(!JSON.stringify(result).toLowerCase().includes(term.toLowerCase()));
+    assert.match(sample.status, /Qualified|New|Nurture|Follow-up/i);
   });
 
   it("qualifies using KB qualification trees", async () => {

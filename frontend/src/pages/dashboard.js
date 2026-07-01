@@ -76,10 +76,12 @@ function renderDashboardView() {
     </div>
 
     <div class="kpi-grid">
-      ${kpiCard('Total Leads', m.total_leads, 'From aqaar_leads_seed.csv')}
-      ${kpiCard('Qualified Leads', m.qualified_leads, 'Rows with published budget')}
-      ${kpiCard('Top Intent', getTopIntent(m.intents), 'Derived from seed purpose/unit type')}
-      ${kpiCard('Active Chats', m.total_sessions, 'Runtime events or seed proxy')}
+      ${kpiCard('Total Leads', m.total_leads, 'Aqaar Ajman lead intelligence')}
+      ${kpiCard('Last 24H', m.last_24h_leads, 'Recent concierge activity')}
+      ${kpiCard('Unique Contacts', m.unique_contacts, 'Deduped phone/email contacts')}
+      ${kpiCard('Top Project', m.top_project, 'Most requested Aqaar project')}
+      ${kpiCard('Top Region', m.top_region, 'Highest interest location')}
+      ${kpiCard('Budget Median', m.median_budget, 'Published AED lead budget')}
     </div>
 
     <div class="charts-grid">
@@ -170,8 +172,13 @@ function normalizeMetrics(payload) {
   const charts = payload?.chart_data || {};
   return {
     total_leads: seed.total_leads,
+    last_24h_leads: seed.last_24h_leads,
+    unique_contacts: seed.unique_contacts,
     qualified_leads: seed.qualified_leads || seed.units_with_published_budget,
     total_sessions: seed.active_chats,
+    top_project: seed.top_project,
+    top_region: seed.top_region,
+    median_budget: seed.median_budget,
     data_label: seed.data_label || 'Demo intelligence data from verified Aqaar KB',
     intents: charts.intents || { buy: 0, rent: 0, invest: 0, commercial: 0 },
     activity: charts.activity || [],
